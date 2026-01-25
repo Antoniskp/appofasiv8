@@ -55,105 +55,7 @@ sudo systemctl restart ssh
 
 ---
 
-## DNS Resolution Troubleshooting (OpenVZ/venet VPSes)
 
-### Understanding the Issue
-
-On OpenVZ VPSes using venet network interfaces, the systemd-resolved stub listener (127.0.0.53) may fail to bind properly to venet0. This can cause DNS resolution failures even when network connectivity is working, preventing package installation and updates.
-
-### Diagnosing DNS Issues
-
-First, verify that network connectivity is working but DNS resolution is failing:
-
-```bash
-# Test basic network connectivity (should succeed)
-ping -c 3 1.1.1.1
-
-# Test DNS resolution (may fail)
-ping -c 3 archive.ubuntu.com
-
-# Check current DNS configuration
-resolvectl status
-```
-
-**Signs of the problem:**
-- `ping 1.1.1.1` succeeds (network works)
-- `ping archive.ubuntu.com` fails with "Temporary failure in name resolution"
-- `resolvectl status` shows DNS server as 127.0.0.53 but queries fail
-
-### Solution 1: Static /etc/resolv.conf (Recommended)
-
-This is the most reliable solution for OpenVZ/venet environments:
-
-```bash
-# Stop and disable systemd-resolved
-sudo systemctl stop systemd-resolved
-sudo systemctl disable systemd-resolved
-
-# Remove the symlink and create a static resolv.conf
-sudo rm /etc/resolv.conf
-sudo tee /etc/resolv.conf > /dev/null << 'EOF'
-nameserver 1.1.1.1
-nameserver 8.8.8.8
-EOF
-
-# Prevent the file from being overwritten
-sudo chattr +i /etc/resolv.conf
-
-# Test DNS resolution (should now work)
-ping -c 3 archive.ubuntu.com
-
-# Update package lists (should now succeed)
-sudo apt update
-```
-
-**Why this works:**
-- Bypasses systemd-resolved entirely
-- Uses reliable public DNS servers (Cloudflare 1.1.1.1 and Google 8.8.8.8)
-- The `chattr +i` flag prevents the file from being modified by other processes
-
-### Solution 2: Configure systemd-resolved for venet0 (Alternative)
-
-If you prefer to keep systemd-resolved running, bind DNS resolution to the venet0 interface:
-
-```bash
-# Configure DNS servers for venet0 interface
-sudo resolvectl dns venet0 1.1.1.1 8.8.8.8
-
-# Set DNS search domain for venet0
-sudo resolvectl domain venet0 '~.'
-
-# Verify the configuration
-resolvectl status venet0
-
-# Test DNS resolution
-resolvectl query archive.ubuntu.com
-
-# Test with ping
-ping -c 3 archive.ubuntu.com
-
-# Update package lists
-sudo apt update
-```
-
-**Note:** This configuration may not persist across reboots. For a permanent solution, add the following to `/etc/systemd/network/venet0.network`:
-
-```bash
-sudo tee /etc/systemd/network/venet0.network > /dev/null << 'EOF'
-[Match]
-Name=venet0
-
-[Network]
-DNS=1.1.1.1
-DNS=8.8.8.8
-Domains=~.
-EOF
-
-# Restart systemd-networkd
-sudo systemctl restart systemd-networkd
-```
-
----
 
 1. **Install dependencies**
 ```bash
@@ -168,6 +70,9 @@ sudo apt install -y nodejs
 sudo apt install -y postgresql postgresql-contrib
 
 # Install PM2 for process management
+
+sudo apt update
+sudo apt install -y nodejs npm
 sudo npm install -g pm2
 ```
 
