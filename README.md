@@ -1,6 +1,6 @@
 # News Application
 
-A professional news application with JWT authentication, PostgreSQL database, and role-based access control.
+A professional news application with JWT authentication, PostgreSQL database, role-based access control, and a modern Next.js frontend.
 
 ## Features
 
@@ -9,6 +9,7 @@ A professional news application with JWT authentication, PostgreSQL database, an
 - **PostgreSQL Database**: Robust data persistence with Sequelize ORM
 - **News Management**: Complete CRUD operations for news articles
 - **Role-Based Access Control**: Different permissions based on user roles
+- **Modern Frontend**: Next.js 13+ with App Router, React, and Tailwind CSS
 
 ## User Roles
 
@@ -18,15 +19,23 @@ A professional news application with JWT authentication, PostgreSQL database, an
 
 ## Technology Stack
 
+### Backend
 - **Backend**: Node.js with Express.js
 - **Database**: PostgreSQL with Sequelize ORM
 - **Authentication**: JWT (JSON Web Tokens)
 - **Password Security**: bcryptjs for password hashing
 - **CORS**: Enabled for cross-origin requests
 
+### Frontend
+- **Framework**: Next.js 13+ with App Router
+- **UI Library**: React 18+
+- **Styling**: Tailwind CSS
+- **State Management**: React Context API
+- **API Communication**: Fetch API with custom client
+
 ## Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v18 or higher)
 - PostgreSQL (v12 or higher)
 - npm or yarn
 
@@ -64,9 +73,10 @@ DB_PASSWORD=your_password
 JWT_SECRET=your-secret-key-change-this-in-production
 PORT=3000
 NODE_ENV=development
+NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
 
-5. Start the server:
+5. Start the backend server:
 ```bash
 # Development mode with auto-reload
 npm run dev
@@ -75,7 +85,80 @@ npm run dev
 npm start
 ```
 
-The server will start on `http://localhost:3000`
+The backend API server will start on `http://localhost:3000`
+
+6. Start the frontend (in a separate terminal):
+```bash
+# Development mode
+npm run frontend
+
+# Production build
+npm run frontend:build
+npm run frontend:start
+```
+
+The frontend application will start on `http://localhost:3001`
+
+## Frontend Structure
+
+The Next.js frontend is organized using the App Router structure:
+
+```
+app/
+├── layout.js              # Root layout with navigation
+├── page.js                # Home page with latest news
+├── articles/
+│   ├── page.js            # Articles list page
+│   └── [id]/
+│       └── page.js        # Article detail page
+├── login/
+│   └── page.js            # Login page
+├── register/
+│   └── page.js            # Registration page
+├── admin/
+│   └── page.js            # Admin dashboard (protected)
+└── editor/
+    └── page.js            # Editor dashboard (protected)
+
+components/
+├── TopNav.js              # Top navigation menu
+├── Footer.js              # Footer menu
+└── ProtectedRoute.js      # Route protection wrapper
+
+lib/
+├── api.js                 # API client and utilities
+└── auth-context.js        # Authentication context provider
+```
+
+## Frontend Pages
+
+### Public Pages
+- **Home (/)**: Landing page with hero section and latest news articles
+- **Articles (/articles)**: Browse all published articles with filters and pagination
+- **Article Detail (/articles/[id])**: View full article with author info
+- **Login (/login)**: User authentication page
+- **Register (/register)**: New user registration
+
+### Protected Pages (Require Authentication)
+- **Admin Dashboard (/admin)**: Admin-only dashboard with full article management
+- **Editor Dashboard (/editor)**: Editor/Admin dashboard for creating and managing articles
+
+## Role-Based Access
+
+The frontend implements client-side route protection:
+
+- **Public Routes**: /, /articles, /articles/[id], /login, /register
+- **Editor Routes**: /editor (requires editor or admin role)
+- **Admin Routes**: /admin (requires admin role)
+
+Unauthorized users are automatically redirected to the login page.
+
+## Environment Variables
+
+### Frontend Variables
+- `NEXT_PUBLIC_API_URL`: Backend API URL (default: http://localhost:3000)
+
+The `NEXT_PUBLIC_` prefix makes the variable accessible in the browser.
 
 ## API Documentation
 
