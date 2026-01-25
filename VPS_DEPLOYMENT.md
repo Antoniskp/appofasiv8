@@ -200,7 +200,7 @@ sudo apt install -y postgresql postgresql-contrib
 sudo npm install -g pm2
 ```
 
-**Note:** The Ubuntu default repository typically provides an older but stable version of Node.js (usually v18.x on Ubuntu 24.04). This method is simpler and works reliably, but for the latest features use Option A.
+**Note:** The Ubuntu default repository typically provides an older but stable version of Node.js. This method is simpler and works reliably, but for the latest features use Option A.
 
 2. **Set up PostgreSQL**
 ```bash
