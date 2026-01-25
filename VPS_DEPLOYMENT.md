@@ -142,6 +142,28 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
+**Troubleshooting: Apache welcome page still showing**
+
+If you see the Apache welcome page instead of your application, Apache may still be bound to port 80:
+
+```bash
+# Check what is listening on port 80
+sudo ss -tulpn | grep :80
+
+# Stop and disable Apache
+sudo systemctl stop apache2
+sudo systemctl disable apache2
+
+# Start and enable Nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+# Verify port 80 is now owned by Nginx
+sudo ss -tulpn | grep :80
+```
+
+You should see `nginx` in the output, not `apache2`.
+
 6. **Set up SSL with Let's Encrypt**
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
