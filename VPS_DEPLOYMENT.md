@@ -56,7 +56,6 @@ sudo systemctl restart ssh
 ---
 
 
-
 1. **Install dependencies**
 ```bash
 # Disable Virtuozzo/OpenVZ repo if present (avoids harmless Translation-en 404s)
@@ -168,4 +167,36 @@ You should see `nginx` in the output, not `apache2`.
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
+```
+
+---
+
+## Update After Merge (Server)
+
+Use these commands on the VPS after pulling the latest changes from `main`.
+
+### Update the repo from GitHub
+
+```bash
+cd /var/www/appofasiv8
+
+git fetch --all
+git checkout main
+git pull origin main
+```
+
+### Update environment variables
+
+`.env.example` should include:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+### Package scripts
+
+```bash
+npm run frontend         # dev server (port 3001)
+npm run frontend:build   # production build
+npm run frontend:start   # production server
 ```
