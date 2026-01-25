@@ -66,8 +66,8 @@ sudo sh -c 'grep -RIl "repo.virtuozzo.com/ctpreset" /etc/apt/sources.list /etc/a
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install prerequisites for NodeSource setup (plus nano)
-sudo apt install -y curl ca-certificates gnupg nano
+# Install prerequisites for NodeSource setup (plus nano and git)
+sudo apt install -y curl ca-certificates gnupg nano git
 
 # Install Node.js LTS via NodeSource (includes npm)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -94,7 +94,7 @@ GRANT ALL PRIVILEGES ON DATABASE newsapp TO newsapp_user;
 cd /var/www
 git clone https://github.com/Antoniskp/appofasiv8.git
 cd appofasiv8
-npm install --production
+npm install --omit=dev
 cp .env.example .env
 # Edit .env with production credentials
 nano .env
