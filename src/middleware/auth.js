@@ -12,6 +12,11 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
+    // Ensure JWT_SECRET is set in production
+    if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET must be set in production environment');
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-this-in-production');
     req.user = decoded;
     next();

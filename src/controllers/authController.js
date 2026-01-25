@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 const { User } = require('../models');
 require('dotenv').config();
 
@@ -19,7 +20,7 @@ const authController = {
       // Check if user already exists
       const existingUser = await User.findOne({
         where: {
-          [require('sequelize').Op.or]: [{ email }, { username }]
+          [Op.or]: [{ email }, { username }]
         }
       });
 
