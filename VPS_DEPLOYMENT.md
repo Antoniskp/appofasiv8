@@ -59,6 +59,10 @@ sudo systemctl restart ssh
 
 1. **Install dependencies**
 ```bash
+# Disable Virtuozzo/OpenVZ repo if present (avoids harmless Translation-en 404s)
+grep -RIn --line-number "repo.virtuozzo.com/ctpreset" /etc/apt/sources.list /etc/apt/sources.list.d || true
+sudo sh -c 'grep -RIl "repo.virtuozzo.com/ctpreset" /etc/apt/sources.list /etc/apt/sources.list.d | while read -r f; do mv "$f" "$f.disabled"; done' || true
+
 # Update system
 sudo apt update && sudo apt upgrade -y
 
