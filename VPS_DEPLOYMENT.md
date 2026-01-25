@@ -156,13 +156,20 @@ sudo systemctl restart systemd-networkd
 ---
 
 1. **Install dependencies**
+
+### Option A: NodeSource Repository (Recommended for Latest Node.js)
+
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20.x LTS from NodeSource (includes npm)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
+
+# Verify installations
+node -v
+npm -v
 
 # Install PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
@@ -170,6 +177,30 @@ sudo apt install -y postgresql postgresql-contrib
 # Install PM2 for process management
 sudo npm install -g pm2
 ```
+
+**Important for Ubuntu 24.04:** The NodeSource `nodejs` package includes npm. Do NOT attempt to install npm separately with `sudo apt install npm` as this can cause dependency conflicts.
+
+### Option B: Ubuntu Default Repository (Stable, Easier)
+
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install Node.js and npm from Ubuntu repository
+sudo apt install -y nodejs npm
+
+# Verify installations
+node -v
+npm -v
+
+# Install PostgreSQL
+sudo apt install -y postgresql postgresql-contrib
+
+# Install PM2 for process management
+sudo npm install -g pm2
+```
+
+**Note:** The Ubuntu default repository typically provides an older but stable version of Node.js (usually v18.x on Ubuntu 24.04). This method is simpler and works reliably, but for the latest features use Option A.
 
 2. **Set up PostgreSQL**
 ```bash
