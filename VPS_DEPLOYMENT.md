@@ -93,7 +93,12 @@ GRANT ALL PRIVILEGES ON DATABASE newsapp TO newsapp_user;
 cd /var/www
 git clone https://github.com/Antoniskp/appofasiv8.git
 cd appofasiv8
-npm install --omit=dev
+
+# Install all dependencies (including Next.js)
+# Note: Even though 'next' is in dependencies (not devDependencies),
+# you should install all packages to ensure proper binary linking
+npm ci
+
 cp .env.example .env
 # Edit .env with production credentials
 nano .env
@@ -185,6 +190,17 @@ git checkout main
 git pull origin main
 ```
 
+### Install/update dependencies
+
+After pulling changes, always reinstall dependencies:
+
+```bash
+# Clean install to ensure all dependencies are properly linked
+npm ci
+```
+
+**Important:** Do not use `npm install --omit=dev` for this project, as it may cause issues with Next.js binary availability. All frontend dependencies (including `next`) are in the main `dependencies` section of `package.json`.
+
 ### Update environment variables
 
 `.env.example` should include:
@@ -200,3 +216,76 @@ npm run frontend         # dev server (port 3001)
 npm run frontend:build   # production build
 npm run frontend:start   # production server
 ```
+
+---
+
+## Troubleshooting
+
+### Error: `sh: 1: next: not found`
+
+If you encounter the error `sh: 1: next: not found` when running `npm run frontend`, `npm run frontend:build`, or `npm run frontend:start`, this means the Next.js binary is not available in your `node_modules/.bin` directory.
+
+#### Root Causes
+
+1. **Incomplete dependency installation** - Dependencies were not fully installed
+2. **Using `--omit=dev` flag** - While `next` is in `dependencies` (not `devDependencies`), incomplete installations can still occur
+3. **Corrupted `node_modules`** - The `node_modules` directory or package lock may be corrupted
+
+#### Solution Steps
+
+**Step 1: Clean and reinstall dependencies**
+
+```bash
+cd /var/www/appofasiv8
+
+# Remove existing node_modules and lock file
+rm -rf node_modules package-lock.json
+
+# Clean npm cache (optional but recommended)
+npm cache clean --force
+
+# Fresh install with locked dependencies
+npm ci
+```
+
+**Step 2: Verify Next.js installation**
+
+```bash
+# Check if next binary exists
+ls -la node_modules/.bin/next
+
+# Test next command directly
+./node_modules/.bin/next --version
+```
+
+**Step 3: Run frontend scripts**
+
+```bash
+# For development
+npm run frontend
+
+# For production build
+npm run frontend:build
+
+# For production server
+npm run frontend:start
+```
+
+#### Production Deployment Notes
+
+For production deployments on a VPS:
+
+- **Always use `npm ci`** instead of `npm install` for reproducible builds
+- **Do NOT use `--omit=dev`** for this project - all frontend dependencies are in the main `dependencies` section
+- The `next` package is required at runtime for both building and serving the frontend
+- Ensure sufficient disk space and memory during installation
+
+#### Verification Checklist
+
+After installation, verify:
+
+- [ ] `node_modules/.bin/next` exists and is executable
+- [ ] `./node_modules/.bin/next --version` shows the Next.js version (should be ^16.1.4)
+- [ ] `npm run frontend` starts the development server on port 3001
+- [ ] `npm run frontend:build` completes successfully
+- [ ] `npm run frontend:start` runs the production server on port 3001
