@@ -3,18 +3,19 @@ const router = express.Router();
 const articleController = require('../controllers/articleController');
 const authMiddleware = require('../middleware/auth');
 const optionalAuthMiddleware = require('../middleware/optionalAuth');
+const { apiLimiter, createLimiter } = require('../middleware/rateLimiter');
 
-// Public routes with optional authentication
-router.get('/', optionalAuthMiddleware, articleController.getAllArticles);
-router.get('/:id', optionalAuthMiddleware, articleController.getArticleById);
+// Public routes with optional authentication and rate limiting
+router.get('/', apiLimiter, optionalAuthMiddleware, articleController.getAllArticles);
+router.get('/:id', apiLimiter, optionalAuthMiddleware, articleController.getArticleById);
 
-// Protected routes - require authentication
-router.post('/', authMiddleware, articleController.createArticle);
+// Protected routes - require authentication and rate limiting
+router.post('/', createLimiter, authMiddleware, articleController.createArticle);
 
 // Update - author can update their own, admin/editor can update all
-router.put('/:id', authMiddleware, articleController.updateArticle);
+router.put('/:id', apiLimiter, authMiddleware, articleController.updateArticle);
 
 // Delete - author can delete their own, admin can delete all
-router.delete('/:id', authMiddleware, articleController.deleteArticle);
+router.delete('/:id', apiLimiter, authMiddleware, articleController.deleteArticle);
 
 module.exports = router;
