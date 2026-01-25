@@ -194,9 +194,16 @@ heroku open
 ```bash
 ssh -i your-key.pem ubuntu@your-ec2-ip
 
-# Install Node.js and dependencies
+# Update system and install essential tools
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y nano curl git
+
+# Install Node.js (prerequisite for PM2)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs git
+sudo apt install -y nodejs
+
+# Install PM2 for process management
+sudo npm install -g pm2
 
 # Clone and configure
 git clone https://github.com/Antoniskp/appofasiv8.git
