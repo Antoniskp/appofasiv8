@@ -1,5 +1,60 @@
 # VPS Deployment (Ubuntu/Debian)
 
+## SSH Setup (Before Installation)
+
+### Fix SSH Runtime Directory
+
+The SSH daemon requires a runtime directory for proper operation. Create and configure it:
+
+```bash
+# Create SSH runtime directory
+sudo mkdir -p /run/sshd
+
+# Set proper permissions
+sudo chmod 755 /run/sshd
+
+# Create systemd tmpfiles configuration to persist across reboots
+sudo tee /etc/tmpfiles.d/sshd.conf > /dev/null << 'EOF'
+d /run/sshd 0755 root root -
+EOF
+
+# Apply the tmpfiles configuration
+sudo systemd-tmpfiles --create
+
+# Restart SSH service
+sudo systemctl restart ssh
+```
+
+**Why this is needed:**
+- `/run/sshd` is required by the SSH daemon for privilege separation
+- The directory is typically on a tmpfs filesystem that gets cleared on reboot
+- The tmpfiles.d configuration ensures it's recreated automatically on boot
+
+### SSH Keepalive Configuration
+
+Configure SSH keepalive settings to maintain stable connections:
+
+```bash
+# Append keepalive settings to SSH daemon configuration
+sudo tee -a /etc/ssh/sshd_config > /dev/null << 'EOF'
+
+# Keepalive settings
+ClientAliveInterval 300
+ClientAliveCountMax 5
+TCPKeepAlive yes
+EOF
+
+# Restart SSH service to apply changes
+sudo systemctl restart ssh
+```
+
+**What these settings do:**
+- `ClientAliveInterval 300`: Server sends keepalive message every 300 seconds (5 minutes) to check if client is alive
+- `ClientAliveCountMax 5`: Server disconnects after 5 unanswered keepalive messages (25 minutes total)
+- `TCPKeepAlive yes`: Enables TCP-level keepalive probes at the operating system level to detect dead connections
+
+---
+
 1. **Install dependencies**
 ```bash
 # Update system
