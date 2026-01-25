@@ -62,7 +62,10 @@ sudo systemctl restart ssh
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js
+# Install prerequisites for NodeSource setup
+sudo apt install -y curl ca-certificates gnupg
+
+# Install Node.js LTS via NodeSource (includes npm)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs
 
@@ -70,9 +73,6 @@ sudo apt install -y nodejs
 sudo apt install -y postgresql postgresql-contrib
 
 # Install PM2 for process management
-
-sudo apt update
-sudo apt install -y nodejs npm
 sudo npm install -g pm2
 ```
 
