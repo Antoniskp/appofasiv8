@@ -160,15 +160,26 @@ sudo systemctl restart systemd-networkd
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js
+# Install essential tools (nano is used for editing configuration files)
+sudo apt install -y nano curl
+
+# Install Node.js (prerequisite for PM2)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs
+
+# Verify Node.js and npm installation
+node --version
+npm --version
 
 # Install PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
 
-# Install PM2 for process management
+# Install PM2 for process management (requires Node.js/npm)
+# PM2 is used to keep the application running, auto-restart on crashes, and manage logs
 sudo npm install -g pm2
+
+# Verify PM2 installation
+pm2 --version
 ```
 
 2. **Set up PostgreSQL**
