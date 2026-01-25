@@ -199,7 +199,7 @@ After pulling changes, always reinstall dependencies:
 npm ci
 ```
 
-**Important:** Do not use `npm install --omit=dev` for this project, as it may cause issues with Next.js binary availability. All frontend dependencies (including `next`) are in the main `dependencies` section of `package.json`.
+**Important:** Do not use `npm install --omit=dev` as it may skip dependency linking steps required for proper binary installation, even for packages in the main dependencies section.
 
 ### Update environment variables
 
@@ -228,7 +228,7 @@ If you encounter the error `sh: 1: next: not found` when running `npm run fronte
 #### Root Causes
 
 1. **Incomplete dependency installation** - Dependencies were not fully installed
-2. **Using `--omit=dev` flag** - While `next` is in `dependencies` (not `devDependencies`), incomplete installations can still occur
+2. **Using `--omit=dev` flag** - This flag can affect the dependency resolution and binary linking process, preventing the `next` binary from being properly installed in `node_modules/.bin`
 3. **Corrupted `node_modules`** - The `node_modules` directory or package lock may be corrupted
 
 #### Solution Steps
@@ -285,7 +285,7 @@ For production deployments on a VPS:
 After installation, verify:
 
 - [ ] `node_modules/.bin/next` exists and is executable
-- [ ] `./node_modules/.bin/next --version` shows the Next.js version (should be ^16.1.4)
+- [ ] `./node_modules/.bin/next --version` shows the installed Next.js version
 - [ ] `npm run frontend` starts the development server on port 3001
 - [ ] `npm run frontend:build` completes successfully
 - [ ] `npm run frontend:start` runs the production server on port 3001
