@@ -68,8 +68,9 @@ sudo apt update && sudo apt upgrade -y
 # Install prerequisites for NodeSource setup (plus nano and git)
 sudo apt install -y curl ca-certificates gnupg nano git
 
-# Install Node.js LTS via NodeSource (includes npm)
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20 LTS via NodeSource (includes npm)
+# Note: Next.js 16.x requires Node.js >=20.9.0
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Install PostgreSQL
@@ -289,3 +290,71 @@ After installation, verify:
 - [ ] `npm run frontend` starts the development server on port 3001
 - [ ] `npm run frontend:build` completes successfully
 - [ ] `npm run frontend:start` runs the production server on port 3001
+
+---
+
+### Error: Node.js version requirement
+
+If you encounter errors like `You are using Node.js 18.x.x. For Next.js, Node.js version ">=20.9.0" is required`, you need to upgrade Node.js.
+
+#### Symptoms
+
+When running `npm run frontend`, `npm run frontend:build`, or `npm run frontend:start`, you see:
+
+```
+You are using Node.js 18.20.8. For Next.js, Node.js version ">=20.9.0" is required.
+```
+
+#### Solution: Upgrade to Node.js 20 LTS
+
+**Step 1: Remove old Node.js version**
+
+```bash
+# Remove existing Node.js installation
+sudo apt remove -y nodejs
+sudo apt autoremove -y
+```
+
+**Step 2: Install Node.js 20 LTS**
+
+```bash
+# Install Node.js 20 LTS via NodeSource
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+
+**Step 3: Verify Node.js version**
+
+```bash
+# Check Node.js version (should be 20.x or higher)
+node --version
+
+# Check npm version
+npm --version
+```
+
+**Step 4: Reinstall dependencies**
+
+```bash
+cd /var/www/appofasiv8
+
+# Remove existing node_modules to avoid compatibility issues
+rm -rf node_modules package-lock.json
+
+# Fresh install with new Node.js version
+npm ci
+```
+
+**Step 5: Test frontend scripts**
+
+```bash
+# Should now run without version errors
+npm run frontend:build
+npm run frontend:start
+```
+
+#### Why Node.js 20 is required
+
+- Next.js 16.x requires Node.js >=20.9.0 for compatibility
+- The initial deployment guide has been updated to install Node.js 20 LTS
+- Older deployments using Node.js 18 must upgrade to support Next.js 16
