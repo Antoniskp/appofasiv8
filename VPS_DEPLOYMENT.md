@@ -66,8 +66,8 @@ sudo sh -c 'grep -RIl "repo.virtuozzo.com/ctpreset" /etc/apt/sources.list /etc/a
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install prerequisites for NodeSource setup
-sudo apt install -y curl ca-certificates gnupg
+# Install prerequisites for NodeSource setup (plus nano)
+sudo apt install -y curl ca-certificates gnupg nano
 
 # Install Node.js LTS via NodeSource (includes npm)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
