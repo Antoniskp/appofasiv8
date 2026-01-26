@@ -13,4 +13,4 @@ coverage
 dist
 test-api.sh
 setup-db.sh
-API_TESTING.md
+doc/API_TESTING.md

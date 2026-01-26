@@ -340,7 +340,7 @@ appofasiv8/
 │   └── index.js                 # Application entry point
 ├── .env.example                 # Environment variables template
 ├── .gitignore
-├── package.json
+├── doc/                         # Additional documentation
 └── README.md
 ```
 
