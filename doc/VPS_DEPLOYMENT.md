@@ -326,7 +326,7 @@ sudo nginx -t
 ```
 
 Ensure:
-- Only your `newsapp` site is enabled (and the default site is removed as shown in step 6)
+- Only your `newsapp` site is enabled (the default nginx site should have been removed during initial setup)
 - No syntax errors are reported by `nginx -t`
 - The configuration matches the split frontend/backend routing shown above
 
