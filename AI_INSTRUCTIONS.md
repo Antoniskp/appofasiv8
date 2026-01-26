@@ -9,6 +9,7 @@
 
 ## Key Docs to Read First
 - README.md (project setup and API overview)
+- doc/VPS_SETUP.md (how this project is deployed)
 - doc/PROJECT_SUMMARY.md
 - doc/ARCHITECTURE.md
 - doc/SECURITY.md
@@ -51,3 +52,7 @@ npm test
 - Use existing validation/auth patterns and route structures when adding or updating endpoints.
 - Run `npm test` when test infrastructure is available, and keep changes scoped to relevant tests.
 - Do not add new dependencies unless absolutely necessary.
+
+
+## Where you can find it and test it live on VPS
+http://185.92.192.81
