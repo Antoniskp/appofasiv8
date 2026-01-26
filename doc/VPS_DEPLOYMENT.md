@@ -132,19 +132,29 @@ pm2 startup
 **Important:** Both processes must be running for the application to work properly. The backend handles API requests at `/api/*`, while the frontend serves the Next.js application and its static assets at `/_next/*`.
 
 6. **Set up nginx reverse proxy**
+
+Install nginx and configure clean setup:
+
 ```bash
+# Install nginx
 sudo apt install -y nginx
 
-# Create nginx configuration
+# Remove default nginx site to avoid server_name conflicts
+# This prevents warnings about conflicting server names for the same IP
+sudo rm -f /etc/nginx/sites-enabled/default
+
+# Create nginx configuration for the application
 sudo nano /etc/nginx/sites-available/newsapp
 ```
 
-Add configuration for split frontend/backend deployment:
+Add configuration for split frontend/backend deployment. Replace `your-domain.com` with your actual domain and `YOUR_SERVER_IP` with your VPS IP address:
 
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
+    # Include both domain and IP to handle requests to either
+    # Only ONE server block should claim the IP to avoid conflicts
+    server_name your-domain.com YOUR_SERVER_IP;
 
     # Route API requests to Express backend on port 3000
     location /api/ {
@@ -216,12 +226,25 @@ These 404 errors will break the signup/sign-in pages and other client-side funct
 
 Both the backend and frontend PM2 processes **must be running** for this routing to work correctly.
 
-Enable site:
+**Enable the site configuration:**
+
 ```bash
+# Check if symlink already exists and remove it to avoid "File exists" error
+if [ -L /etc/nginx/sites-enabled/newsapp ]; then
+    sudo rm /etc/nginx/sites-enabled/newsapp
+fi
+
+# Create symlink to enable the site
 sudo ln -s /etc/nginx/sites-available/newsapp /etc/nginx/sites-enabled/
+
+# Test nginx configuration for syntax errors
 sudo nginx -t
+
+# Restart nginx to apply changes
 sudo systemctl restart nginx
 ```
+
+**Note:** The symlink check ensures you can re-run these commands without encountering "File exists" errors when updating your configuration.
 
 **Troubleshooting: Apache welcome page still showing**
 
