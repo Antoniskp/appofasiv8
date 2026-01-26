@@ -5,7 +5,7 @@ const articleController = {
   // Create a new article
   createArticle: async (req, res) => {
     try {
-      const { title, content, summary, category, status } = req.body;
+      const { title, content, summary, category, status, isNews } = req.body;
 
       // Validate required fields
       if (!title || !content) {
@@ -23,7 +23,8 @@ const articleController = {
         category,
         status: status || 'draft',
         authorId: req.user.id,
-        publishedAt: status === 'published' ? new Date() : null
+        publishedAt: status === 'published' ? new Date() : null,
+        isNews: isNews || false
       });
 
       // Fetch article with author info
@@ -151,7 +152,7 @@ const articleController = {
   updateArticle: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, content, summary, category, status } = req.body;
+      const { title, content, summary, category, status, isNews } = req.body;
 
       const article = await Article.findByPk(id);
 
@@ -179,6 +180,16 @@ const articleController = {
         article.status = status;
         if (status === 'published' && !article.publishedAt) {
           article.publishedAt = new Date();
+        }
+      }
+      
+      // Allow author, admin, editor, or moderator to set/unset isNews flag
+      if (isNews !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
+        article.isNews = isNews;
+        // Clear approval if user unflags as news
+        if (!isNews) {
+          article.newsApprovedAt = null;
+          article.newsApprovedBy = null;
         }
       }
 
@@ -241,6 +252,64 @@ const articleController = {
       res.status(500).json({
         success: false,
         message: 'Error deleting article.',
+        error: error.message
+      });
+    }
+  },
+
+  // Approve article as news (moderator/admin only)
+  approveNews: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const article = await Article.findByPk(id);
+
+      if (!article) {
+        return res.status(404).json({
+          success: false,
+          message: 'Article not found.'
+        });
+      }
+
+      // Check if article is flagged as news
+      if (!article.isNews) {
+        return res.status(400).json({
+          success: false,
+          message: 'Article is not flagged as news.'
+        });
+      }
+
+      // Approve news and publish article
+      article.newsApprovedAt = new Date();
+      article.newsApprovedBy = req.user.id;
+      article.status = 'published';
+      if (!article.publishedAt) {
+        article.publishedAt = new Date();
+      }
+
+      await article.save();
+
+      // Fetch updated article with author and approver info
+      const updatedArticle = await Article.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          }
+        ]
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'News approved and published successfully.',
+        data: { article: updatedArticle }
+      });
+    } catch (error) {
+      console.error('Approve news error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error approving news.',
         error: error.message
       });
     }

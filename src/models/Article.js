@@ -45,6 +45,23 @@ const Article = sequelize.define('Article', {
   category: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  isNews: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  newsApprovedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  newsApprovedBy: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   }
 }, {
   timestamps: true

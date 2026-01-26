@@ -14,6 +14,7 @@ function AdminDashboardContent() {
     published: 0,
     draft: 0,
     archived: 0,
+    pendingNews: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +33,7 @@ function AdminDashboardContent() {
             published: allArticles.filter(a => a.status === 'published').length,
             draft: allArticles.filter(a => a.status === 'draft').length,
             archived: allArticles.filter(a => a.status === 'archived').length,
+            pendingNews: allArticles.filter(a => a.isNews && !a.newsApprovedAt).length,
           });
         }
       } catch (error) {
@@ -58,6 +60,25 @@ function AdminDashboardContent() {
     }
   };
 
+  const handleApproveNews = async (id) => {
+    if (!confirm('Approve this article as news and publish it?')) {
+      return;
+    }
+
+    try {
+      const response = await articleAPI.approveNews(id);
+      if (response.success) {
+        // Update the article in the list with server response
+        setArticles(articles.map(a => 
+          a.id === id ? response.data.article : a
+        ));
+        alert('News approved and published successfully!');
+      }
+    } catch (error) {
+      alert('Failed to approve news: ' + error.message);
+    }
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,14 +86,14 @@ function AdminDashboardContent() {
 
         {/* Welcome Message */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-2">Welcome, {user?.username}!</h2>
+          <h2 className="text-xl font-semibold mb-2">Welcome, {user?.username}!</h2>
           <p className="text-gray-600">
-            You have admin access. You can create, edit, and delete all articles.
+            You have {user?.role} access. You can {user?.role === 'admin' ? 'create, edit, and delete all articles' : 'approve news submissions and manage content'}.
           </p>
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-gray-500 text-sm font-medium">Total Articles</h3>
             <p className="text-3xl font-bold mt-2">{stats.total}</p>
@@ -88,6 +109,10 @@ function AdminDashboardContent() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-gray-500 text-sm font-medium">Archived</h3>
             <p className="text-3xl font-bold mt-2 text-gray-600">{stats.archived}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Pending News</h3>
+            <p className="text-3xl font-bold mt-2 text-orange-600">{stats.pendingNews}</p>
           </div>
         </div>
 
@@ -139,6 +164,9 @@ function AdminDashboardContent() {
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      News Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Category
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -172,6 +200,17 @@ function AdminDashboardContent() {
                           {article.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {article.isNews ? (
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            article.newsApprovedAt ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {article.newsApprovedAt ? '✓ Approved' : '⏳ Pending'}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {article.category || '-'}
                       </td>
@@ -185,6 +224,14 @@ function AdminDashboardContent() {
                         >
                           View
                         </Link>
+                        {article.isNews && !article.newsApprovedAt && (
+                          <button
+                            onClick={() => handleApproveNews(article.id)}
+                            className="text-green-600 hover:text-green-900 mr-4"
+                          >
+                            Approve
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(article.id)}
                           className="text-red-600 hover:text-red-900"
@@ -206,7 +253,7 @@ function AdminDashboardContent() {
 
 export default function AdminDashboard() {
   return (
-    <ProtectedRoute allowedRoles={['admin']}>
+    <ProtectedRoute allowedRoles={['admin', 'moderator']}>
       <AdminDashboardContent />
     </ProtectedRoute>
   );
