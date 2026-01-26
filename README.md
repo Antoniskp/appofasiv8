@@ -5,17 +5,40 @@ A professional news application with JWT authentication, PostgreSQL database, ro
 ## Features
 
 - **Professional Authentication**: JWT-based authentication system with secure password hashing
-- **User Roles**: Three-tier role system (Admin, Editor, Viewer)
+- **User Roles**: Four-tier role system (Admin, Moderator, Editor, Viewer)
 - **PostgreSQL Database**: Robust data persistence with Sequelize ORM
 - **News Management**: Complete CRUD operations for news articles
+- **News Submission & Moderation Workflow**: Users can flag articles as news; moderators/admins approve them for publication
 - **Role-Based Access Control**: Different permissions based on user roles
 - **Modern Frontend**: Next.js 13+ with App Router, React, and Tailwind CSS
 
 ## User Roles
 
-1. **Admin**: Full access - can create, read, update, and delete all articles
-2. **Editor**: Can create articles and edit/update all articles
-3. **Viewer**: Can only read published articles and create their own articles
+1. **Admin**: Full access - can create, read, update, and delete all articles; can approve news submissions
+2. **Moderator**: Can approve news submissions and manage content - similar to admin for news moderation
+3. **Editor**: Can create articles and edit/update all articles
+4. **Viewer**: Can only read published articles and create their own articles
+
+## News Submission and Moderation Workflow
+
+The application includes a comprehensive news workflow that allows users to submit articles as news and moderators/admins to approve them:
+
+### For Article Authors
+1. **Create/Edit Articles**: Any authenticated user can create articles
+2. **Flag as News**: When creating or editing an article, check the "Flag as news" checkbox to submit it for news consideration
+3. **Ownership**: Users can only edit or delete their own articles (admins can edit/delete all)
+
+### For Moderators/Admins
+1. **Review Pending News**: Access the Admin Dashboard to see articles flagged as news with "Pending" status
+2. **Approve News**: Click the "Approve" button to approve a news submission
+3. **Automatic Publication**: Upon approval, the article is automatically published with `newsApprovedAt` timestamp and status set to "published"
+
+### Technical Details
+- **isNews**: Boolean flag that users set on their articles
+- **newsApprovedAt**: Timestamp set when a moderator/admin approves the news
+- **newsApprovedBy**: ID of the moderator/admin who approved the news
+- Articles flagged as news but not yet approved show as "Pending News" in the dashboard
+- Only moderators and admins can approve news submissions via the `/api/articles/:id/approve-news` endpoint
 
 ## Technology Stack
 
@@ -140,8 +163,8 @@ lib/
 - **Register (/register)**: New user registration
 
 ### Protected Pages (Require Authentication)
-- **Admin Dashboard (/admin)**: Admin-only dashboard with full article management
-- **Editor Dashboard (/editor)**: Editor/Admin dashboard for creating and managing articles
+- **Admin Dashboard (/admin)**: Admin/Moderator dashboard with full article management and news approval
+- **Editor Dashboard (/editor)**: Editor/Admin dashboard for creating and managing articles with news flagging
 
 ## Role-Based Access
 
@@ -149,7 +172,7 @@ The frontend implements client-side route protection:
 
 - **Public Routes**: /, /articles, /articles/[id], /login, /register
 - **Editor Routes**: /editor (requires editor or admin role)
-- **Admin Routes**: /admin (requires admin role)
+- **Admin Routes**: /admin (requires admin or moderator role)
 
 Unauthorized users are automatically redirected to the login page.
 
@@ -245,7 +268,8 @@ Content-Type: application/json
   "content": "Full article content goes here...",
   "summary": "Brief summary of the article",  // Optional
   "category": "Technology",  // Optional
-  "status": "published"  // Optional: draft, published, or archived (default: draft)
+  "status": "published",  // Optional: draft, published, or archived (default: draft)
+  "isNews": true  // Optional: flag article as news submission (default: false)
 }
 ```
 
@@ -274,15 +298,32 @@ Content-Type: application/json
 {
   "title": "Updated Title",
   "content": "Updated content",
-  "status": "published"
+  "status": "published",
+  "isNews": true  // Optional: flag/unflag as news
 }
 ```
+
+**Permissions**: Author can update their own articles; admin and editor can update all articles.
 
 #### Delete Article (Authenticated)
 ```http
 DELETE /api/articles/:id
 Authorization: Bearer jwt_token_here
 ```
+
+**Permissions**: Author can delete their own articles; admin can delete all articles.
+
+#### Approve News (Moderator/Admin only)
+```http
+POST /api/articles/:id/approve-news
+Authorization: Bearer jwt_token_here
+```
+
+**Description**: Approves an article flagged as news, sets newsApprovedAt and newsApprovedBy, and publishes the article.
+
+**Permissions**: Only moderators and admins can approve news submissions.
+
+**Requirements**: Article must have isNews set to true.
 
 ## Database Schema
 
@@ -291,7 +332,7 @@ Authorization: Bearer jwt_token_here
 - `username`: String, Unique, Required
 - `email`: String, Unique, Required
 - `password`: String, Hashed, Required
-- `role`: Enum (admin, editor, viewer), Default: viewer
+- `role`: Enum (admin, moderator, editor, viewer), Default: viewer
 - `firstName`: String, Optional
 - `lastName`: String, Optional
 - `createdAt`: Timestamp
@@ -306,6 +347,9 @@ Authorization: Bearer jwt_token_here
 - `status`: Enum (draft, published, archived), Default: draft
 - `publishedAt`: Date, Optional
 - `category`: String, Optional
+- `isNews`: Boolean, Default: false (user-set flag for news submissions)
+- `newsApprovedAt`: Date, Optional (set when moderator/admin approves)
+- `newsApprovedBy`: Integer, Foreign Key to Users (moderator/admin who approved)
 - `createdAt`: Timestamp
 - `updatedAt`: Timestamp
 
