@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { articleAPI } from '@/lib/api';
+import ArticleCard from '@/components/ArticleCard';
+import SkeletonLoader from '@/components/SkeletonLoader';
+import EmptyState from '@/components/EmptyState';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState([]);
@@ -53,11 +56,11 @@ export default function ArticlesPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="app-container">
         <h1 className="text-4xl font-bold mb-8">All Articles</h1>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-8">
+        <div className="card p-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
@@ -95,63 +98,36 @@ export default function ArticlesPage() {
 
         {/* Loading State */}
         {loading && (
-          <div className="text-center py-8">
-            <p className="text-gray-600">Loading articles...</p>
+          <div className="space-y-6">
+            <SkeletonLoader count={5} variant="list" />
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p>Error loading articles: {error}</p>
-          </div>
+          <EmptyState
+            type="error"
+            title="Error Loading Articles"
+            description={error}
+            action={{
+              text: 'Try Again',
+              onClick: () => window.location.reload()
+            }}
+          />
         )}
 
         {/* Articles List */}
         {!loading && !error && articles.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-600">No articles found.</p>
-          </div>
+          <EmptyState
+            type="empty"
+            title="No Articles Found"
+            description="No articles match your current filters. Try adjusting your search criteria."
+          />
         )}
 
         <div className="space-y-6">
           {articles.map((article) => (
-            <article key={article.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-                <div className="flex-grow">
-                  {article.category && (
-                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2">
-                      {article.category}
-                    </span>
-                  )}
-                  <h2 className="text-2xl font-semibold mb-2">
-                    <Link href={`/articles/${article.id}`} className="hover:text-blue-600">
-                      {article.title}
-                    </Link>
-                  </h2>
-                  <p className="text-gray-600 mb-4">
-                    {article.summary || article.content?.substring(0, 200) + '...'}
-                  </p>
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    <span>By {article.User?.username || 'Unknown'}</span>
-                    <span>•</span>
-                    <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-                    {article.status !== 'published' && (
-                      <>
-                        <span>•</span>
-                        <span className="text-orange-600 font-medium">{article.status}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <Link
-                  href={`/articles/${article.id}`}
-                  className="inline-block mt-4 md:mt-0 md:ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition whitespace-nowrap"
-                >
-                  Read More
-                </Link>
-              </div>
-            </article>
+            <ArticleCard key={article.id} article={article} variant="list" />
           ))}
         </div>
 
