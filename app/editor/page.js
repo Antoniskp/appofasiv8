@@ -19,6 +19,7 @@ function EditorDashboardContent() {
     summary: '',
     category: '',
     status: 'draft',
+    isNews: false,
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,9 +41,10 @@ function EditorDashboardContent() {
   };
 
   const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -61,6 +63,7 @@ function EditorDashboardContent() {
           summary: '',
           category: '',
           status: 'draft',
+          isNews: false,
         });
         fetchArticles();
       }
@@ -193,6 +196,20 @@ function EditorDashboardContent() {
                 </div>
               </div>
 
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isNews"
+                  name="isNews"
+                  checked={formData.isNews}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
+                  Flag as news (requires moderator approval for publication)
+                </label>
+              </div>
+
               <div className="flex gap-4">
                 <button
                   type="submit"
@@ -253,6 +270,13 @@ function EditorDashboardContent() {
                           }`}>
                             {article.status}
                           </span>
+                          {article.isNews && (
+                            <span className={`px-2 py-1 rounded ${
+                              article.newsApprovedAt ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                            }`}>
+                              {article.newsApprovedAt ? '📰 Approved News' : '📰 Pending News'}
+                            </span>
+                          )}
                           {article.category && (
                             <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
                               {article.category}
