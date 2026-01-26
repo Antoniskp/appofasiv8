@@ -296,4 +296,137 @@ describe('News Application Integration Tests', () => {
       expect(response.body.success).toBe(true);
     });
   });
+
+  describe('News Workflow Tests', () => {
+    let moderatorToken;
+    let newsArticleId;
+
+    beforeAll(async () => {
+      // Register a moderator user
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testmoderator',
+          email: 'moderator@test.com',
+          password: 'moderator123',
+          role: 'moderator',
+          firstName: 'Test',
+          lastName: 'Moderator'
+        });
+      
+      moderatorToken = response.body.data.token;
+    });
+
+    test('should create article with isNews flag', async () => {
+      const response = await request(app)
+        .post('/api/articles')
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({
+          title: 'Breaking News Article',
+          content: 'This is a news article that needs moderation approval.',
+          summary: 'Breaking news summary',
+          category: 'News',
+          status: 'draft',
+          isNews: true
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.article.isNews).toBe(true);
+      expect(response.body.data.article.newsApprovedAt).toBeNull();
+      newsArticleId = response.body.data.article.id;
+    });
+
+    test('should not approve news without moderator/admin role', async () => {
+      const response = await request(app)
+        .post(`/api/articles/${newsArticleId}/approve-news`)
+        .set('Authorization', `Bearer ${viewerToken}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.success).toBe(false);
+    });
+
+    test('moderator should approve news successfully', async () => {
+      const response = await request(app)
+        .post(`/api/articles/${newsArticleId}/approve-news`)
+        .set('Authorization', `Bearer ${moderatorToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.article.newsApprovedAt).toBeTruthy();
+      expect(response.body.data.article.status).toBe('published');
+    });
+
+    test('should not approve already approved news', async () => {
+      const response = await request(app)
+        .post(`/api/articles/${newsArticleId}/approve-news`)
+        .set('Authorization', `Bearer ${moderatorToken}`);
+
+      // Should still succeed but article is already approved
+      expect(response.status).toBe(200);
+    });
+
+    test('should not approve article not flagged as news', async () => {
+      // Create a regular article
+      const createResponse = await request(app)
+        .post('/api/articles')
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({
+          title: 'Regular Article',
+          content: 'This is not a news article.',
+          status: 'draft',
+          isNews: false
+        });
+
+      const regularArticleId = createResponse.body.data.article.id;
+
+      const response = await request(app)
+        .post(`/api/articles/${regularArticleId}/approve-news`)
+        .set('Authorization', `Bearer ${moderatorToken}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toContain('not flagged as news');
+    });
+
+    test('should update article and maintain isNews flag', async () => {
+      const response = await request(app)
+        .put(`/api/articles/${newsArticleId}`)
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({
+          title: 'Updated Breaking News Article'
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.article.isNews).toBe(true);
+    });
+
+    test('should allow author to unflag article as news', async () => {
+      // Create a news article
+      const createResponse = await request(app)
+        .post('/api/articles')
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({
+          title: 'News to Unflag',
+          content: 'This will be unflagged as news.',
+          isNews: true
+        });
+
+      const articleId = createResponse.body.data.article.id;
+
+      // Unflag as news
+      const response = await request(app)
+        .put(`/api/articles/${articleId}`)
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({
+          isNews: false
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.article.isNews).toBe(false);
+      expect(response.body.data.article.newsApprovedAt).toBeNull();
+    });
+  });
 });
