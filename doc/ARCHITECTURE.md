@@ -314,12 +314,12 @@ appofasiv8/
 ├── __tests__/                    # Test files
 │   └── app.test.js              # Integration tests
 │
-├── Documentation/                # Project docs
-│   ├── README.md                # Main documentation
+├── doc/                         # Project docs
 │   ├── API_TESTING.md           # API testing guide
 │   ├── DEPLOYMENT.md            # Deployment guide
 │   ├── SECURITY.md              # Security documentation
 │   ├── PROJECT_SUMMARY.md       # Project overview
+│   ├── VPS_DEPLOYMENT.md        # VPS deployment guide
 │   └── ARCHITECTURE.md          # This file
 │
 ├── Configuration/                # Config files
