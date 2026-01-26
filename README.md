@@ -394,6 +394,9 @@ appofasiv8/
 # Install dependencies
 npm install
 
+# Run API tests (uses in-memory SQLite in test mode)
+NODE_ENV=test npm test
+
 # Run in development mode
 npm run dev
 
