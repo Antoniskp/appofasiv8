@@ -105,14 +105,33 @@ cp .env.example .env
 nano .env
 ```
 
-4. **Start with PM2**
+4. **Build the frontend**
 ```bash
-pm2 start src/index.js --name newsapp
+# Build the Next.js frontend for production
+npm run frontend:build
+```
+
+5. **Start with PM2**
+
+For a split frontend/backend deployment, you need to run both the Express backend and Next.js frontend as separate PM2 processes:
+
+```bash
+# Start the Express backend (API server) on port 3000
+pm2 start src/index.js --name newsapp-backend
+
+# Start the Next.js frontend on port 3001
+pm2 start npm --name newsapp-frontend -- run frontend:start
+
+# Save PM2 process list
 pm2 save
+
+# Enable PM2 to start on system boot
 pm2 startup
 ```
 
-5. **Set up nginx reverse proxy**
+**Important:** Both processes must be running for the application to work properly. The backend handles API requests at `/api/*`, while the frontend serves the Next.js application and its static assets at `/_next/*`.
+
+6. **Set up nginx reverse proxy**
 ```bash
 sudo apt install -y nginx
 
@@ -120,14 +139,43 @@ sudo apt install -y nginx
 sudo nano /etc/nginx/sites-available/newsapp
 ```
 
-Add configuration:
+Add configuration for split frontend/backend deployment:
+
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
 
-    location / {
+    # Route API requests to Express backend on port 3000
+    location /api/ {
         proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Route Next.js static assets to frontend on port 3001
+    # This includes JavaScript chunks, CSS, images, and other static files
+    location /_next/ {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Route all other requests (pages, etc.) to Next.js frontend on port 3001
+    location / {
+        proxy_pass http://localhost:3001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -139,6 +187,34 @@ server {
     }
 }
 ```
+
+**Why this routing is critical:**
+
+This Nginx configuration is specifically designed for a **split frontend/backend deployment** where:
+- The Express backend runs on `localhost:3000` and handles API routes
+- The Next.js frontend runs on `localhost:3001` and serves the UI and static assets
+
+**Common Issue: 404 Errors for `/_next/static` Chunks**
+
+If Nginx routing is incorrect, you'll see 404 errors for Next.js static assets like:
+- `/_next/static/chunks/*.js` - JavaScript bundles
+- `/_next/static/css/*.css` - Stylesheets
+- `/_next/static/media/*` - Images and fonts
+
+These 404 errors will break the signup/sign-in pages and other client-side functionality because the browser cannot load the required JavaScript and CSS files.
+
+**What happens with incorrect routing:**
+- If all requests go to the backend (port 3000), the Express server won't know how to serve `/_next/*` paths
+- Next.js static assets return 404 errors
+- Client-side JavaScript fails to load
+- Pages appear broken or don't function properly
+
+**This configuration ensures:**
+1. API calls (`/api/*`) are routed to the Express backend
+2. Next.js static assets (`/_next/*`) are routed to the frontend server
+3. All other paths (pages like `/`, `/login`, `/register`) are routed to Next.js for server-side rendering
+
+Both the backend and frontend PM2 processes **must be running** for this routing to work correctly.
 
 Enable site:
 ```bash
@@ -169,7 +245,7 @@ sudo ss -tulpn | grep :80
 
 You should see `nginx` in the output, not `apache2`.
 
-6. **Set up SSL with Let's Encrypt**
+7. **Set up SSL with Let's Encrypt**
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
@@ -224,13 +300,13 @@ For a complete rebuild that ensures all changes are properly applied and old bui
 
 #### Step 1: Stop running services
 
-Stop PM2 processes to prevent conflicts during the update:
+Stop both PM2 processes to prevent conflicts during the update:
 
 ```bash
 cd /var/www/appofasiv8
 
-# Stop the application
-pm2 stop newsapp
+# Stop both backend and frontend
+pm2 stop newsapp-backend newsapp-frontend
 ```
 
 #### Step 2: Fetch and pull latest changes
@@ -286,14 +362,25 @@ This creates optimized production assets in the `.next` directory.
 
 #### Step 6: Restart services
 
-Restart PM2 to run the updated application:
+Restart both PM2 processes to run the updated application:
 
 ```bash
-# Start the application
-pm2 start newsapp
+# Restart both backend and frontend
+pm2 restart newsapp-backend newsapp-frontend
 
-# Or restart if you prefer
-pm2 restart newsapp
+# Save PM2 configuration
+pm2 save
+```
+
+**Note:** If you're upgrading from a single-process deployment (old configuration), you'll need to delete the old process and start both new ones:
+
+```bash
+# Delete old single process
+pm2 delete newsapp
+
+# Start both new processes
+pm2 start src/index.js --name newsapp-backend
+pm2 start npm --name newsapp-frontend -- run frontend:start
 
 # Save PM2 configuration
 pm2 save
@@ -322,7 +409,7 @@ Here's the complete sequence for copy-paste convenience:
 cd /var/www/appofasiv8
 
 # Stop running services
-pm2 stop newsapp
+pm2 stop newsapp-backend newsapp-frontend
 
 # Fetch and pull latest changes
 git fetch --all
@@ -339,10 +426,44 @@ npm ci
 npm run frontend:build
 
 # Restart services
-pm2 restart newsapp
+pm2 restart newsapp-backend newsapp-frontend
 pm2 save
 
 # Reload nginx (only if config changed)
+# sudo nginx -t && sudo systemctl reload nginx
+```
+
+**For upgrading from old single-process deployment:**
+
+```bash
+# Navigate to application directory
+cd /var/www/appofasiv8
+
+# Stop and delete old single process
+pm2 stop newsapp
+pm2 delete newsapp
+
+# Fetch and pull latest changes
+git fetch --all
+git checkout main
+git pull origin main
+
+# Remove build artifacts
+rm -rf .next
+
+# Clean install dependencies
+npm ci
+
+# Build frontend
+npm run frontend:build
+
+# Start both new processes
+pm2 start src/index.js --name newsapp-backend
+pm2 start npm --name newsapp-frontend -- run frontend:start
+pm2 save
+
+# Update nginx configuration with split routing (see section 6 above)
+# sudo nano /etc/nginx/sites-available/newsapp
 # sudo nginx -t && sudo systemctl reload nginx
 ```
 
