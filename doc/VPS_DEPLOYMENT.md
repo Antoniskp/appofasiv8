@@ -246,27 +246,91 @@ sudo systemctl restart nginx
 
 **Note:** The symlink check ensures you can re-run these commands without encountering "File exists" errors when updating your configuration.
 
-**Troubleshooting: Apache welcome page still showing**
+**Troubleshooting: Apache Blocking nginx on Port 80**
 
-If you see the Apache welcome page instead of your application, Apache may still be bound to port 80:
+**Problem:** If you see the Apache welcome page instead of your application, or nginx fails to start with errors like "Address already in use," Apache is likely still bound to port 80, preventing nginx from starting.
+
+**Why this happens:**
+- Apache may have been pre-installed on your VPS and automatically enabled
+- Both Apache and nginx try to listen on port 80 by default
+- When Apache is already bound to port 80, nginx cannot start
+- Even after installing nginx, Apache continues running and serving its default page
+
+**Step 1: Check what is listening on port 80**
 
 ```bash
-# Check what is listening on port 80
-sudo ss -tulpn | grep :80
-
-# Stop and disable Apache
-sudo systemctl stop apache2
-sudo systemctl disable apache2
-
-# Start and enable Nginx
-sudo systemctl start nginx
-sudo systemctl enable nginx
-
-# Verify port 80 is now owned by Nginx
+# Check what process is bound to port 80
 sudo ss -tulpn | grep :80
 ```
 
-You should see `nginx` in the output, not `apache2`.
+If you see `apache2` in the output instead of `nginx`, Apache is blocking port 80.
+
+**Step 2: Stop and disable Apache**
+
+```bash
+# Stop Apache immediately
+sudo systemctl stop apache2
+
+# Disable Apache from starting on boot
+sudo systemctl disable apache2
+
+# Optional: Prevent Apache from being started even manually
+# This is useful if other packages try to start it automatically
+sudo systemctl mask apache2
+```
+
+**Note:** Using `mask` (optional) prevents Apache from being started by any means until unmasked with `sudo systemctl unmask apache2`. Use this if you want to ensure Apache never interferes with nginx.
+
+**Step 3: Start and enable nginx**
+
+```bash
+# Start nginx immediately
+sudo systemctl start nginx
+
+# Enable nginx to start on boot
+sudo systemctl enable nginx
+```
+
+**Step 4: Verify port 80 is now owned by nginx**
+
+```bash
+# Check port 80 again
+sudo ss -tulpn | grep :80
+```
+
+You should now see `nginx` in the output, not `apache2`.
+
+**Step 5: If nginx still fails to start, inspect the service status**
+
+```bash
+# Check nginx service status
+sudo systemctl status nginx
+
+# View recent nginx error logs
+sudo journalctl -u nginx -n 50 --no-pager
+```
+
+Look for error messages indicating:
+- Port binding issues
+- Configuration syntax errors
+- Permission problems
+
+**Step 6: Verify nginx site configuration**
+
+```bash
+# List enabled sites
+ls -la /etc/nginx/sites-enabled/
+
+# Test nginx configuration for syntax errors
+sudo nginx -t
+```
+
+Ensure:
+- Only your `newsapp` site is enabled (and the default site is removed as shown in step 6)
+- No syntax errors are reported by `nginx -t`
+- The configuration matches the split frontend/backend routing shown above
+
+**Expected result:** After completing these steps, visiting your server's IP address or domain should show your application, not the Apache default page.
 
 7. **Set up SSL with Let's Encrypt**
 ```bash
