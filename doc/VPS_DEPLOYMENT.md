@@ -218,6 +218,145 @@ npm run frontend:build   # production build
 npm run frontend:start   # production server
 ```
 
+### Clean Update Workflow
+
+For a complete rebuild that ensures all changes are properly applied and old build artifacts are cleared, follow this comprehensive update workflow:
+
+#### Step 1: Stop running services
+
+Stop PM2 processes to prevent conflicts during the update:
+
+```bash
+cd /var/www/appofasiv8
+
+# Stop the application
+pm2 stop newsapp
+```
+
+#### Step 2: Fetch and pull latest changes
+
+Update the repository from GitHub:
+
+```bash
+# Fetch all changes from remote
+git fetch --all
+
+# Ensure you're on the main branch
+git checkout main
+
+# Pull the latest changes
+git pull origin main
+```
+
+#### Step 3: Remove build artifacts
+
+Clean the Next.js build directory to ensure a fresh build:
+
+```bash
+# Remove Next.js build output
+rm -rf .next
+```
+
+This ensures that:
+- Old cached build files are removed
+- Any stale static assets are cleared
+- The next build will be completely fresh
+
+#### Step 4: Clean dependency reinstallation
+
+Always use `npm ci` for a clean dependency installation:
+
+```bash
+# Clean install all dependencies
+npm ci
+```
+
+**Important:** Do not use `npm install --omit=dev` as it may skip dependency linking steps required for proper binary installation, even for packages in the main dependencies section (like `next`). The `npm ci` command installs exactly what's in `package-lock.json` and ensures all binaries are properly linked.
+
+#### Step 5: Build the frontend
+
+Run the production build for the Next.js frontend:
+
+```bash
+# Build the frontend for production
+npm run frontend:build
+```
+
+This creates optimized production assets in the `.next` directory.
+
+#### Step 6: Restart services
+
+Restart PM2 to run the updated application:
+
+```bash
+# Start the application
+pm2 start newsapp
+
+# Or restart if you prefer
+pm2 restart newsapp
+
+# Save PM2 configuration
+pm2 save
+```
+
+#### Step 7: Reload nginx (if configuration changed)
+
+If nginx configuration was updated, reload it:
+
+```bash
+# Test nginx configuration
+sudo nginx -t
+
+# Reload nginx if config is valid
+sudo systemctl reload nginx
+```
+
+**Note:** If no nginx configuration changes were made, this step can be skipped.
+
+#### Complete Clean Update Script
+
+Here's the complete sequence for copy-paste convenience:
+
+```bash
+# Navigate to application directory
+cd /var/www/appofasiv8
+
+# Stop running services
+pm2 stop newsapp
+
+# Fetch and pull latest changes
+git fetch --all
+git checkout main
+git pull origin main
+
+# Remove build artifacts
+rm -rf .next
+
+# Clean install dependencies
+npm ci
+
+# Build frontend
+npm run frontend:build
+
+# Restart services
+pm2 restart newsapp
+pm2 save
+
+# Reload nginx (only if config changed)
+# sudo nginx -t && sudo systemctl reload nginx
+```
+
+#### When to use this workflow
+
+Use this clean update workflow when:
+- Major version updates have been made
+- Dependencies have been added, removed, or updated
+- You're experiencing issues with stale build artifacts
+- You want to ensure a completely fresh deployment
+- Troubleshooting deployment issues
+
+For simple code changes without dependency or configuration updates, the basic update workflow (git pull + npm ci + pm2 restart) may be sufficient.
+
 ---
 
 ## Troubleshooting
