@@ -1,5 +1,15 @@
 # VPS Deployment (Ubuntu/Debian)
 
+## Important variables to change
+-Database newsapp_user password
+
+IN nano /var/www/appofasiv8/.env
+CHANGE Database user and password
+CHANGE NEXT_PUBLIC_API_URL=http://185.92.192.81
+
+IN sudo nano /etc/nginx/sites-available/newsapp
+CHANGE server_name your-domain.com YOUR_SERVER_IP;
+
 ## SSH Setup (Before Installation)
 
 ### Fix SSH Runtime Directory
