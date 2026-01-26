@@ -68,8 +68,9 @@ sudo apt update && sudo apt upgrade -y
 # Install prerequisites for NodeSource setup (plus nano and git)
 sudo apt install -y curl ca-certificates gnupg nano git
 
-# Install Node.js LTS via NodeSource (includes npm)
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20 LTS via NodeSource (includes npm)
+# Note: Next.js 16.x requires Node.js >=20.9.0
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Install PostgreSQL
@@ -93,7 +94,12 @@ GRANT ALL PRIVILEGES ON DATABASE newsapp TO newsapp_user;
 cd /var/www
 git clone https://github.com/Antoniskp/appofasiv8.git
 cd appofasiv8
-npm install --omit=dev
+
+# Install all dependencies (including Next.js)
+# Note: Even though 'next' is in dependencies (not devDependencies),
+# you should install all packages to ensure proper binary linking
+npm ci
+
 cp .env.example .env
 # Edit .env with production credentials
 nano .env
@@ -185,6 +191,17 @@ git checkout main
 git pull origin main
 ```
 
+### Install/update dependencies
+
+After pulling changes, always reinstall dependencies:
+
+```bash
+# Clean install to ensure all dependencies are properly linked
+npm ci
+```
+
+**Important:** Do not use `npm install --omit=dev` as it may skip dependency linking steps required for proper binary installation, even for packages in the main dependencies section.
+
 ### Update environment variables
 
 `.env.example` should include:
@@ -200,3 +217,144 @@ npm run frontend         # dev server (port 3001)
 npm run frontend:build   # production build
 npm run frontend:start   # production server
 ```
+
+---
+
+## Troubleshooting
+
+### Error: `sh: 1: next: not found`
+
+If you encounter the error `sh: 1: next: not found` when running `npm run frontend`, `npm run frontend:build`, or `npm run frontend:start`, this means the Next.js binary is not available in your `node_modules/.bin` directory.
+
+#### Root Causes
+
+1. **Incomplete dependency installation** - Dependencies were not fully installed
+2. **Using `--omit=dev` flag** - This flag can affect the dependency resolution and binary linking process, preventing the `next` binary from being properly installed in `node_modules/.bin`
+3. **Corrupted `node_modules`** - The `node_modules` directory or package lock may be corrupted
+
+#### Solution Steps
+
+**Step 1: Clean and reinstall dependencies**
+
+```bash
+cd /var/www/appofasiv8
+
+# Remove existing node_modules and lock file
+rm -rf node_modules package-lock.json
+
+# Clean npm cache (optional but recommended)
+npm cache clean --force
+
+# Fresh install with locked dependencies
+npm ci
+```
+
+**Step 2: Verify Next.js installation**
+
+```bash
+# Check if next binary exists
+ls -la node_modules/.bin/next
+
+# Test next command directly
+./node_modules/.bin/next --version
+```
+
+**Step 3: Run frontend scripts**
+
+```bash
+# For development
+npm run frontend
+
+# For production build
+npm run frontend:build
+
+# For production server
+npm run frontend:start
+```
+
+#### Production Deployment Notes
+
+For production deployments on a VPS:
+
+- **Always use `npm ci`** instead of `npm install` for reproducible builds
+- **Do NOT use `--omit=dev`** for this project - all frontend dependencies are in the main `dependencies` section
+- The `next` package is required at runtime for both building and serving the frontend
+- Ensure sufficient disk space and memory during installation
+
+#### Verification Checklist
+
+After installation, verify:
+
+- [ ] `node_modules/.bin/next` exists and is executable
+- [ ] `./node_modules/.bin/next --version` shows the installed Next.js version
+- [ ] `npm run frontend` starts the development server on port 3001
+- [ ] `npm run frontend:build` completes successfully
+- [ ] `npm run frontend:start` runs the production server on port 3001
+
+---
+
+### Error: Node.js version requirement
+
+If you encounter errors like `You are using Node.js 18.x.x. For Next.js, Node.js version ">=20.9.0" is required`, you need to upgrade Node.js.
+
+#### Symptoms
+
+When running `npm run frontend`, `npm run frontend:build`, or `npm run frontend:start`, you see:
+
+```
+You are using Node.js 18.20.8. For Next.js, Node.js version ">=20.9.0" is required.
+```
+
+#### Solution: Upgrade to Node.js 20 LTS
+
+**Step 1: Remove old Node.js version**
+
+```bash
+# Remove existing Node.js installation
+sudo apt remove -y nodejs
+sudo apt autoremove -y
+```
+
+**Step 2: Install Node.js 20 LTS**
+
+```bash
+# Install Node.js 20 LTS via NodeSource
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+
+**Step 3: Verify Node.js version**
+
+```bash
+# Check Node.js version (should be 20.x or higher)
+node --version
+
+# Check npm version
+npm --version
+```
+
+**Step 4: Reinstall dependencies**
+
+```bash
+cd /var/www/appofasiv8
+
+# Remove existing node_modules to avoid compatibility issues
+rm -rf node_modules package-lock.json
+
+# Fresh install with new Node.js version
+npm ci
+```
+
+**Step 5: Test frontend scripts**
+
+```bash
+# Should now run without version errors
+npm run frontend:build
+npm run frontend:start
+```
+
+#### Why Node.js 20 is required
+
+- Next.js 16.x requires Node.js >=20.9.0 for compatibility
+- The initial deployment guide has been updated to install Node.js 20 LTS
+- Older deployments using Node.js 18 must upgrade to support Next.js 16
