@@ -292,7 +292,7 @@ Restart PM2 to run the updated application:
 # Start the application
 pm2 start newsapp
 
-# Or restart if prefer
+# Or restart if you prefer
 pm2 restart newsapp
 
 # Save PM2 configuration
