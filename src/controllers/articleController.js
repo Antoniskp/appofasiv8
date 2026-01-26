@@ -183,8 +183,8 @@ const articleController = {
         }
       }
       
-      // Only allow author to set/unset isNews flag
-      if (isNews !== undefined && (article.authorId === req.user.id || ['admin', 'editor'].includes(req.user.role))) {
+      // Allow author, admin, editor, or moderator to set/unset isNews flag
+      if (isNews !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
         article.isNews = isNews;
         // Clear approval if user unflags as news
         if (!isNews) {

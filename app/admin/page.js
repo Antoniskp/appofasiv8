@@ -68,9 +68,9 @@ function AdminDashboardContent() {
     try {
       const response = await articleAPI.approveNews(id);
       if (response.success) {
-        // Update the article in the list
+        // Update the article in the list with server response
         setArticles(articles.map(a => 
-          a.id === id ? { ...a, newsApprovedAt: new Date(), status: 'published', publishedAt: new Date() } : a
+          a.id === id ? response.data.article : a
         ));
         alert('News approved and published successfully!');
       }
