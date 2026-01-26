@@ -7,7 +7,7 @@ const authController = {
   // Register a new user
   register: async (req, res) => {
     try {
-      const { username, email, password, role, firstName, lastName } = req.body;
+      const { username, email, password, firstName, lastName } = req.body;
 
       // Validate required fields
       if (!username || !email || !password) {
@@ -36,7 +36,7 @@ const authController = {
         username,
         email,
         password,
-        role: role || 'viewer',
+        role: 'registered',
         firstName,
         lastName
       });
@@ -171,6 +171,55 @@ const authController = {
       res.status(500).json({
         success: false,
         message: 'Error fetching user profile.',
+        error: error.message
+      });
+    }
+  },
+  // Update user role (admin/moderator only)
+  updateRole: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+      const allowedRoles = ['registered', 'editor', 'moderator', 'admin'];
+
+      if (!role || !allowedRoles.includes(role)) {
+        return res.status(400).json({
+          success: false,
+          message: `Role must be one of: ${allowedRoles.join(', ')}.`
+        });
+      }
+
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found.'
+        });
+      }
+
+      user.role = role;
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'User role updated successfully.',
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            firstName: user.firstName,
+            lastName: user.lastName
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Update role error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error updating user role.',
         error: error.message
       });
     }
