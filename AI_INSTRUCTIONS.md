@@ -4,6 +4,8 @@
 - News application with a Node.js/Express backend and a Next.js frontend.
 - PostgreSQL database managed with Sequelize ORM.
 - Authentication uses JWT and bcryptjs.
+- Node.js v18+ required (see README.md).
+- Frameworks/major versions: Next.js 16.x, React 19.x, Express 5.x (see package.json for exact versions).
 
 ## Key Docs to Read First
 - README.md (project setup and API overview)
@@ -45,5 +47,7 @@ npm test
 
 ## AI Workflow Guidance
 - Use the docs above to avoid asking setup or structure questions repeatedly.
-- Prefer minimal, surgical changes and follow existing patterns in code.
+- Prefer minimal, surgical changes and follow existing patterns in `src/` (API) and `app/` + `components/` (frontend).
+- Use existing validation/auth patterns and route structures when adding or updating endpoints.
+- Run `npm test` when test infrastructure is available, and keep changes scoped to relevant tests.
 - Do not add new dependencies unless absolutely necessary.
