@@ -3,6 +3,7 @@ const router = express.Router();
 const articleController = require('../controllers/articleController');
 const authMiddleware = require('../middleware/auth');
 const optionalAuthMiddleware = require('../middleware/optionalAuth');
+const checkRole = require('../middleware/checkRole');
 const { apiLimiter, createLimiter } = require('../middleware/rateLimiter');
 
 // Public routes with optional authentication and rate limiting
@@ -17,5 +18,8 @@ router.put('/:id', apiLimiter, authMiddleware, articleController.updateArticle);
 
 // Delete - author can delete their own, admin can delete all
 router.delete('/:id', apiLimiter, authMiddleware, articleController.deleteArticle);
+
+// Approve news - moderator/admin only
+router.post('/:id/approve-news', apiLimiter, authMiddleware, checkRole('admin', 'moderator'), articleController.approveNews);
 
 module.exports = router;
