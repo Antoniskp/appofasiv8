@@ -60,12 +60,14 @@ export default function TopNav() {
                     Editor
                   </Link>
                 )}
-                <Link
-                  href="/editor"
-                  className="text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
-                >
-                  Add Article
-                </Link>
+                {(user.role === 'admin' || user.role === 'editor') && (
+                  <Link
+                    href="/editor"
+                    className="text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
+                  >
+                    Add Article
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="text-sm font-medium text-red-600 hover:text-red-800"
