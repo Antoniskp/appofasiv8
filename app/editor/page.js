@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import LocationSelector from '@/components/LocationSelector';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
@@ -20,6 +21,8 @@ function EditorDashboardContent() {
     category: '',
     status: 'draft',
     isNews: false,
+    locationId: null,
+    useUserLocation: false
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -64,6 +67,8 @@ function EditorDashboardContent() {
           category: '',
           status: 'draft',
           isNews: false,
+          locationId: null,
+          useUserLocation: false
         });
         fetchArticles();
       }
@@ -208,6 +213,20 @@ function EditorDashboardContent() {
                 <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
                   Flag as news (requires moderator approval for publication)
                 </label>
+              </div>
+
+              {/* Location Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Location (Optional)
+                </label>
+                <LocationSelector
+                  selectedLocationId={formData.locationId}
+                  onLocationChange={(locationId) => setFormData({ ...formData, locationId })}
+                  showUseUserLocation={true}
+                  useUserLocation={formData.useUserLocation}
+                  onUseUserLocationChange={(checked) => setFormData({ ...formData, useUserLocation: checked })}
+                />
               </div>
 
               <div className="flex gap-4">

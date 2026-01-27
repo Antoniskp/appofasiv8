@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import LocationSelector from '@/components/LocationSelector';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function RegisterPage() {
     firstName: '',
     lastName: '',
     role: 'viewer',
+    locationId: null
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -188,6 +190,17 @@ export default function RegisterPage() {
                 <option value="editor">Editor</option>
                 <option value="admin">Admin</option>
               </select>
+            </div>
+
+            {/* Location Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Location (Optional)
+              </label>
+              <LocationSelector
+                selectedLocationId={formData.locationId}
+                onLocationChange={(locationId) => setFormData({ ...formData, locationId })}
+              />
             </div>
           </div>
 
