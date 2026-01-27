@@ -110,9 +110,11 @@ export default function LocationSelector({
     setSelectedJurisdiction('');
     setSelectedMunicipality('');
     
-    // If a country is selected and no jurisdictions available, set the country as location
+    // Always set country as location when selected - more specific selections will override
     if (value && onLocationChange) {
       onLocationChange(value);
+    } else if (!value && onLocationChange) {
+      onLocationChange(null);
     }
   };
 

@@ -22,6 +22,17 @@ const articleController = {
         finalLocationId = user.locationId;
       }
 
+      // Validate locationId if provided
+      if (finalLocationId !== null && finalLocationId !== undefined) {
+        const location = await Location.findByPk(finalLocationId);
+        if (!location) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid location ID. Location does not exist.'
+          });
+        }
+      }
+
       // Create article
       const article = await Article.create({
         title,
@@ -227,6 +238,16 @@ const articleController = {
         const user = await User.findByPk(req.user.id);
         article.locationId = user.locationId;
       } else if (locationId !== undefined) {
+        // Validate locationId if provided
+        if (locationId !== null) {
+          const location = await Location.findByPk(locationId);
+          if (!location) {
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid location ID. Location does not exist.'
+            });
+          }
+        }
         article.locationId = locationId;
       }
 

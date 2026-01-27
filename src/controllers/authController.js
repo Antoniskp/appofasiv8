@@ -240,6 +240,16 @@ const authController = {
       }
 
       if (locationId !== undefined) {
+        // Validate locationId if provided
+        if (locationId !== null) {
+          const location = await Location.findByPk(locationId);
+          if (!location) {
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid location ID. Location does not exist.'
+            });
+          }
+        }
         user.locationId = locationId;
       }
 

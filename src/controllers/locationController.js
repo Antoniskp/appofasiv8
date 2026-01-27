@@ -37,10 +37,19 @@ const locationController = {
         });
       }
 
+      // Validate countryId is a valid number
+      const parsedCountryId = parseInt(countryId, 10);
+      if (isNaN(parsedCountryId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Country ID must be a valid number.'
+        });
+      }
+
       const jurisdictions = await Location.findAll({
         where: {
           type: 'jurisdiction',
-          parentId: countryId
+          parentId: parsedCountryId
         },
         order: [['name', 'ASC']],
         attributes: ['id', 'name', 'code', 'type', 'parentId', 'metadata']
@@ -72,10 +81,19 @@ const locationController = {
         });
       }
 
+      // Validate jurisdictionId is a valid number
+      const parsedJurisdictionId = parseInt(jurisdictionId, 10);
+      if (isNaN(parsedJurisdictionId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Jurisdiction ID must be a valid number.'
+        });
+      }
+
       const municipalities = await Location.findAll({
         where: {
           type: 'municipality',
-          parentId: jurisdictionId
+          parentId: parsedJurisdictionId
         },
         order: [['name', 'ASC']],
         attributes: ['id', 'name', 'code', 'type', 'parentId', 'metadata']
