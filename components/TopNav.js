@@ -20,19 +20,19 @@ export default function TopNav() {
       <div className="app-container">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <Link href="/" className="flex items-center text-xl font-bold text-gray-800">
+            <Link href="/" className="flex items-center text-xl font-bold text-gray-900">
               News App
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${isActive('/')}`}
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-950 ${isActive('/')}`}
               >
                 Home
               </Link>
               <Link
                 href="/articles"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${isActive('/articles')}`}
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-950 ${isActive('/articles')}`}
               >
                 Articles
               </Link>
@@ -41,13 +41,13 @@ export default function TopNav() {
           <div className="flex items-center">
             {user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-gray-950">
                   Welcome, {user.username} ({user.role})
                 </span>
                 {user.role === 'admin' && (
                   <Link
                     href="/admin"
-                    className={`text-sm font-medium ${isActive('/admin')}`}
+                    className={`text-sm font-medium text-gray-950 ${isActive('/admin')}`}
                   >
                     Admin
                   </Link>
@@ -55,11 +55,17 @@ export default function TopNav() {
                 {(user.role === 'admin' || user.role === 'editor') && (
                   <Link
                     href="/editor"
-                    className={`text-sm font-medium ${isActive('/editor')}`}
+                    className={`text-sm font-medium text-gray-950 ${isActive('/editor')}`}
                   >
                     Editor
                   </Link>
                 )}
+                <Link
+                  href="/editor"
+                  className="text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
+                >
+                  Add Article
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-sm font-medium text-red-600 hover:text-red-800"
@@ -71,7 +77,7 @@ export default function TopNav() {
               <div className="flex space-x-4">
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="text-sm font-medium text-gray-950 hover:text-blue-700"
                 >
                   Login
                 </Link>
