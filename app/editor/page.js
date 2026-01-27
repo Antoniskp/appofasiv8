@@ -91,13 +91,13 @@ function EditorDashboardContent() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold mb-8">Editor Dashboard</h1>
+        <h1 className="text-4xl font-bold mb-8">Article Dashboard</h1>
 
         {/* Welcome Message */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-2">Welcome, {user?.username}!</h2>
           <p className="text-gray-600">
-            You have editor access. You can create and edit articles.
+            You can create and manage articles here.
           </p>
         </div>
 
@@ -325,7 +325,7 @@ function EditorDashboardContent() {
 
 export default function EditorDashboard() {
   return (
-    <ProtectedRoute allowedRoles={['admin', 'editor']}>
+    <ProtectedRoute allowedRoles={['admin', 'editor', 'moderator', 'viewer']}>
       <EditorDashboardContent />
     </ProtectedRoute>
   );
