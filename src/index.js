@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const articleRoutes = require('./routes/articleRoutes');
+const { healthHandler } = require('./controllers/healthController');
+const { healthLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,11 +23,14 @@ app.get('/', (req, res) => {
     message: 'News Application API',
     version: '1.0.0',
     endpoints: {
+      health: '/health',
       auth: '/api/auth',
       articles: '/api/articles'
     }
   });
 });
+
+app.get('/health', healthLimiter, healthHandler);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);

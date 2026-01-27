@@ -37,8 +37,20 @@ const createLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const healthLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60, // Limit each IP to 60 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many health check requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 module.exports = {
   apiLimiter,
   authLimiter,
-  createLimiter
+  createLimiter,
+  healthLimiter
 };

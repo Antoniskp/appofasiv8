@@ -185,6 +185,21 @@ The `NEXT_PUBLIC_` prefix makes the variable accessible in the browser.
 
 ## API Documentation
 
+### Health Check
+
+```http
+GET /health
+```
+
+Response:
+```json
+{
+  "success": true,
+  "status": "ok",
+  "timestamp": "2026-01-27T09:43:42.620Z"
+}
+```
+
 ### Authentication Endpoints
 
 #### Register a New User

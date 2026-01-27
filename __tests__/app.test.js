@@ -6,10 +6,13 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('../src/routes/authRoutes');
 const articleRoutes = require('../src/routes/articleRoutes');
+const { healthHandler } = require('../src/controllers/healthController');
+const { healthLimiter } = require('../src/middleware/rateLimiter');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.get('/health', healthLimiter, healthHandler);
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
 
@@ -28,6 +31,17 @@ describe('News Application Integration Tests', () => {
   afterAll(async () => {
     // Close database connection
     await sequelize.close();
+  });
+
+  describe('Health Check', () => {
+    test('should return health check status', async () => {
+      const response = await request(app).get('/health');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.status).toBe('ok');
+      expect(response.body.timestamp).toBeDefined();
+    });
   });
 
   describe('Authentication Tests', () => {
