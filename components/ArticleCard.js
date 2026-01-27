@@ -28,7 +28,7 @@ export default function ArticleCard({ article, variant = 'grid' }) {
             <p className="body-copy mb-4">
               {article.summary || article.content?.substring(0, 200) + '...'}
             </p>
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-500 min-w-0">
               <span>By {article.User?.username || 'Unknown'}</span>
               <span>•</span>
               <span>{new Date(article.createdAt).toLocaleDateString()}</span>
@@ -68,7 +68,7 @@ export default function ArticleCard({ article, variant = 'grid' }) {
           <p className="body-copy mb-4 line-clamp-3">
             {article.summary || article.content?.substring(0, 150) + '...'}
           </p>
-          <div className="flex flex-wrap justify-between items-center text-sm text-gray-500 gap-2">
+          <div className="flex flex-wrap justify-between items-center text-sm text-gray-500 gap-2 min-w-0">
             <span>By {article.User?.username || 'Unknown'}</span>
             {locationLabel && <span>{locationLabel}</span>}
             <span>{new Date(article.createdAt).toLocaleDateString()}</span>
