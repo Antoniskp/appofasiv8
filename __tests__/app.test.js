@@ -15,6 +15,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/locations', locationRoutes);
 
+const originalGithubEnv = {
+  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL
+};
+const originalFetch = global.fetch;
+
 describe('News Application Integration Tests', () => {
   let adminToken;
   let editorToken;
@@ -22,6 +29,9 @@ describe('News Application Integration Tests', () => {
   let testArticleId;
 
   beforeAll(async () => {
+    process.env.GITHUB_CLIENT_ID = 'test-client-id';
+    process.env.GITHUB_CLIENT_SECRET = 'test-client-secret';
+    process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3001';
     // Connect to test database and sync models
     await sequelize.authenticate();
     await sequelize.sync({ force: true }); // Reset database for tests
@@ -30,6 +40,10 @@ describe('News Application Integration Tests', () => {
   afterAll(async () => {
     // Close database connection
     await sequelize.close();
+    process.env.GITHUB_CLIENT_ID = originalGithubEnv.GITHUB_CLIENT_ID;
+    process.env.GITHUB_CLIENT_SECRET = originalGithubEnv.GITHUB_CLIENT_SECRET;
+    process.env.NEXT_PUBLIC_APP_URL = originalGithubEnv.NEXT_PUBLIC_APP_URL;
+    global.fetch = originalFetch;
   });
 
   describe('Authentication Tests', () => {
@@ -188,6 +202,100 @@ describe('News Application Integration Tests', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
+    });
+
+    test('should start GitHub OAuth flow', async () => {
+      const response = await request(app)
+        .get('/api/auth/github');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.url).toContain('https://github.com/login/oauth/authorize');
+      expect(response.body.data.state).toBeDefined();
+    });
+
+    test('should register with GitHub OAuth', async () => {
+      const stateResponse = await request(app)
+        .get('/api/auth/github');
+
+      const state = stateResponse.body.data.state;
+
+      global.fetch = jest.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ access_token: 'test-access-token' })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            id: 12345,
+            login: 'octocat',
+            html_url: 'https://github.com/octocat',
+            avatar_url: 'https://avatars.githubusercontent.com/u/12345?v=4',
+            name: 'Octo Cat',
+            email: 'octo@example.com'
+          })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ([
+            { email: 'octo@example.com', primary: true, verified: true }
+          ])
+        });
+
+      const response = await request(app)
+        .post('/api/auth/github/callback')
+        .send({
+          code: 'test-code',
+          state
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.user.githubUsername).toBe('octocat');
+      expect(response.body.data.user.email).toBe('octo@example.com');
+    });
+
+    test('should connect GitHub for existing user', async () => {
+      const stateResponse = await request(app)
+        .get('/api/auth/github');
+
+      const state = stateResponse.body.data.state;
+
+      global.fetch = jest.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ access_token: 'test-access-token-2' })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            id: 54321,
+            login: 'linkeduser',
+            html_url: 'https://github.com/linkeduser',
+            avatar_url: 'https://avatars.githubusercontent.com/u/54321?v=4',
+            name: 'Linked User',
+            email: 'admin@test.com'
+          })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ([
+            { email: 'admin@test.com', primary: true, verified: true }
+          ])
+        });
+
+      const response = await request(app)
+        .post('/api/auth/github/callback')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          code: 'test-code-2',
+          state
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.user.githubUsername).toBe('linkeduser');
     });
   });
 
