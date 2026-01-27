@@ -9,6 +9,8 @@ export default function TopNav() {
   const pathname = usePathname();
 
   const isActive = (path) => pathname === path ? 'text-blue-600' : '';
+  const loginLinkClass = 'text-sm font-medium text-gray-950 hover:text-blue-700';
+  const registerLinkClass = 'text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700';
 
   const handleLogout = () => {
     logout();
@@ -42,9 +44,9 @@ export default function TopNav() {
             {loading ? (
               <>
                 <span className="sr-only">Loading user menu</span>
-                <div className="flex space-x-4 opacity-0" aria-hidden="true">
-                  <span className="text-sm font-medium text-gray-950 hover:text-blue-700">Login</span>
-                  <span className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                <div className="flex space-x-4 opacity-0 pointer-events-none" aria-hidden="true">
+                  <span className={loginLinkClass}>Login</span>
+                  <span className={registerLinkClass}>
                     Register
                   </span>
                 </div>
@@ -91,16 +93,10 @@ export default function TopNav() {
               </div>
             ) : (
               <div className="flex space-x-4">
-                <Link
-                  href="/login"
-                  className="text-sm font-medium text-gray-950 hover:text-blue-700"
-                >
+                <Link href="/login" className={loginLinkClass}>
                   Login
                 </Link>
-                <Link
-                  href="/register"
-                  className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
+                <Link href="/register" className={registerLinkClass}>
                   Register
                 </Link>
               </div>
