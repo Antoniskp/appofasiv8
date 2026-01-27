@@ -6,7 +6,12 @@ import { articleAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import EmptyState from '@/components/EmptyState';
-import { locationOptions, getJurisdictionOptions, getMunicipalityOptions } from '@/lib/location-options';
+import {
+  locationOptions,
+  getJurisdictionOptions,
+  getMunicipalityOptions,
+  applyLocationCascade,
+} from '@/lib/location-options';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState([]);
@@ -54,26 +59,7 @@ export default function ArticlesPage() {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => {
-      const updated = { ...prev, [name]: value };
-
-      if (name === 'country') {
-        const jurisdictions = getJurisdictionOptions(value);
-        if (!jurisdictions.includes(updated.jurisdiction)) {
-          updated.jurisdiction = '';
-          updated.municipality = '';
-        }
-      }
-
-      if (name === 'jurisdiction') {
-        const municipalities = getMunicipalityOptions(updated.country, value);
-        if (!municipalities.includes(updated.municipality)) {
-          updated.municipality = '';
-        }
-      }
-
-      return updated;
-    });
+    setFilters((prev) => applyLocationCascade(prev, name, value));
     setPage(1); // Reset to first page on filter change
   };
 

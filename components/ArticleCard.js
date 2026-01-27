@@ -8,6 +8,7 @@ import { formatLocationLabel } from '@/lib/location-options';
  */
 export default function ArticleCard({ article, variant = 'grid' }) {
   const isListVariant = variant === 'list';
+  const locationLabel = formatLocationLabel(article);
 
   return (
     <article className={isListVariant ? 'card p-6' : 'card'}>
@@ -31,10 +32,10 @@ export default function ArticleCard({ article, variant = 'grid' }) {
               <span>By {article.User?.username || 'Unknown'}</span>
               <span>•</span>
               <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-              {formatLocationLabel(article) && (
+              {locationLabel && (
                 <>
                   <span>•</span>
-                  <span>{formatLocationLabel(article)}</span>
+                  <span>{locationLabel}</span>
                 </>
               )}
               {article.status !== 'published' && (
@@ -69,7 +70,7 @@ export default function ArticleCard({ article, variant = 'grid' }) {
           </p>
           <div className="flex flex-wrap justify-between items-center text-sm text-gray-500 gap-2">
             <span>By {article.User?.username || 'Unknown'}</span>
-            {formatLocationLabel(article) && <span>{formatLocationLabel(article)}</span>}
+            {locationLabel && <span>{locationLabel}</span>}
             <span>{new Date(article.createdAt).toLocaleDateString()}</span>
           </div>
           <Link

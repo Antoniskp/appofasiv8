@@ -11,6 +11,7 @@ import {
   formatLocationLabel,
   getJurisdictionOptions,
   getMunicipalityOptions,
+  applyLocationCascade,
 } from '@/lib/location-options';
 
 function EditorDashboardContent() {
@@ -51,29 +52,7 @@ function EditorDashboardContent() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => {
-      const updated = {
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value,
-      };
-
-      if (name === 'country') {
-        const jurisdictions = getJurisdictionOptions(value);
-        if (!jurisdictions.includes(updated.jurisdiction)) {
-          updated.jurisdiction = '';
-          updated.municipality = '';
-        }
-      }
-
-      if (name === 'jurisdiction') {
-        const municipalities = getMunicipalityOptions(updated.country, value);
-        if (!municipalities.includes(updated.municipality)) {
-          updated.municipality = '';
-        }
-      }
-
-      return updated;
-    });
+    setFormData((prev) => applyLocationCascade(prev, name, type === 'checkbox' ? checked : value));
   };
 
   const handleSubmit = async (e) => {

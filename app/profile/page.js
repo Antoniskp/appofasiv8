@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
-import { locationOptions, getJurisdictionOptions, getMunicipalityOptions } from '@/lib/location-options';
+import {
+  locationOptions,
+  getJurisdictionOptions,
+  getMunicipalityOptions,
+  applyLocationCascade,
+} from '@/lib/location-options';
 
 function ProfilePageContent() {
   const { user, updateProfile } = useAuth();
@@ -54,29 +59,7 @@ function ProfilePageContent() {
 
   const handleProfileChange = (event) => {
     const { name, value } = event.target;
-    setProfileData((prev) => {
-      const updated = {
-        ...prev,
-        [name]: value,
-      };
-
-      if (name === 'country') {
-        const jurisdictions = getJurisdictionOptions(value);
-        if (!jurisdictions.includes(updated.jurisdiction)) {
-          updated.jurisdiction = '';
-          updated.municipality = '';
-        }
-      }
-
-      if (name === 'jurisdiction') {
-        const municipalities = getMunicipalityOptions(updated.country, value);
-        if (!municipalities.includes(updated.municipality)) {
-          updated.municipality = '';
-        }
-      }
-
-      return updated;
-    });
+    setProfileData((prev) => applyLocationCascade(prev, name, value));
   };
 
   const handlePasswordChange = (event) => {
