@@ -7,6 +7,11 @@ import { useAuth } from '@/lib/auth-context';
 
 function ProfilePageContent() {
   const { user, updateProfile } = useAuth();
+  const locationOptions = {
+    countries: ['Greece', 'Italy', 'Spain', 'Portugal'],
+    jurisdictions: ['Attica', 'Lombardy', 'Catalonia', 'Lisbon'],
+    municipalities: ['Athens', 'Milan', 'Barcelona', 'Lisbon'],
+  };
   const [profileData, setProfileData] = useState({
     username: '',
     firstName: '',
@@ -191,40 +196,58 @@ function ProfilePageContent() {
                 <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
                   Country
                 </label>
-                <input
+                <select
                   id="country"
                   name="country"
-                  type="text"
                   value={profileData.country}
                   onChange={handleProfileChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
-                />
+                >
+                  <option value="">Select country</option>
+                  {locationOptions.countries.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700 mb-1">
                   Jurisdiction
                 </label>
-                <input
+                <select
                   id="jurisdiction"
                   name="jurisdiction"
-                  type="text"
                   value={profileData.jurisdiction}
                   onChange={handleProfileChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
-                />
+                >
+                  <option value="">Select jurisdiction</option>
+                  {locationOptions.jurisdictions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="municipality" className="block text-sm font-medium text-gray-700 mb-1">
                   Municipality
                 </label>
-                <input
+                <select
                   id="municipality"
                   name="municipality"
-                  type="text"
                   value={profileData.municipality}
                   onChange={handleProfileChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
-                />
+                >
+                  <option value="">Select municipality</option>
+                  {locationOptions.municipalities.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <button

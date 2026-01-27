@@ -8,6 +8,11 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 import EmptyState from '@/components/EmptyState';
 
 export default function ArticlesPage() {
+  const locationOptions = {
+    countries: ['Greece', 'Italy', 'Spain', 'Portugal'],
+    jurisdictions: ['Attica', 'Lombardy', 'Catalonia', 'Lisbon'],
+    municipalities: ['Athens', 'Milan', 'Barcelona', 'Lisbon'],
+  };
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -102,43 +107,58 @@ export default function ArticlesPage() {
               <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
                 Country
               </label>
-              <input
-                type="text"
+              <select
                 id="country"
                 name="country"
                 value={filters.country}
                 onChange={handleFilterChange}
-                placeholder="Filter by country..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-              />
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All countries</option>
+                {locationOptions.countries.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700 mb-2">
                 Jurisdiction
               </label>
-              <input
-                type="text"
+              <select
                 id="jurisdiction"
                 name="jurisdiction"
                 value={filters.jurisdiction}
                 onChange={handleFilterChange}
-                placeholder="Filter by jurisdiction..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-              />
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All jurisdictions</option>
+                {locationOptions.jurisdictions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label htmlFor="municipality" className="block text-sm font-medium text-gray-700 mb-2">
                 Municipality
               </label>
-              <input
-                type="text"
+              <select
                 id="municipality"
                 name="municipality"
                 value={filters.municipality}
                 onChange={handleFilterChange}
-                placeholder="Filter by municipality..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-              />
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All municipalities</option>
+                {locationOptions.municipalities.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

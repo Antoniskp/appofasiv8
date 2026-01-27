@@ -15,9 +15,6 @@ export default function RegisterPage() {
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    country: '',
-    jurisdiction: '',
-    municipality: '',
     role: 'viewer',
   });
   const [error, setError] = useState('');
@@ -140,50 +137,6 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Last Name"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                  Country
-                </label>
-                <input
-                  id="country"
-                  name="country"
-                  type="text"
-                  value={formData.country}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Country"
-                />
-              </div>
-              <div>
-                <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700">
-                  Jurisdiction
-                </label>
-                <input
-                  id="jurisdiction"
-                  name="jurisdiction"
-                  type="text"
-                  value={formData.jurisdiction}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Jurisdiction"
-                />
-              </div>
-              <div>
-                <label htmlFor="municipality" className="block text-sm font-medium text-gray-700">
-                  Municipality
-                </label>
-                <input
-                  id="municipality"
-                  name="municipality"
-                  type="text"
-                  value={formData.municipality}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Municipality"
                 />
               </div>
             </div>

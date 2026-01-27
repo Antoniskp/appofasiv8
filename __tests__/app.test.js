@@ -40,17 +40,13 @@ describe('News Application Integration Tests', () => {
           password: 'admin123',
           role: 'admin',
           firstName: 'Test',
-          lastName: 'Admin',
-          country: 'Greece',
-          jurisdiction: 'Attica',
-          municipality: 'Athens'
+          lastName: 'Admin'
         });
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
       expect(response.body.data.token).toBeDefined();
       expect(response.body.data.user.role).toBe('admin');
-      expect(response.body.data.user.country).toBe('Greece');
       adminToken = response.body.data.token;
     });
 

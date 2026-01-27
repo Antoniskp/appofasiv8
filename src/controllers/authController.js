@@ -7,7 +7,7 @@ const authController = {
   // Register a new user
   register: async (req, res) => {
     try {
-      const { username, email, password, role, firstName, lastName, country, jurisdiction, municipality } = req.body;
+      const { username, email, password, role, firstName, lastName } = req.body;
 
       // Validate required fields
       if (!username || !email || !password) {
@@ -38,10 +38,7 @@ const authController = {
         password,
         role: role || 'viewer',
         firstName,
-        lastName,
-        country,
-        jurisdiction,
-        municipality
+        lastName
       });
 
       // Generate JWT token
