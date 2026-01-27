@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import LocationSelector from '@/components/LocationSelector';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
@@ -11,6 +12,7 @@ function ProfilePageContent() {
     username: '',
     firstName: '',
     lastName: '',
+    locationId: null
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -28,11 +30,12 @@ function ProfilePageContent() {
       try {
         const response = await authAPI.getProfile();
         if (response.success) {
-          const { username, firstName, lastName } = response.data.user;
+          const { username, firstName, lastName, locationId } = response.data.user;
           setProfileData({
             username: username || '',
             firstName: firstName || '',
             lastName: lastName || '',
+            locationId: locationId || null
           });
         }
       } catch (error) {
@@ -180,6 +183,18 @@ function ProfilePageContent() {
                 />
               </div>
             </div>
+
+            {/* Location Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Location (Optional)
+              </label>
+              <LocationSelector
+                selectedLocationId={profileData.locationId}
+                onLocationChange={(locationId) => setProfileData((prev) => ({ ...prev, locationId }))}
+              />
+            </div>
+
             <button
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"

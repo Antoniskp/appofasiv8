@@ -1,11 +1,11 @@
-const { Article, User } = require('../models');
+const { Article, User, Location } = require('../models');
 const { Op } = require('sequelize');
 
 const articleController = {
   // Create a new article
   createArticle: async (req, res) => {
     try {
-      const { title, content, summary, category, status, isNews } = req.body;
+      const { title, content, summary, category, status, isNews, locationId, useUserLocation } = req.body;
 
       // Validate required fields
       if (!title || !content) {
@@ -13,6 +13,24 @@ const articleController = {
           success: false,
           message: 'Title and content are required.'
         });
+      }
+
+      // Determine which locationId to use
+      let finalLocationId = locationId;
+      if (useUserLocation) {
+        const user = await User.findByPk(req.user.id);
+        finalLocationId = user.locationId;
+      }
+
+      // Validate locationId if provided
+      if (finalLocationId !== null && finalLocationId !== undefined) {
+        const location = await Location.findByPk(finalLocationId);
+        if (!location) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid location ID. Location does not exist.'
+          });
+        }
       }
 
       // Create article
@@ -24,16 +42,24 @@ const articleController = {
         status: status || 'draft',
         authorId: req.user.id,
         publishedAt: status === 'published' ? new Date() : null,
-        isNews: isNews || false
+        isNews: isNews || false,
+        locationId: finalLocationId || null
       });
 
       // Fetch article with author info
       const articleWithAuthor = await Article.findByPk(article.id, {
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        }]
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['id', 'name', 'code', 'type']
+          }
+        ]
       });
 
       res.status(201).json({
@@ -74,11 +100,18 @@ const articleController = {
 
       const { count, rows: articles } = await Article.findAndCountAll({
         where,
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        }],
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['id', 'name', 'code', 'type']
+          }
+        ],
         order: [['createdAt', 'DESC']],
         limit: parseInt(limit),
         offset: parseInt(offset)
@@ -112,11 +145,18 @@ const articleController = {
       const { id } = req.params;
 
       const article = await Article.findByPk(id, {
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        }]
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['id', 'name', 'code', 'type']
+          }
+        ]
       });
 
       if (!article) {
@@ -152,7 +192,7 @@ const articleController = {
   updateArticle: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, content, summary, category, status, isNews } = req.body;
+      const { title, content, summary, category, status, isNews, locationId, useUserLocation } = req.body;
 
       const article = await Article.findByPk(id);
 
@@ -193,15 +233,40 @@ const articleController = {
         }
       }
 
+      // Handle location update
+      if (useUserLocation) {
+        const user = await User.findByPk(req.user.id);
+        article.locationId = user.locationId;
+      } else if (locationId !== undefined) {
+        // Validate locationId if provided
+        if (locationId !== null) {
+          const location = await Location.findByPk(locationId);
+          if (!location) {
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid location ID. Location does not exist.'
+            });
+          }
+        }
+        article.locationId = locationId;
+      }
+
       await article.save();
 
       // Fetch updated article with author info
       const updatedArticle = await Article.findByPk(id, {
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        }]
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['id', 'name', 'code', 'type']
+          }
+        ]
       });
 
       res.status(200).json({
@@ -296,6 +361,11 @@ const articleController = {
             model: User,
             as: 'author',
             attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Location,
+            as: 'location',
+            attributes: ['id', 'name', 'code', 'type']
           }
         ]
       });

@@ -62,6 +62,14 @@ const Article = sequelize.define('Article', {
       model: 'Users',
       key: 'id'
     }
+  },
+  locationId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Locations',
+      key: 'id'
+    }
   }
 }, {
   timestamps: true
