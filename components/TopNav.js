@@ -44,6 +44,12 @@ export default function TopNav() {
                 <span className="text-sm text-gray-950">
                   Welcome, {user.username} ({user.role})
                 </span>
+                <Link
+                  href="/profile"
+                  className={`text-sm font-medium text-gray-950 ${isActive('/profile')}`}
+                >
+                  Profile
+                </Link>
                 {user.role === 'admin' && (
                   <Link
                     href="/admin"

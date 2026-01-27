@@ -10,5 +10,7 @@ router.post('/login', authLimiter, authController.login);
 
 // Protected routes with rate limiting
 router.get('/profile', apiLimiter, authMiddleware, authController.getProfile);
+router.put('/profile', apiLimiter, authMiddleware, authController.updateProfile);
+router.put('/password', apiLimiter, authMiddleware, authController.updatePassword);
 
 module.exports = router;
