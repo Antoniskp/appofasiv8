@@ -40,7 +40,15 @@ export default function TopNav() {
           </div>
           <div className="flex items-center">
             {loading ? (
-              <div className="h-8 w-32" aria-hidden="true" />
+              <>
+                <span className="sr-only">Loading user menu</span>
+                <div className="flex space-x-4 invisible" aria-hidden="true">
+                  <span className="text-sm font-medium text-gray-950">Login</span>
+                  <span className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded">
+                    Register
+                  </span>
+                </div>
+              </>
             ) : user ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-950">
