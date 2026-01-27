@@ -49,6 +49,27 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  githubId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
+  },
+  githubUsername: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  githubProfileUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  githubAvatarUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  githubEmail: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   locationId: {
     type: DataTypes.INTEGER,
     allowNull: true,

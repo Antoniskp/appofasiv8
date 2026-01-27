@@ -26,7 +26,10 @@ function ProfilePageContent() {
     lastName: '',
     locationId: null,
     avatarUrl: '',
-    profileColor: ''
+    profileColor: '',
+    githubUsername: '',
+    githubProfileUrl: '',
+    githubEmail: ''
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -38,20 +41,35 @@ function ProfilePageContent() {
   const [passwordMessage, setPasswordMessage] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [githubLoading, setGithubLoading] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
         const response = await authAPI.getProfile();
         if (response.success) {
-          const { username, firstName, lastName, locationId, avatarUrl, profileColor } = response.data.user;
+          const {
+            username,
+            firstName,
+            lastName,
+            locationId,
+            avatarUrl,
+            profileColor,
+            githubAvatarUrl,
+            githubUsername,
+            githubProfileUrl,
+            githubEmail
+          } = response.data.user;
           setProfileData({
             username: username || '',
             firstName: firstName || '',
             lastName: lastName || '',
             locationId: locationId || null,
-            avatarUrl: avatarUrl || '',
-            profileColor: profileColor || ''
+            avatarUrl: avatarUrl || githubAvatarUrl || '',
+            profileColor: profileColor || '',
+            githubUsername: githubUsername || '',
+            githubProfileUrl: githubProfileUrl || '',
+            githubEmail: githubEmail || ''
           });
         }
       } catch (error) {
@@ -111,8 +129,11 @@ function ProfilePageContent() {
           firstName: updatedUser.firstName || '',
           lastName: updatedUser.lastName || '',
           locationId: updatedUser.locationId || null,
-          avatarUrl: updatedUser.avatarUrl || '',
-          profileColor: updatedUser.profileColor || ''
+          avatarUrl: updatedUser.avatarUrl || updatedUser.githubAvatarUrl || '',
+          profileColor: updatedUser.profileColor || '',
+          githubUsername: updatedUser.githubUsername || '',
+          githubProfileUrl: updatedUser.githubProfileUrl || '',
+          githubEmail: updatedUser.githubEmail || ''
         });
       }
       setProfileMessage('Profile updated successfully.');
@@ -120,6 +141,28 @@ function ProfilePageContent() {
       setProfileError(error.message || 'Failed to update profile.');
     }
   };
+
+  const handleGithubConnect = async () => {
+    setProfileError('');
+    setProfileMessage('');
+    setGithubLoading(true);
+
+    try {
+      const response = await authAPI.githubAuth();
+      const authUrl = response?.data?.url;
+      const state = response?.data?.state;
+      if (authUrl && state) {
+        sessionStorage.setItem('github_oauth_state', state);
+        window.location.href = authUrl;
+      } else {
+        throw new Error('Unable to start GitHub connection.');
+      }
+    } catch (error) {
+      setProfileError(error.message || 'Failed to connect GitHub account.');
+      setGithubLoading(false);
+    }
+  };
+
 
   const resetPasswordData = () => {
     setPasswordData({
@@ -318,6 +361,47 @@ function ProfilePageContent() {
                 selectedLocationId={profileData.locationId}
                 onLocationChange={(locationId) => setProfileData((prev) => ({ ...prev, locationId }))}
               />
+            </div>
+
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">GitHub</h3>
+              {(profileData.githubUsername || user?.githubUsername) ? (
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Connected as{' '}
+                      <a
+                        href={profileData.githubProfileUrl || user?.githubProfileUrl || '#'}
+                        className="text-blue-600 hover:text-blue-700"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        @{profileData.githubUsername || user?.githubUsername}
+                      </a>
+                    </p>
+                    {(profileData.githubEmail || user?.githubEmail) && (
+                      <p className="text-xs text-gray-500">GitHub email: {profileData.githubEmail || user?.githubEmail}</p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGithubConnect}
+                    disabled={githubLoading}
+                    className="inline-flex items-center justify-center rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    {githubLoading ? 'Updating...' : 'Re-sync GitHub account'}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleGithubConnect}
+                  disabled={githubLoading}
+                  className="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {githubLoading ? 'Connecting...' : 'Connect GitHub account'}
+                </button>
+              )}
             </div>
 
             <button
