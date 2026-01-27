@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
-import { locationOptions } from '@/lib/location-options';
+import { locationOptions, getJurisdictionOptions, getMunicipalityOptions } from '@/lib/location-options';
 
 function ProfilePageContent() {
   const { user, updateProfile } = useAuth();
@@ -54,10 +54,29 @@ function ProfilePageContent() {
 
   const handleProfileChange = (event) => {
     const { name, value } = event.target;
-    setProfileData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setProfileData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: value,
+      };
+
+      if (name === 'country') {
+        const jurisdictions = getJurisdictionOptions(value);
+        if (!jurisdictions.includes(updated.jurisdiction)) {
+          updated.jurisdiction = '';
+          updated.municipality = '';
+        }
+      }
+
+      if (name === 'jurisdiction') {
+        const municipalities = getMunicipalityOptions(updated.country, value);
+        if (!municipalities.includes(updated.municipality)) {
+          updated.municipality = '';
+        }
+      }
+
+      return updated;
+    });
   };
 
   const handlePasswordChange = (event) => {
@@ -219,7 +238,7 @@ function ProfilePageContent() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Select jurisdiction</option>
-                  {locationOptions.jurisdictions.map((option) => (
+                  {getJurisdictionOptions(profileData.country).map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>
@@ -238,7 +257,7 @@ function ProfilePageContent() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Select municipality</option>
-                  {locationOptions.municipalities.map((option) => (
+                  {getMunicipalityOptions(profileData.country, profileData.jurisdiction).map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>

@@ -6,7 +6,12 @@ import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
-import { locationOptions } from '@/lib/location-options';
+import {
+  locationOptions,
+  formatLocationLabel,
+  getJurisdictionOptions,
+  getMunicipalityOptions,
+} from '@/lib/location-options';
 
 function EditorDashboardContent() {
   const { user } = useAuth();
@@ -46,9 +51,28 @@ function EditorDashboardContent() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      };
+
+      if (name === 'country') {
+        const jurisdictions = getJurisdictionOptions(value);
+        if (!jurisdictions.includes(updated.jurisdiction)) {
+          updated.jurisdiction = '';
+          updated.municipality = '';
+        }
+      }
+
+      if (name === 'jurisdiction') {
+        const municipalities = getMunicipalityOptions(updated.country, value);
+        if (!municipalities.includes(updated.municipality)) {
+          updated.municipality = '';
+        }
+      }
+
+      return updated;
     });
   };
 
@@ -219,7 +243,7 @@ function EditorDashboardContent() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Select jurisdiction</option>
-                    {locationOptions.jurisdictions.map((option) => (
+                    {getJurisdictionOptions(formData.country).map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>
@@ -238,7 +262,7 @@ function EditorDashboardContent() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Select municipality</option>
-                    {locationOptions.municipalities.map((option) => (
+                    {getMunicipalityOptions(formData.country, formData.jurisdiction).map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>
@@ -317,9 +341,7 @@ function EditorDashboardContent() {
               {articles.slice(0, 10).map((article) => {
                 const canEdit = user.role === 'admin' || user.role === 'editor' || user.id === article.authorId;
                 const canDelete = user.role === 'admin' || user.id === article.authorId;
-                const locationLabel = [article.municipality, article.jurisdiction, article.country]
-                  .filter(Boolean)
-                  .join(', ');
+                const locationLabel = formatLocationLabel(article);
                 
                 return (
                   <div key={article.id} className="p-6 hover:bg-gray-50">

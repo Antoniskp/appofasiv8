@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { formatLocationLabel } from '@/lib/location-options';
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -101,19 +102,11 @@ export default function ArticleDetailPage() {
               <div>
                 <span>Published: {new Date(article.createdAt).toLocaleDateString()}</span>
               </div>
-              {(article.country || article.jurisdiction || article.municipality) && (
+              {formatLocationLabel(article) && (
                 <>
                   <span>•</span>
                   <div>
-                    <span>
-                      {[
-                        article.municipality,
-                        article.jurisdiction,
-                        article.country
-                      ]
-                        .filter(Boolean)
-                        .join(', ')}
-                    </span>
+                    <span>{formatLocationLabel(article)}</span>
                   </div>
                 </>
               )}

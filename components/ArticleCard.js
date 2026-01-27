@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { formatLocationLabel } from '@/lib/location-options';
 
 /**
  * Reusable article card component
@@ -30,14 +31,10 @@ export default function ArticleCard({ article, variant = 'grid' }) {
               <span>By {article.User?.username || 'Unknown'}</span>
               <span>•</span>
               <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-              {(article.country || article.jurisdiction || article.municipality) && (
+              {formatLocationLabel(article) && (
                 <>
                   <span>•</span>
-                  <span>
-                    {[article.municipality, article.jurisdiction, article.country]
-                      .filter(Boolean)
-                      .join(', ')}
-                  </span>
+                  <span>{formatLocationLabel(article)}</span>
                 </>
               )}
               {article.status !== 'published' && (
@@ -72,13 +69,7 @@ export default function ArticleCard({ article, variant = 'grid' }) {
           </p>
           <div className="flex flex-wrap justify-between items-center text-sm text-gray-500 gap-2">
             <span>By {article.User?.username || 'Unknown'}</span>
-            {(article.country || article.jurisdiction || article.municipality) && (
-              <span>
-                {[article.municipality, article.jurisdiction, article.country]
-                  .filter(Boolean)
-                  .join(', ')}
-              </span>
-            )}
+            {formatLocationLabel(article) && <span>{formatLocationLabel(article)}</span>}
             <span>{new Date(article.createdAt).toLocaleDateString()}</span>
           </div>
           <Link

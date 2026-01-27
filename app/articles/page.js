@@ -6,7 +6,7 @@ import { articleAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import EmptyState from '@/components/EmptyState';
-import { locationOptions } from '@/lib/location-options';
+import { locationOptions, getJurisdictionOptions, getMunicipalityOptions } from '@/lib/location-options';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState([]);
@@ -54,7 +54,26 @@ export default function ArticlesPage() {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => {
+      const updated = { ...prev, [name]: value };
+
+      if (name === 'country') {
+        const jurisdictions = getJurisdictionOptions(value);
+        if (!jurisdictions.includes(updated.jurisdiction)) {
+          updated.jurisdiction = '';
+          updated.municipality = '';
+        }
+      }
+
+      if (name === 'jurisdiction') {
+        const municipalities = getMunicipalityOptions(updated.country, value);
+        if (!municipalities.includes(updated.municipality)) {
+          updated.municipality = '';
+        }
+      }
+
+      return updated;
+    });
     setPage(1); // Reset to first page on filter change
   };
 
@@ -130,7 +149,7 @@ export default function ArticlesPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All jurisdictions</option>
-                {locationOptions.jurisdictions.map((option) => (
+                {getJurisdictionOptions(filters.country).map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -149,7 +168,7 @@ export default function ArticlesPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All municipalities</option>
-                {locationOptions.municipalities.map((option) => (
+                {getMunicipalityOptions(filters.country, filters.jurisdiction).map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
