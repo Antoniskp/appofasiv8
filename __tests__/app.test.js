@@ -1,5 +1,6 @@
 const request = require('supertest');
-const { sequelize } = require('../src/models');
+const { sequelize, Location } = require('../src/models');
+const seedLocations = require('../src/config/seedLocations');
 
 // Create a test app instance
 const express = require('express');
@@ -25,6 +26,7 @@ describe('News Application Integration Tests', () => {
     // Connect to test database and sync models
     await sequelize.authenticate();
     await sequelize.sync({ force: true }); // Reset database for tests
+    await seedLocations();
   });
 
   afterAll(async () => {
@@ -471,6 +473,24 @@ describe('News Application Integration Tests', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.data.article.isNews).toBe(false);
       expect(response.body.data.article.newsApprovedAt).toBeNull();
+    });
+  });
+
+  describe('Location Data Tests', () => {
+    test('should seed all Greek jurisdictions', async () => {
+      const jurisdictionCount = await Location.count({
+        where: { type: 'jurisdiction' }
+      });
+
+      expect(jurisdictionCount).toBe(13);
+    });
+
+    test('should seed most Greek municipalities', async () => {
+      const municipalityCount = await Location.count({
+        where: { type: 'municipality' }
+      });
+
+      expect(municipalityCount).toBeGreaterThan(300);
     });
   });
 });

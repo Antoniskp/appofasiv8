@@ -1,4 +1,5 @@
 const { Location } = require('../models');
+const greeceMunicipalities = require('./greeceMunicipalities');
 
 async function seedLocations() {
   try {
@@ -36,98 +37,65 @@ async function seedLocations() {
       }
     });
 
-    // Add some Greek jurisdictions (administrative regions) as examples
-    const attica = await Location.create({
-      name: 'Attica',
-      type: 'jurisdiction',
-      code: 'GR-I',
-      parentId: greece.id,
-      metadata: {
-        names: {
-          en: 'Attica',
-          el: 'Αττική'
-        }
-      }
-    });
+    // Add Greek jurisdictions (administrative regions)
+    const jurisdictions = [
+      { name: 'Eastern Macedonia and Thrace', greekName: 'Ανατολικής Μακεδονίας και Θράκης', code: 'GR-A' },
+      { name: 'Central Macedonia', greekName: 'Κεντρικής Μακεδονίας', code: 'GR-B' },
+      { name: 'Western Macedonia', greekName: 'Δυτικής Μακεδονίας', code: 'GR-C' },
+      { name: 'Epirus', greekName: 'Ηπείρου', code: 'GR-D' },
+      { name: 'Thessaly', greekName: 'Θεσσαλίας', code: 'GR-E' },
+      { name: 'Ionian Islands', greekName: 'Ιονίων Νήσων', code: 'GR-F' },
+      { name: 'Western Greece', greekName: 'Δυτικής Ελλάδας', code: 'GR-G' },
+      { name: 'Central Greece', greekName: 'Στερεάς Ελλάδας', code: 'GR-H' },
+      { name: 'Attica', greekName: 'Αττικής', code: 'GR-I' },
+      { name: 'Peloponnese', greekName: 'Πελοποννήσου', code: 'GR-J' },
+      { name: 'North Aegean', greekName: 'Βορείου Αιγαίου', code: 'GR-K' },
+      { name: 'South Aegean', greekName: 'Νοτίου Αιγαίου', code: 'GR-L' },
+      { name: 'Crete', greekName: 'Κρήτης', code: 'GR-M' }
+    ];
 
-    const centralMacedonia = await Location.create({
-      name: 'Central Macedonia',
-      type: 'jurisdiction',
-      code: 'GR-B',
-      parentId: greece.id,
-      metadata: {
-        names: {
-          en: 'Central Macedonia',
-          el: 'Κεντρική Μακεδονία'
+    const jurisdictionMap = new Map();
+    for (const jurisdiction of jurisdictions) {
+      const createdJurisdiction = await Location.create({
+        name: jurisdiction.name,
+        type: 'jurisdiction',
+        code: jurisdiction.code,
+        parentId: greece.id,
+        metadata: {
+          names: {
+            en: jurisdiction.name,
+            el: jurisdiction.greekName
+          }
         }
-      }
-    });
+      });
+      jurisdictionMap.set(jurisdiction.greekName, createdJurisdiction);
+    }
 
-    const crete = await Location.create({
-      name: 'Crete',
-      type: 'jurisdiction',
-      code: 'GR-M',
-      parentId: greece.id,
-      metadata: {
-        names: {
-          en: 'Crete',
-          el: 'Κρήτη'
-        }
+    const createdMunicipalities = new Set();
+    for (const municipality of greeceMunicipalities) {
+      const jurisdiction = jurisdictionMap.get(municipality.periferies_name);
+      if (!jurisdiction) {
+        continue;
       }
-    });
 
-    // Add some municipalities as examples
-    await Location.create({
-      name: 'Athens',
-      type: 'municipality',
-      code: 'GR-I-ATH',
-      parentId: attica.id,
-      metadata: {
-        names: {
-          en: 'Athens',
-          el: 'Αθήνα'
-        }
+      const municipalityKey = `${jurisdiction.id}-${municipality.dimos_name}`;
+      if (createdMunicipalities.has(municipalityKey)) {
+        continue;
       }
-    });
+      createdMunicipalities.add(municipalityKey);
 
-    await Location.create({
-      name: 'Piraeus',
-      type: 'municipality',
-      code: 'GR-I-PIR',
-      parentId: attica.id,
-      metadata: {
-        names: {
-          en: 'Piraeus',
-          el: 'Πειραιάς'
+      await Location.create({
+        name: municipality.dimos_name,
+        type: 'municipality',
+        parentId: jurisdiction.id,
+        metadata: {
+          names: {
+            el: municipality.dimos_name
+          },
+          nomos: municipality.nomos_name
         }
-      }
-    });
-
-    await Location.create({
-      name: 'Thessaloniki',
-      type: 'municipality',
-      code: 'GR-B-THE',
-      parentId: centralMacedonia.id,
-      metadata: {
-        names: {
-          en: 'Thessaloniki',
-          el: 'Θεσσαλονίκη'
-        }
-      }
-    });
-
-    await Location.create({
-      name: 'Heraklion',
-      type: 'municipality',
-      code: 'GR-M-HER',
-      parentId: crete.id,
-      metadata: {
-        names: {
-          en: 'Heraklion',
-          el: 'Ηράκλειο'
-        }
-      }
-    });
+      });
+    }
 
     console.log('Location data seeded successfully!');
   } catch (error) {

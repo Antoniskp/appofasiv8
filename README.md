@@ -57,7 +57,7 @@ The application includes a hierarchical location system that allows users and ar
 - **Use User Location**: When creating articles, users can choose to use their profile location
 - **Hierarchical Dropdowns**: Frontend provides dependent dropdowns for easy location selection
 - **Standards-Oriented**: Location data includes ISO codes and metadata for interoperability
-- **Seeded Data**: Pre-populated with Greece and International countries, plus sample Greek regions and cities
+- **Seeded Data**: Pre-populated with Greece and International countries, all 13 Greek jurisdictions, and most Greek municipalities
 
 ### Location Fields
 Each location record includes:
