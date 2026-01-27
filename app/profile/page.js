@@ -26,7 +26,10 @@ function ProfilePageContent() {
     lastName: '',
     locationId: null,
     avatarUrl: '',
-    profileColor: ''
+    profileColor: '',
+    githubUsername: '',
+    githubProfileUrl: '',
+    githubEmail: ''
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -45,14 +48,28 @@ function ProfilePageContent() {
       try {
         const response = await authAPI.getProfile();
         if (response.success) {
-          const { username, firstName, lastName, locationId, avatarUrl, profileColor } = response.data.user;
+          const {
+            username,
+            firstName,
+            lastName,
+            locationId,
+            avatarUrl,
+            profileColor,
+            githubAvatarUrl,
+            githubUsername,
+            githubProfileUrl,
+            githubEmail
+          } = response.data.user;
           setProfileData({
             username: username || '',
             firstName: firstName || '',
             lastName: lastName || '',
             locationId: locationId || null,
-            avatarUrl: avatarUrl || '',
-            profileColor: profileColor || ''
+            avatarUrl: avatarUrl || githubAvatarUrl || '',
+            profileColor: profileColor || '',
+            githubUsername: githubUsername || '',
+            githubProfileUrl: githubProfileUrl || '',
+            githubEmail: githubEmail || ''
           });
         }
       } catch (error) {
@@ -112,8 +129,11 @@ function ProfilePageContent() {
           firstName: updatedUser.firstName || '',
           lastName: updatedUser.lastName || '',
           locationId: updatedUser.locationId || null,
-          avatarUrl: updatedUser.avatarUrl || '',
-          profileColor: updatedUser.profileColor || ''
+          avatarUrl: updatedUser.avatarUrl || updatedUser.githubAvatarUrl || '',
+          profileColor: updatedUser.profileColor || '',
+          githubUsername: updatedUser.githubUsername || '',
+          githubProfileUrl: updatedUser.githubProfileUrl || '',
+          githubEmail: updatedUser.githubEmail || ''
         });
       }
       setProfileMessage('Profile updated successfully.');
@@ -345,22 +365,22 @@ function ProfilePageContent() {
 
             <div className="border-t border-gray-200 pt-4">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">GitHub</h3>
-              {user?.githubUsername ? (
+              {(profileData.githubUsername || user?.githubUsername) ? (
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700">
                       Connected as{' '}
                       <a
-                        href={user.githubProfileUrl || '#'}
+                        href={profileData.githubProfileUrl || user?.githubProfileUrl || '#'}
                         className="text-blue-600 hover:text-blue-700"
                         target="_blank"
                         rel="noreferrer"
                       >
-                        @{user.githubUsername}
+                        @{profileData.githubUsername || user?.githubUsername}
                       </a>
                     </p>
-                    {user.githubEmail && (
-                      <p className="text-xs text-gray-500">GitHub email: {user.githubEmail}</p>
+                    {(profileData.githubEmail || user?.githubEmail) && (
+                      <p className="text-xs text-gray-500">GitHub email: {profileData.githubEmail || user?.githubEmail}</p>
                     )}
                   </div>
                   <button
