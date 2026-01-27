@@ -1,10 +1,22 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LocationSelector from '@/components/LocationSelector';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+
+const normalizeProfileColorInput = (value) => {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return '';
+  }
+  const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+  if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(normalized)) {
+    return null;
+  }
+  return normalized.toLowerCase();
+};
 
 function ProfilePageContent() {
   const { user, updateProfile } = useAuth();
@@ -75,21 +87,6 @@ function ProfilePageContent() {
       [name]: value,
     }));
   };
-
-  const normalizeProfileColorInput = useMemo(
-    () => (value) => {
-      const trimmed = value?.trim();
-      if (!trimmed) {
-        return '';
-      }
-      const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
-      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(normalized)) {
-        return null;
-      }
-      return normalized.toLowerCase();
-    },
-    []
-  );
 
   const handleProfileSubmit = async (event) => {
     event.preventDefault();
@@ -174,7 +171,7 @@ function ProfilePageContent() {
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
+    .map((part) => (part && part[0] ? part[0].toUpperCase() : ''))
     .join('');
   const normalizedProfileColor = normalizeProfileColorInput(profileData.profileColor);
   const avatarColor = normalizedProfileColor || '#94a3b8';
@@ -287,7 +284,7 @@ function ProfilePageContent() {
             </div>
             <div>
               <label htmlFor="profileColor" className="block text-sm font-medium text-gray-700 mb-1">
-                Profile color
+                Profile Color
               </label>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <input
