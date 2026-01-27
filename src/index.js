@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
+const seedLocations = require('./config/seedLocations');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const articleRoutes = require('./routes/articleRoutes');
+const locationRoutes = require('./routes/locationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,13 +24,15 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
-      articles: '/api/articles'
+      articles: '/api/articles',
+      locations: '/api/locations'
     }
   });
 });
 
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -58,6 +62,9 @@ const startServer = async () => {
     // Sync database models
     await sequelize.sync({ alter: true });
     console.log('Database models synchronized.');
+
+    // Seed initial location data
+    await seedLocations();
 
     // Start server
     app.listen(PORT, () => {
