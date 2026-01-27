@@ -4,13 +4,13 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
 
@@ -51,15 +51,15 @@ select:-webkit-autofill:focus {
 
   /* Typography */
   .section-title {
-    @apply text-3xl font-bold mb-8 text-gray-900;
+    @apply text-3xl font-bold mb-8 text-black;
   }
 
   .headline {
-    @apply text-xl font-semibold mb-2 text-gray-900;
+    @apply text-xl font-semibold mb-2 text-black;
   }
 
   .body-copy {
-    @apply text-gray-600 leading-relaxed;
+    @apply text-black leading-relaxed;
   }
 
   /* Layout */

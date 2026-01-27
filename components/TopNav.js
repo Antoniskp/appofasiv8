@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { usePathname } from 'next/navigation';
@@ -7,8 +8,13 @@ import { usePathname } from 'next/navigation';
 export default function TopNav() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path) => pathname === path ? 'text-blue-600' : '';
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     logout();
@@ -18,42 +24,42 @@ export default function TopNav() {
   return (
     <nav className="bg-white shadow-md">
       <div className="app-container">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link href="/" className="flex items-center text-xl font-bold text-gray-900">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center text-xl font-bold text-black">
               News App
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-950 ${isActive('/')}`}
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/')}`}
               >
                 Home
               </Link>
               <Link
                 href="/articles"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-950 ${isActive('/articles')}`}
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/articles')}`}
               >
                 Articles
               </Link>
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="hidden sm:flex flex-wrap items-center gap-4">
             {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-950">
+              <>
+                <span className="text-sm text-black">
                   Welcome, {user.username} ({user.role})
                 </span>
                 <Link
                   href="/profile"
-                  className={`text-sm font-medium text-gray-950 ${isActive('/profile')}`}
+                  className={`text-sm font-medium text-black ${isActive('/profile')}`}
                 >
                   Profile
                 </Link>
                 {user.role === 'admin' && (
                   <Link
                     href="/admin"
-                    className={`text-sm font-medium text-gray-950 ${isActive('/admin')}`}
+                    className={`text-sm font-medium text-black ${isActive('/admin')}`}
                   >
                     Admin
                   </Link>
@@ -61,7 +67,7 @@ export default function TopNav() {
                 {(user.role === 'admin' || user.role === 'editor') && (
                   <Link
                     href="/editor"
-                    className={`text-sm font-medium text-gray-950 ${isActive('/editor')}`}
+                    className={`text-sm font-medium text-black ${isActive('/editor')}`}
                   >
                     Editor
                   </Link>
@@ -78,12 +84,12 @@ export default function TopNav() {
                 >
                   Logout
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="flex space-x-4">
+              <>
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-gray-950 hover:text-blue-700"
+                  className="text-sm font-medium text-black hover:text-blue-700"
                 >
                   Login
                 </Link>
@@ -93,9 +99,101 @@ export default function TopNav() {
                 >
                   Register
                 </Link>
-              </div>
+              </>
             )}
           </div>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-100 sm:hidden"
+            aria-controls="mobile-menu"
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen((open) => !open)}
+          >
+            <span className="sr-only">Open main menu</span>
+            {isMenuOpen ? (
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+      <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
+        <div className="border-t border-gray-200 px-4 py-3 space-y-2">
+          <Link
+            href="/"
+            className={`block text-base font-medium text-black ${isActive('/')}`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/articles"
+            className={`block text-base font-medium text-black ${isActive('/articles')}`}
+          >
+            Articles
+          </Link>
+        </div>
+        <div className="border-t border-gray-200 px-4 py-3 space-y-3">
+          {user ? (
+            <>
+              <span className="block text-sm text-black">
+                Welcome, {user.username} ({user.role})
+              </span>
+              <Link
+                href="/profile"
+                className={`block text-base font-medium text-black ${isActive('/profile')}`}
+              >
+                Profile
+              </Link>
+              {user.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className={`block text-base font-medium text-black ${isActive('/admin')}`}
+                >
+                  Admin
+                </Link>
+              )}
+              {(user.role === 'admin' || user.role === 'editor') && (
+                <Link
+                  href="/editor"
+                  className={`block text-base font-medium text-black ${isActive('/editor')}`}
+                >
+                  Editor
+                </Link>
+              )}
+              <Link
+                href="/editor"
+                className="inline-flex w-full items-center justify-center text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+              >
+                Add Article
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left text-base font-medium text-red-600 hover:text-red-800"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="block text-base font-medium text-black hover:text-blue-700"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex w-full items-center justify-center text-base font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
