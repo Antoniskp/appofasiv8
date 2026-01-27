@@ -466,6 +466,34 @@ pm2 save
 # sudo nginx -t && sudo systemctl reload nginx
 ```
 
+Problemsolving
+
+```bash
+
+# Fix the Duplicate PM2 Frontend Process
+# Stop all running 'newsapp-frontend' processes
+pm2 stop newsapp-frontend
+
+# Delete all 'newsapp-frontend' processes
+pm2 delete newsapp-frontend
+
+# Restart the frontend with a clean configuration
+pm2 start npm --name newsapp-frontend -- run frontend:start
+
+pm2 status
+# Test Nginx configuration syntax
+sudo nginx -t
+
+# If no errors, reload Nginx
+sudo systemctl reload nginx
+
+# Clean Stale PM2 State (if Issues Persist)
+pm2 unstartup
+pm2 kill
+pm2 startup
+pm2 save
+```
+
 **For upgrading from old single-process deployment:**
 
 ```bash
