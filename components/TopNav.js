@@ -36,6 +36,18 @@ export default function TopNav() {
               >
                 Articles
               </Link>
+              <Link
+                href="/contact"
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-950 ${isActive('/contact')}`}
+              >
+                Contact
+              </Link>
+              <Link
+                href="/rules"
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-950 ${isActive('/rules')}`}
+              >
+                Rules
+              </Link>
             </div>
           </div>
           <div className="flex items-center">
