@@ -5,7 +5,7 @@ const articleController = {
   // Create a new article
   createArticle: async (req, res) => {
     try {
-      const { title, content, summary, category, status, isNews } = req.body;
+      const { title, content, summary, category, status, isNews, country, jurisdiction, municipality } = req.body;
 
       // Validate required fields
       if (!title || !content) {
@@ -21,6 +21,9 @@ const articleController = {
         content,
         summary,
         category,
+        country,
+        jurisdiction,
+        municipality,
         status: status || 'draft',
         authorId: req.user.id,
         publishedAt: status === 'published' ? new Date() : null,
@@ -54,7 +57,7 @@ const articleController = {
   // Get all articles
   getAllArticles: async (req, res) => {
     try {
-      const { status, category, page = 1, limit = 10 } = req.query;
+      const { status, category, country, jurisdiction, municipality, page = 1, limit = 10 } = req.query;
       
       const where = {};
       
@@ -68,6 +71,18 @@ const articleController = {
       // Filter by category
       if (category) {
         where.category = category;
+      }
+
+      if (country) {
+        where.country = country;
+      }
+
+      if (jurisdiction) {
+        where.jurisdiction = jurisdiction;
+      }
+
+      if (municipality) {
+        where.municipality = municipality;
       }
 
       const offset = (page - 1) * limit;
@@ -152,7 +167,7 @@ const articleController = {
   updateArticle: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, content, summary, category, status, isNews } = req.body;
+      const { title, content, summary, category, status, isNews, country, jurisdiction, municipality } = req.body;
 
       const article = await Article.findByPk(id);
 
@@ -176,6 +191,9 @@ const articleController = {
       if (content) article.content = content;
       if (summary !== undefined) article.summary = summary;
       if (category !== undefined) article.category = category;
+      if (country !== undefined) article.country = country;
+      if (jurisdiction !== undefined) article.jurisdiction = jurisdiction;
+      if (municipality !== undefined) article.municipality = municipality;
       if (status) {
         article.status = status;
         if (status === 'published' && !article.publishedAt) {

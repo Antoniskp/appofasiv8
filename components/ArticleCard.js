@@ -30,6 +30,16 @@ export default function ArticleCard({ article, variant = 'grid' }) {
               <span>By {article.User?.username || 'Unknown'}</span>
               <span>•</span>
               <span>{new Date(article.createdAt).toLocaleDateString()}</span>
+              {(article.country || article.jurisdiction || article.municipality) && (
+                <>
+                  <span>•</span>
+                  <span>
+                    {[article.municipality, article.jurisdiction, article.country]
+                      .filter(Boolean)
+                      .join(', ')}
+                  </span>
+                </>
+              )}
               {article.status !== 'published' && (
                 <>
                   <span>•</span>
@@ -60,8 +70,15 @@ export default function ArticleCard({ article, variant = 'grid' }) {
           <p className="body-copy mb-4 line-clamp-3">
             {article.summary || article.content?.substring(0, 150) + '...'}
           </p>
-          <div className="flex justify-between items-center text-sm text-gray-500">
+          <div className="flex flex-wrap justify-between items-center text-sm text-gray-500 gap-2">
             <span>By {article.User?.username || 'Unknown'}</span>
+            {(article.country || article.jurisdiction || article.municipality) && (
+              <span>
+                {[article.municipality, article.jurisdiction, article.country]
+                  .filter(Boolean)
+                  .join(', ')}
+              </span>
+            )}
             <span>{new Date(article.createdAt).toLocaleDateString()}</span>
           </div>
           <Link

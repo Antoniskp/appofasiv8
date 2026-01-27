@@ -16,6 +16,9 @@ export default function ArticlesPage() {
   const [filters, setFilters] = useState({
     status: 'published',
     category: '',
+    country: '',
+    jurisdiction: '',
+    municipality: '',
   });
 
   useEffect(() => {
@@ -92,6 +95,50 @@ export default function ArticlesPage() {
                 <option value="draft">Draft</option>
                 <option value="archived">Archived</option>
               </select>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                Country
+              </label>
+              <input
+                type="text"
+                id="country"
+                name="country"
+                value={filters.country}
+                onChange={handleFilterChange}
+                placeholder="Filter by country..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700 mb-2">
+                Jurisdiction
+              </label>
+              <input
+                type="text"
+                id="jurisdiction"
+                name="jurisdiction"
+                value={filters.jurisdiction}
+                onChange={handleFilterChange}
+                placeholder="Filter by jurisdiction..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="municipality" className="block text-sm font-medium text-gray-700 mb-2">
+                Municipality
+              </label>
+              <input
+                type="text"
+                id="municipality"
+                name="municipality"
+                value={filters.municipality}
+                onChange={handleFilterChange}
+                placeholder="Filter by municipality..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
           </div>
         </div>

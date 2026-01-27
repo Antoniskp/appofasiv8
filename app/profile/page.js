@@ -11,6 +11,9 @@ function ProfilePageContent() {
     username: '',
     firstName: '',
     lastName: '',
+    country: '',
+    jurisdiction: '',
+    municipality: '',
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -28,11 +31,14 @@ function ProfilePageContent() {
       try {
         const response = await authAPI.getProfile();
         if (response.success) {
-          const { username, firstName, lastName } = response.data.user;
+          const { username, firstName, lastName, country, jurisdiction, municipality } = response.data.user;
           setProfileData({
             username: username || '',
             firstName: firstName || '',
             lastName: lastName || '',
+            country: country || '',
+            jurisdiction: jurisdiction || '',
+            municipality: municipality || '',
           });
         }
       } catch (error) {
@@ -175,6 +181,47 @@ function ProfilePageContent() {
                   name="lastName"
                   type="text"
                   value={profileData.lastName}
+                  onChange={handleProfileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                  Country
+                </label>
+                <input
+                  id="country"
+                  name="country"
+                  type="text"
+                  value={profileData.country}
+                  onChange={handleProfileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700 mb-1">
+                  Jurisdiction
+                </label>
+                <input
+                  id="jurisdiction"
+                  name="jurisdiction"
+                  type="text"
+                  value={profileData.jurisdiction}
+                  onChange={handleProfileChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="municipality" className="block text-sm font-medium text-gray-700 mb-1">
+                  Municipality
+                </label>
+                <input
+                  id="municipality"
+                  name="municipality"
+                  type="text"
+                  value={profileData.municipality}
                   onChange={handleProfileChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
                 />

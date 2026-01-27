@@ -18,6 +18,9 @@ function EditorDashboardContent() {
     content: '',
     summary: '',
     category: '',
+    country: '',
+    jurisdiction: '',
+    municipality: '',
     status: 'draft',
     isNews: false,
   });
@@ -62,6 +65,9 @@ function EditorDashboardContent() {
           content: '',
           summary: '',
           category: '',
+          country: '',
+          jurisdiction: '',
+          municipality: '',
           status: 'draft',
           isNews: false,
         });
@@ -162,7 +168,7 @@ function EditorDashboardContent() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
                     Category
@@ -179,21 +185,67 @@ function EditorDashboardContent() {
                 </div>
 
                 <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                    Status *
+                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                    Country
                   </label>
-                  <select
-                    id="status"
-                    name="status"
-                    value={formData.status}
+                  <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    value={formData.country}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="archived">Archived</option>
-                  </select>
+                    placeholder="Country"
+                  />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700 mb-1">
+                    Jurisdiction
+                  </label>
+                  <input
+                    type="text"
+                    id="jurisdiction"
+                    name="jurisdiction"
+                    value={formData.jurisdiction}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Jurisdiction"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="municipality" className="block text-sm font-medium text-gray-700 mb-1">
+                    Municipality
+                  </label>
+                  <input
+                    type="text"
+                    id="municipality"
+                    name="municipality"
+                    value={formData.municipality}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Municipality"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                  Status *
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                  <option value="archived">Archived</option>
+                </select>
               </div>
 
               <div className="flex items-center">
@@ -249,6 +301,9 @@ function EditorDashboardContent() {
               {articles.slice(0, 10).map((article) => {
                 const canEdit = user.role === 'admin' || user.role === 'editor' || user.id === article.authorId;
                 const canDelete = user.role === 'admin' || user.id === article.authorId;
+                const locationLabel = [article.municipality, article.jurisdiction, article.country]
+                  .filter(Boolean)
+                  .join(', ');
                 
                 return (
                   <div key={article.id} className="p-6 hover:bg-gray-50">
@@ -280,6 +335,11 @@ function EditorDashboardContent() {
                           {article.category && (
                             <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
                               {article.category}
+                            </span>
+                          )}
+                          {locationLabel && (
+                            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded">
+                              {locationLabel}
                             </span>
                           )}
                           <span>By {article.User?.username || 'Unknown'}</span>

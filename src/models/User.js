@@ -40,6 +40,18 @@ const User = sequelize.define('User', {
   lastName: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  country: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  jurisdiction: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  municipality: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   timestamps: true,

@@ -101,6 +101,22 @@ export default function ArticleDetailPage() {
               <div>
                 <span>Published: {new Date(article.createdAt).toLocaleDateString()}</span>
               </div>
+              {(article.country || article.jurisdiction || article.municipality) && (
+                <>
+                  <span>•</span>
+                  <div>
+                    <span>
+                      {[
+                        article.municipality,
+                        article.jurisdiction,
+                        article.country
+                      ]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </span>
+                  </div>
+                </>
+              )}
               {article.updatedAt !== article.createdAt && (
                 <>
                   <span>•</span>

@@ -40,13 +40,17 @@ describe('News Application Integration Tests', () => {
           password: 'admin123',
           role: 'admin',
           firstName: 'Test',
-          lastName: 'Admin'
+          lastName: 'Admin',
+          country: 'Greece',
+          jurisdiction: 'Attica',
+          municipality: 'Athens'
         });
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
       expect(response.body.data.token).toBeDefined();
       expect(response.body.data.user.role).toBe('admin');
+      expect(response.body.data.user.country).toBe('Greece');
       adminToken = response.body.data.token;
     });
 
@@ -195,12 +199,16 @@ describe('News Application Integration Tests', () => {
           content: 'This is a test article content that is long enough to pass validation.',
           summary: 'Test summary',
           category: 'Technology',
-          status: 'published'
+          status: 'published',
+          country: 'Greece',
+          jurisdiction: 'Attica',
+          municipality: 'Athens'
         });
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
       expect(response.body.data.article.title).toBe('Test Article');
+      expect(response.body.data.article.municipality).toBe('Athens');
       testArticleId = response.body.data.article.id;
     });
 
@@ -246,6 +254,17 @@ describe('News Application Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.article.title).toBe('Updated Test Article');
+    });
+
+    test('should filter articles by location', async () => {
+      const response = await request(app)
+        .get('/api/articles?country=Greece&jurisdiction=Attica&municipality=Athens');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data.articles)).toBe(true);
+      expect(response.body.data.articles.length).toBeGreaterThan(0);
+      expect(response.body.data.articles[0].country).toBe('Greece');
     });
 
     test('should update article as editor (different user)', async () => {

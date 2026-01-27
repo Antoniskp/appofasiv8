@@ -46,6 +46,18 @@ const Article = sequelize.define('Article', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  country: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  jurisdiction: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  municipality: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   isNews: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,

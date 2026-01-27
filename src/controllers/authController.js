@@ -7,7 +7,7 @@ const authController = {
   // Register a new user
   register: async (req, res) => {
     try {
-      const { username, email, password, role, firstName, lastName } = req.body;
+      const { username, email, password, role, firstName, lastName, country, jurisdiction, municipality } = req.body;
 
       // Validate required fields
       if (!username || !email || !password) {
@@ -38,7 +38,10 @@ const authController = {
         password,
         role: role || 'viewer',
         firstName,
-        lastName
+        lastName,
+        country,
+        jurisdiction,
+        municipality
       });
 
       // Generate JWT token
@@ -64,7 +67,10 @@ const authController = {
             email: user.email,
             role: user.role,
             firstName: user.firstName,
-            lastName: user.lastName
+            lastName: user.lastName,
+            country: user.country,
+            jurisdiction: user.jurisdiction,
+            municipality: user.municipality
           }
         }
       });
@@ -134,7 +140,10 @@ const authController = {
             email: user.email,
             role: user.role,
             firstName: user.firstName,
-            lastName: user.lastName
+            lastName: user.lastName,
+            country: user.country,
+            jurisdiction: user.jurisdiction,
+            municipality: user.municipality
           }
         }
       });
@@ -179,7 +188,7 @@ const authController = {
   // Update current user profile (excluding email)
   updateProfile: async (req, res) => {
     try {
-      const { username, firstName, lastName } = req.body;
+      const { username, firstName, lastName, country, jurisdiction, municipality } = req.body;
 
       const user = await User.findByPk(req.user.id);
 
@@ -231,6 +240,18 @@ const authController = {
 
       if (lastName !== undefined) {
         user.lastName = lastName;
+      }
+
+      if (country !== undefined) {
+        user.country = country;
+      }
+
+      if (jurisdiction !== undefined) {
+        user.jurisdiction = jurisdiction;
+      }
+
+      if (municipality !== undefined) {
+        user.municipality = municipality;
       }
 
       await user.save();
