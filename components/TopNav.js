@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/auth-context';
 import { usePathname } from 'next/navigation';
 
 export default function TopNav() {
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const pathname = usePathname();
 
   const isActive = (path) => pathname === path ? 'text-blue-600' : '';
@@ -39,7 +39,9 @@ export default function TopNav() {
             </div>
           </div>
           <div className="flex items-center">
-            {user ? (
+            {loading ? (
+              <div className="h-8 w-32" aria-hidden="true" />
+            ) : user ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-950">
                   Welcome, {user.username} ({user.role})
