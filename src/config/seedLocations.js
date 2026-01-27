@@ -72,13 +72,15 @@ async function seedLocations() {
     }
 
     const createdMunicipalities = new Set();
+    let skippedMunicipalities = 0;
     for (const municipality of greeceMunicipalities) {
       const jurisdiction = jurisdictionMap.get(municipality.periferies_name);
       if (!jurisdiction) {
+        skippedMunicipalities += 1;
         continue;
       }
 
-      const municipalityKey = `${jurisdiction.id}-${municipality.dimos_name}`;
+      const municipalityKey = `${jurisdiction.code}-${municipality.dimos_name}`;
       if (createdMunicipalities.has(municipalityKey)) {
         continue;
       }
@@ -90,11 +92,16 @@ async function seedLocations() {
         parentId: jurisdiction.id,
         metadata: {
           names: {
+            en: municipality.dimos_name,
             el: municipality.dimos_name
           },
           nomos: municipality.nomos_name
         }
       });
+    }
+
+    if (skippedMunicipalities > 0) {
+      console.warn(`Skipped ${skippedMunicipalities} municipalities without matching jurisdiction.`);
     }
 
     console.log('Location data seeded successfully!');
