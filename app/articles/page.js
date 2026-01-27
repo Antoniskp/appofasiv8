@@ -6,13 +6,9 @@ import { articleAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import EmptyState from '@/components/EmptyState';
+import { locationOptions } from '@/lib/location-options';
 
 export default function ArticlesPage() {
-  const locationOptions = {
-    countries: ['Greece', 'Italy', 'Spain', 'Portugal'],
-    jurisdictions: ['Attica', 'Lombardy', 'Catalonia', 'Lisbon'],
-    municipalities: ['Athens', 'Milan', 'Barcelona', 'Lisbon'],
-  };
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

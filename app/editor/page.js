@@ -6,15 +6,11 @@ import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { locationOptions } from '@/lib/location-options';
 
 function EditorDashboardContent() {
   const { user } = useAuth();
   const router = useRouter();
-  const locationOptions = {
-    countries: ['Greece', 'Italy', 'Spain', 'Portugal'],
-    jurisdictions: ['Attica', 'Lombardy', 'Catalonia', 'Lisbon'],
-    municipalities: ['Athens', 'Milan', 'Barcelona', 'Lisbon'],
-  };
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);

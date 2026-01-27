@@ -4,14 +4,10 @@ import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { locationOptions } from '@/lib/location-options';
 
 function ProfilePageContent() {
   const { user, updateProfile } = useAuth();
-  const locationOptions = {
-    countries: ['Greece', 'Italy', 'Spain', 'Portugal'],
-    jurisdictions: ['Attica', 'Lombardy', 'Catalonia', 'Lisbon'],
-    municipalities: ['Athens', 'Milan', 'Barcelona', 'Lisbon'],
-  };
   const [profileData, setProfileData] = useState({
     username: '',
     firstName: '',
