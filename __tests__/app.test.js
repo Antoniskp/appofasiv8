@@ -141,6 +141,48 @@ describe('News Application Integration Tests', () => {
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
     });
+
+    test('should update profile details', async () => {
+      const response = await request(app)
+        .put('/api/auth/profile')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          username: 'updatedadmin',
+          firstName: 'Updated',
+          lastName: 'Admin'
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.user.username).toBe('updatedadmin');
+      expect(response.body.data.user.firstName).toBe('Updated');
+      expect(response.body.data.user.lastName).toBe('Admin');
+    });
+
+    test('should update password with current password', async () => {
+      const response = await request(app)
+        .put('/api/auth/password')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          currentPassword: 'admin123',
+          newPassword: 'newadmin123'
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+    });
+
+    test('should login with new password', async () => {
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'admin@test.com',
+          password: 'newadmin123'
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+    });
   });
 
   describe('Article CRUD Tests', () => {
