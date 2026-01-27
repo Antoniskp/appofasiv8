@@ -96,8 +96,8 @@ const authController = {
         role: role || 'viewer',
         firstName,
         lastName,
-        avatarUrl: avatarResult.value ?? null,
-        profileColor: colorResult.value ?? null,
+        avatarUrl: avatarResult.value === undefined ? null : avatarResult.value,
+        profileColor: colorResult.value === undefined ? null : colorResult.value,
         locationId: locationId || null
       });
 

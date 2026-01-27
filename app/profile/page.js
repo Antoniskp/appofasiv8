@@ -60,6 +60,14 @@ function ProfilePageContent() {
     }));
   };
 
+  const handleColorPickerChange = (event) => {
+    const { value } = event.target;
+    setProfileData((prev) => ({
+      ...prev,
+      profileColor: value,
+    }));
+  };
+
   const handlePasswordChange = (event) => {
     const { name, value } = event.target;
     setPasswordData((prev) => ({
@@ -161,7 +169,7 @@ function ProfilePageContent() {
   }
 
   const displayName = [profileData.firstName, profileData.lastName].filter(Boolean).join(' ');
-  const avatarLabel = displayName || profileData.username || user?.email || 'User';
+  const avatarLabel = displayName || profileData.username || 'User';
   const avatarInitials = avatarLabel
     .split(' ')
     .filter(Boolean)
@@ -284,10 +292,9 @@ function ProfilePageContent() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <input
                   id="profileColorPicker"
-                  name="profileColor"
                   type="color"
                   value={colorPickerValue}
-                  onChange={handleProfileChange}
+                  onChange={handleColorPickerChange}
                   className="h-10 w-16 cursor-pointer rounded border border-gray-300"
                 />
                 <input
