@@ -58,13 +58,22 @@ const normalizeGithubUsername = (githubUsername) => {
   if (!trimmed) {
     return { value: null };
   }
-  if (!/^[A-Za-z0-9-]{1,39}$/.test(trimmed)) {
+  if (!/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$/.test(trimmed) || /--/.test(trimmed)) {
     return { error: 'GitHub username must be a valid GitHub handle.' };
   }
   return { value: trimmed };
 };
 
 const githubStateStore = new Map();
+
+const cleanupGithubStates = () => {
+  const now = Date.now();
+  for (const [key, expiresAt] of githubStateStore.entries()) {
+    if (expiresAt < now) {
+      githubStateStore.delete(key);
+    }
+  }
+};
 
 const getGithubRedirectUri = () => {
   if (process.env.GITHUB_REDIRECT_URI) {
@@ -75,6 +84,7 @@ const getGithubRedirectUri = () => {
 };
 
 const createGithubState = () => {
+  cleanupGithubStates();
   const state = crypto.randomBytes(16).toString('hex');
   githubStateStore.set(state, Date.now() + 10 * 60 * 1000);
   return state;
@@ -84,6 +94,7 @@ const consumeGithubState = (state) => {
   if (!state) {
     return false;
   }
+  cleanupGithubStates();
   const expiresAt = githubStateStore.get(state);
   if (!expiresAt || expiresAt < Date.now()) {
     githubStateStore.delete(state);
@@ -107,13 +118,16 @@ const createTokenPayload = (user) => ({
   role: user.role
 });
 
-const createAuthToken = (user) => (
-  jwt.sign(
+const createAuthToken = (user) => {
+  if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET must be set in production environment');
+  }
+  return jwt.sign(
     createTokenPayload(user),
     process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
     { expiresIn: '24h' }
-  )
-);
+  );
+};
 
 const buildGithubAuthUrl = (state) => {
   const params = new URLSearchParams({
@@ -126,12 +140,15 @@ const buildGithubAuthUrl = (state) => {
 };
 
 const fetchGithubAccessToken = async (code) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
   const response = await fetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     },
+    signal: controller.signal,
     body: JSON.stringify({
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,
@@ -139,6 +156,7 @@ const fetchGithubAccessToken = async (code) => {
       redirect_uri: getGithubRedirectUri()
     })
   });
+  clearTimeout(timeout);
   const data = await response.json();
   if (!response.ok || data.error) {
     throw new Error(data.error_description || 'Unable to fetch GitHub access token.');
@@ -147,14 +165,18 @@ const fetchGithubAccessToken = async (code) => {
 };
 
 const fetchGithubProfile = async (token) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
   const response = await fetch('https://api.github.com/user', {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
       'User-Agent': 'news-app'
-    }
+    },
+    signal: controller.signal
   });
+  clearTimeout(timeout);
   if (!response.ok) {
     throw new Error('Unable to fetch GitHub profile.');
   }
@@ -162,14 +184,18 @@ const fetchGithubProfile = async (token) => {
 };
 
 const fetchGithubEmails = async (token) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
   const response = await fetch('https://api.github.com/user/emails', {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
       'User-Agent': 'news-app'
-    }
+    },
+    signal: controller.signal
   });
+  clearTimeout(timeout);
   if (!response.ok) {
     return [];
   }
@@ -220,13 +246,15 @@ const ensureUniqueUsername = async (baseUsername) => {
   const fallback = trimmed && trimmed.length >= 3 ? trimmed : 'githubuser';
   let candidate = fallback.slice(0, 50);
   let suffix = 0;
+  let randomSuffix = null;
 
   while (await User.findOne({ where: { username: candidate } })) {
     suffix += 1;
     const suffixText = String(suffix);
     candidate = `${fallback.slice(0, 50 - suffixText.length)}${suffixText}`;
-    if (suffix > 50) {
-      throw new Error('Unable to create a unique username for this GitHub account.');
+    if (suffix >= 6) {
+      randomSuffix = randomSuffix || crypto.randomBytes(3).toString('hex');
+      candidate = `${fallback.slice(0, 50 - randomSuffix.length)}${randomSuffix}`;
     }
   }
 
@@ -687,12 +715,12 @@ const authController = {
         });
       }
 
-      if (!githubPayload.githubId) {
-        return res.status(400).json({
-          success: false,
-          message: 'GitHub account information is incomplete.'
-        });
-      }
+  if (!githubPayload.githubId) {
+    return res.status(400).json({
+      success: false,
+      message: 'GitHub account information is incomplete (missing GitHub id).'
+    });
+  }
 
       const existingGithubUser = await User.findOne({ where: { githubId: githubPayload.githubId } });
 
@@ -746,38 +774,6 @@ const authController = {
         });
       }
 
-      if (primaryEmail) {
-        const existingEmailUser = await User.findOne({ where: { email: primaryEmail } });
-        if (existingEmailUser) {
-          if (existingEmailUser.githubId && existingEmailUser.githubId !== githubPayload.githubId) {
-            return res.status(400).json({
-              success: false,
-              message: 'This user already has a different GitHub account connected.'
-            });
-          }
-
-          existingEmailUser.githubId = githubPayload.githubId;
-          existingEmailUser.githubUsername = githubPayload.githubUsername;
-          existingEmailUser.githubProfileUrl = githubPayload.githubProfileUrl;
-          existingEmailUser.githubAvatarUrl = githubPayload.githubAvatarUrl;
-          existingEmailUser.githubEmail = githubPayload.githubEmail;
-          applyGithubProfileDefaults(existingEmailUser, githubPayload);
-
-          await existingEmailUser.save();
-
-          const token = createAuthToken(existingEmailUser);
-
-          return res.status(200).json({
-            success: true,
-            message: 'GitHub account connected successfully.',
-            data: {
-              token,
-              user: serializeUser(existingEmailUser)
-            }
-          });
-        }
-      }
-
       const usernameBase = githubPayload.githubUsername || primaryEmail?.split('@')[0];
       const username = await ensureUniqueUsername(usernameBase || 'githubuser');
       const email = primaryEmail || `github-${githubPayload.githubId}@users.noreply.github.com`;
@@ -785,7 +781,7 @@ const authController = {
       const user = await User.create({
         username,
         email,
-        password: crypto.randomBytes(32).toString('hex'),
+        password: `oauth:${crypto.randomBytes(32).toString('hex')}`,
         role: 'viewer',
         firstName: githubPayload.firstName,
         lastName: githubPayload.lastName,

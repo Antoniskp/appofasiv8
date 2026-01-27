@@ -211,14 +211,16 @@ Unauthorized users are automatically redirected to the login page.
 
 ## Environment Variables
 
-### Frontend Variables
-- `NEXT_PUBLIC_API_URL`: Backend API URL (default: http://localhost:3000)
-- `NEXT_PUBLIC_APP_URL`: Frontend base URL for OAuth redirects (default: http://localhost:3001)
+### Backend Variables
 - `GITHUB_CLIENT_ID`: GitHub OAuth app client ID
 - `GITHUB_CLIENT_SECRET`: GitHub OAuth app client secret
 - `GITHUB_REDIRECT_URI`: Optional override for OAuth callback URL
 
-The `NEXT_PUBLIC_` prefix makes the variable accessible in the browser.
+### Frontend Variables
+- `NEXT_PUBLIC_API_URL`: Backend API URL (default: http://localhost:3000)
+- `NEXT_PUBLIC_APP_URL`: Frontend base URL for OAuth redirects (default: http://localhost:3001)
+
+The `NEXT_PUBLIC_` prefix makes the variable accessible in the browser. Keep OAuth secrets on the server only.
 
 ## API Documentation
 
@@ -543,29 +545,3 @@ ISC
 ## Author
 
 Antoniskp
-#### GitHub OAuth Start
-```http
-GET /api/auth/github
-```
-
-Response:
-```json
-{
-  "success": true,
-  "data": {
-    "url": "https://github.com/login/oauth/authorize?...",
-    "state": "csrf_state"
-  }
-}
-```
-
-#### GitHub OAuth Callback
-```http
-POST /api/auth/github/callback
-Content-Type: application/json
-
-{
-  "code": "oauth_code",
-  "state": "csrf_state"
-}
-```

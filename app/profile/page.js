@@ -389,7 +389,7 @@ function ProfilePageContent() {
                     disabled={githubLoading}
                     className="inline-flex items-center justify-center rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:opacity-50"
                   >
-                    {githubLoading ? 'Updating...' : 'Refresh GitHub data'}
+                    {githubLoading ? 'Updating...' : 'Re-sync GitHub account'}
                   </button>
                 </div>
               ) : (
