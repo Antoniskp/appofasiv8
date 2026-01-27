@@ -502,11 +502,6 @@ const greeceMunicipalities = [
   },
   {
     "periferies_name": "Θεσσαλίας",
-    "nomos_name": "Καρδίτσας",
-    "dimos_name": "Παλαμά"
-  },
-  {
-    "periferies_name": "Θεσσαλίας",
     "nomos_name": "Λάρισας",
     "dimos_name": "Αγιάς"
   },
@@ -933,12 +928,7 @@ const greeceMunicipalities = [
   {
     "periferies_name": "Αττικής",
     "nomos_name": "Αττικής-Δυτικού Τομέα Αθηνών",
-    "dimos_name": "ιλίου"
-  },
-  {
-    "periferies_name": "Αττικής",
-    "nomos_name": "Αττικής-Δυτικού Τομέα Αθηνών",
-    "dimos_name": "Περιστερίου"
+    "dimos_name": "Ιλίου"
   },
   {
     "periferies_name": "Αττικής",
