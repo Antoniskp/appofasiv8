@@ -151,7 +151,9 @@ describe('News Application Integration Tests', () => {
         .send({
           username: 'updatedadmin',
           firstName: 'Updated',
-          lastName: 'Admin'
+          lastName: 'Admin',
+          avatarUrl: 'https://example.com/avatar.png',
+          profileColor: '#1d4ed8'
         });
 
       expect(response.status).toBe(200);
@@ -159,6 +161,8 @@ describe('News Application Integration Tests', () => {
       expect(response.body.data.user.username).toBe('updatedadmin');
       expect(response.body.data.user.firstName).toBe('Updated');
       expect(response.body.data.user.lastName).toBe('Admin');
+      expect(response.body.data.user.avatarUrl).toBe('https://example.com/avatar.png');
+      expect(response.body.data.user.profileColor).toBe('#1d4ed8');
     });
 
     test('should update password with current password', async () => {

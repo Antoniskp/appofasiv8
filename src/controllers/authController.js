@@ -3,11 +3,53 @@ const { Op } = require('sequelize');
 const { User, Location } = require('../models');
 require('dotenv').config();
 
+const normalizeAvatarUrl = (avatarUrl) => {
+  if (avatarUrl === undefined) {
+    return { value: undefined };
+  }
+  if (avatarUrl === null) {
+    return { value: null };
+  }
+  if (typeof avatarUrl !== 'string') {
+    return { error: 'Avatar URL must be a string.' };
+  }
+  const trimmed = avatarUrl.trim();
+  if (!trimmed) {
+    return { value: null };
+  }
+  if (trimmed.length > 2048) {
+    return { error: 'Avatar URL is too long.' };
+  }
+  return { value: trimmed };
+};
+
+const normalizeProfileColor = (profileColor) => {
+  if (profileColor === undefined) {
+    return { value: undefined };
+  }
+  if (profileColor === null) {
+    return { value: null };
+  }
+  if (typeof profileColor !== 'string') {
+    return { error: 'Profile color must be a string.' };
+  }
+  const trimmed = profileColor.trim();
+  if (!trimmed) {
+    return { value: null };
+  }
+  const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+  const hex = normalized.slice(1);
+  if (!/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex)) {
+    return { error: 'Profile color must be a valid hex color.' };
+  }
+  return { value: `#${hex.toLowerCase()}` };
+};
+
 const authController = {
   // Register a new user
   register: async (req, res) => {
     try {
-      const { username, email, password, role, firstName, lastName, locationId } = req.body;
+      const { username, email, password, role, firstName, lastName, locationId, avatarUrl, profileColor } = req.body;
 
       // Validate required fields
       if (!username || !email || !password) {
@@ -31,6 +73,22 @@ const authController = {
         });
       }
 
+      const avatarResult = normalizeAvatarUrl(avatarUrl);
+      if (avatarResult.error) {
+        return res.status(400).json({
+          success: false,
+          message: avatarResult.error
+        });
+      }
+
+      const colorResult = normalizeProfileColor(profileColor);
+      if (colorResult.error) {
+        return res.status(400).json({
+          success: false,
+          message: colorResult.error
+        });
+      }
+
       // Create new user
       const user = await User.create({
         username,
@@ -39,6 +97,8 @@ const authController = {
         role: role || 'viewer',
         firstName,
         lastName,
+        avatarUrl: avatarResult.value ?? null,
+        profileColor: colorResult.value ?? null,
         locationId: locationId || null
       });
 
@@ -65,7 +125,9 @@ const authController = {
             email: user.email,
             role: user.role,
             firstName: user.firstName,
-            lastName: user.lastName
+            lastName: user.lastName,
+            avatarUrl: user.avatarUrl,
+            profileColor: user.profileColor
           }
         }
       });
@@ -135,7 +197,9 @@ const authController = {
             email: user.email,
             role: user.role,
             firstName: user.firstName,
-            lastName: user.lastName
+            lastName: user.lastName,
+            avatarUrl: user.avatarUrl,
+            profileColor: user.profileColor
           }
         }
       });
@@ -185,7 +249,7 @@ const authController = {
   // Update current user profile (excluding email)
   updateProfile: async (req, res) => {
     try {
-      const { username, firstName, lastName, locationId } = req.body;
+      const { username, firstName, lastName, locationId, avatarUrl, profileColor } = req.body;
 
       const user = await User.findByPk(req.user.id);
 
@@ -237,6 +301,28 @@ const authController = {
 
       if (lastName !== undefined) {
         user.lastName = lastName;
+      }
+
+      const avatarResult = normalizeAvatarUrl(avatarUrl);
+      if (avatarResult.error) {
+        return res.status(400).json({
+          success: false,
+          message: avatarResult.error
+        });
+      }
+      if (avatarResult.value !== undefined) {
+        user.avatarUrl = avatarResult.value;
+      }
+
+      const colorResult = normalizeProfileColor(profileColor);
+      if (colorResult.error) {
+        return res.status(400).json({
+          success: false,
+          message: colorResult.error
+        });
+      }
+      if (colorResult.value !== undefined) {
+        user.profileColor = colorResult.value;
       }
 
       if (locationId !== undefined) {

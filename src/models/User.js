@@ -41,6 +41,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  avatarUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  profileColor: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   locationId: {
     type: DataTypes.INTEGER,
     allowNull: true,

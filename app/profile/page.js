@@ -12,7 +12,9 @@ function ProfilePageContent() {
     username: '',
     firstName: '',
     lastName: '',
-    locationId: null
+    locationId: null,
+    avatarUrl: '',
+    profileColor: ''
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -30,12 +32,14 @@ function ProfilePageContent() {
       try {
         const response = await authAPI.getProfile();
         if (response.success) {
-          const { username, firstName, lastName, locationId } = response.data.user;
+          const { username, firstName, lastName, locationId, avatarUrl, profileColor } = response.data.user;
           setProfileData({
             username: username || '',
             firstName: firstName || '',
             lastName: lastName || '',
-            locationId: locationId || null
+            locationId: locationId || null,
+            avatarUrl: avatarUrl || '',
+            profileColor: profileColor || ''
           });
         }
       } catch (error) {
@@ -56,6 +60,14 @@ function ProfilePageContent() {
     }));
   };
 
+  const handleColorChange = (event) => {
+    const { value } = event.target;
+    setProfileData((prev) => ({
+      ...prev,
+      profileColor: value,
+    }));
+  };
+
   const handlePasswordChange = (event) => {
     const { name, value } = event.target;
     setPasswordData((prev) => ({
@@ -70,7 +82,18 @@ function ProfilePageContent() {
     setProfileMessage('');
 
     try {
-      await updateProfile(profileData);
+      const response = await updateProfile(profileData);
+      const updatedUser = response?.data?.user;
+      if (updatedUser) {
+        setProfileData({
+          username: updatedUser.username || '',
+          firstName: updatedUser.firstName || '',
+          lastName: updatedUser.lastName || '',
+          locationId: updatedUser.locationId || null,
+          avatarUrl: updatedUser.avatarUrl || '',
+          profileColor: updatedUser.profileColor || ''
+        });
+      }
       setProfileMessage('Profile updated successfully.');
     } catch (error) {
       setProfileError(error.message || 'Failed to update profile.');
@@ -121,12 +144,51 @@ function ProfilePageContent() {
     );
   }
 
+  const displayName = [profileData.firstName, profileData.lastName].filter(Boolean).join(' ');
+  const avatarLabel = displayName || profileData.username || user?.email || 'User';
+  const avatarInitials = avatarLabel
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
+  const avatarColor = profileData.profileColor || '#94a3b8';
+  const colorPickerValue = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(avatarColor)
+    ? avatarColor
+    : '#94a3b8';
+
   return (
     <div className="bg-gray-50 min-h-screen py-10">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-          <p className="text-sm text-gray-600">Signed in as {user?.email}</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div
+                className="h-16 w-16 rounded-full border border-gray-200 shadow-sm overflow-hidden flex items-center justify-center"
+                style={{ backgroundColor: avatarColor }}
+              >
+                {profileData.avatarUrl ? (
+                  <img
+                    src={profileData.avatarUrl}
+                    alt={`${avatarLabel} avatar`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-lg font-semibold text-white">
+                    {avatarInitials || 'U'}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+                {displayName && <p className="text-sm text-gray-600">{displayName}</p>}
+                <p className="text-sm text-gray-500">Signed in as {user?.email}</p>
+              </div>
+            </div>
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+              Role: {user?.role}
+            </span>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -182,6 +244,49 @@ function ProfilePageContent() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
+            </div>
+            <div>
+              <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                Avatar URL
+              </label>
+              <input
+                id="avatarUrl"
+                name="avatarUrl"
+                type="url"
+                value={profileData.avatarUrl}
+                onChange={handleProfileChange}
+                placeholder="https://example.com/avatar.png"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Add a photo URL to personalize your profile (optional).
+              </p>
+            </div>
+            <div>
+              <label htmlFor="profileColor" className="block text-sm font-medium text-gray-700 mb-1">
+                Profile color
+              </label>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <input
+                  id="profileColorPicker"
+                  type="color"
+                  value={colorPickerValue}
+                  onChange={handleColorChange}
+                  className="h-10 w-16 cursor-pointer rounded border border-gray-300"
+                />
+                <input
+                  id="profileColor"
+                  name="profileColor"
+                  type="text"
+                  value={profileData.profileColor}
+                  onChange={handleProfileChange}
+                  placeholder="#94a3b8"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Pick an accent color to show with your avatar (optional).
+              </p>
             </div>
 
             {/* Location Selection */}
