@@ -42,9 +42,9 @@ export default function TopNav() {
             {loading ? (
               <>
                 <span className="sr-only">Loading user menu</span>
-                <div className="flex space-x-4 invisible" aria-hidden="true">
-                  <span className="text-sm font-medium text-gray-950">Login</span>
-                  <span className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded">
+                <div className="flex space-x-4 opacity-0" aria-hidden="true">
+                  <span className="text-sm font-medium text-gray-950 hover:text-blue-700">Login</span>
+                  <span className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                     Register
                   </span>
                 </div>
