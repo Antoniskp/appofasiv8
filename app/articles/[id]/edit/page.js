@@ -41,6 +41,8 @@ function EditArticleContent() {
             locationId: article.locationId || null,
             useUserLocation: false
           });
+        } else {
+          setLoadError(response.message || 'Failed to load article.');
         }
       } catch (err) {
         setLoadError(err.message || 'Failed to load article.');
@@ -72,6 +74,8 @@ function EditArticleContent() {
       if (response.success) {
         alert('Article updated successfully!');
         router.push(`/articles/${params.id}`);
+      } else {
+        setSubmitError(response.message || 'Failed to update article.');
       }
     } catch (err) {
       setSubmitError(err.message || 'Failed to update article.');
