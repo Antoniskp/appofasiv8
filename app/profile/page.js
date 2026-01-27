@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LocationSelector from '@/components/LocationSelector';
 import { authAPI } from '@/lib/api';
@@ -60,14 +60,6 @@ function ProfilePageContent() {
     }));
   };
 
-  const handleColorChange = (event) => {
-    const { value } = event.target;
-    setProfileData((prev) => ({
-      ...prev,
-      profileColor: value,
-    }));
-  };
-
   const handlePasswordChange = (event) => {
     const { name, value } = event.target;
     setPasswordData((prev) => ({
@@ -76,13 +68,37 @@ function ProfilePageContent() {
     }));
   };
 
+  const normalizeProfileColorInput = useMemo(
+    () => (value) => {
+      const trimmed = value?.trim();
+      if (!trimmed) {
+        return '';
+      }
+      const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(normalized)) {
+        return null;
+      }
+      return normalized.toLowerCase();
+    },
+    []
+  );
+
   const handleProfileSubmit = async (event) => {
     event.preventDefault();
     setProfileError('');
     setProfileMessage('');
 
+    const normalizedProfileColor = normalizeProfileColorInput(profileData.profileColor);
+    if (normalizedProfileColor === null) {
+      setProfileError('Profile color must be a valid hex value.');
+      return;
+    }
+
     try {
-      const response = await updateProfile(profileData);
+      const response = await updateProfile({
+        ...profileData,
+        profileColor: normalizedProfileColor
+      });
       const updatedUser = response?.data?.user;
       if (updatedUser) {
         setProfileData({
@@ -152,10 +168,9 @@ function ProfilePageContent() {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join('');
-  const avatarColor = profileData.profileColor || '#94a3b8';
-  const colorPickerValue = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(avatarColor)
-    ? avatarColor
-    : '#94a3b8';
+  const normalizedProfileColor = normalizeProfileColorInput(profileData.profileColor);
+  const avatarColor = normalizedProfileColor || '#94a3b8';
+  const colorPickerValue = normalizedProfileColor || '#94a3b8';
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
@@ -269,9 +284,10 @@ function ProfilePageContent() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <input
                   id="profileColorPicker"
+                  name="profileColor"
                   type="color"
                   value={colorPickerValue}
-                  onChange={handleColorChange}
+                  onChange={handleProfileChange}
                   className="h-10 w-16 cursor-pointer rounded border border-gray-300"
                 />
                 <input

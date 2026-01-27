@@ -38,11 +38,10 @@ const normalizeProfileColor = (profileColor) => {
     return { value: null };
   }
   const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
-  const hex = normalized.slice(1);
-  if (!/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex)) {
+  if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(normalized)) {
     return { error: 'Profile color must be a valid hex color.' };
   }
-  return { value: `#${hex.toLowerCase()}` };
+  return { value: normalized.toLowerCase() };
 };
 
 const authController = {
