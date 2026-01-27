@@ -9,6 +9,7 @@ A professional news application with JWT authentication, PostgreSQL database, ro
 - **PostgreSQL Database**: Robust data persistence with Sequelize ORM
 - **News Management**: Complete CRUD operations for news articles
 - **News Submission & Moderation Workflow**: Users can flag articles as news; moderators/admins approve them for publication
+- **Hierarchical Location System**: Optional location tagging for users and articles with support for country, jurisdiction, and municipality levels
 - **Role-Based Access Control**: Different permissions based on user roles
 - **Modern Frontend**: Next.js 13+ with App Router, React, and Tailwind CSS
 
@@ -39,6 +40,32 @@ The application includes a comprehensive news workflow that allows users to subm
 - **newsApprovedBy**: ID of the moderator/admin who approved the news
 - Articles flagged as news but not yet approved show as "Pending News" in the dashboard
 - Only moderators and admins can approve news submissions via the `/api/articles/:id/approve-news` endpoint
+
+## Location System
+
+The application includes a hierarchical location system that allows users and articles to be tagged with geographical locations:
+
+### Location Hierarchy
+- **Country**: Top level (e.g., Greece, International)
+- **Jurisdiction**: Administrative regions within a country (e.g., Attica, Central Macedonia, Crete)
+- **Municipality**: Cities or municipalities within a jurisdiction (e.g., Athens, Thessaloniki, Heraklion)
+- **Address**: Reserved for future use (detailed addresses)
+
+### Features
+- **Optional Location for Users**: Users can optionally select a location in their profile
+- **Optional Location for Articles**: Articles can have an optional location tag
+- **Use User Location**: When creating articles, users can choose to use their profile location
+- **Hierarchical Dropdowns**: Frontend provides dependent dropdowns for easy location selection
+- **Standards-Oriented**: Location data includes ISO codes and metadata for interoperability
+- **Seeded Data**: Pre-populated with Greece and International countries, plus sample Greek regions and cities
+
+### Location Fields
+Each location record includes:
+- `name`: Human-readable name
+- `type`: Location type (country, jurisdiction, municipality, address)
+- `code`: Standard code (e.g., ISO 3166 country codes)
+- `parentId`: Reference to parent location for hierarchy
+- `metadata`: JSONB field for additional data (coordinates, multilingual names, etc.)
 
 ## Technology Stack
 
@@ -198,7 +225,8 @@ Content-Type: application/json
   "password": "securepassword",
   "role": "viewer",  // Optional: admin, editor, or viewer (default: viewer)
   "firstName": "John",  // Optional
-  "lastName": "Doe"     // Optional
+  "lastName": "Doe",     // Optional
+  "locationId": 1       // Optional: ID of a location from /api/locations
 }
 ```
 
@@ -269,7 +297,9 @@ Content-Type: application/json
   "summary": "Brief summary of the article",  // Optional
   "category": "Technology",  // Optional
   "status": "published",  // Optional: draft, published, or archived (default: draft)
-  "isNews": true  // Optional: flag article as news submission (default: false)
+  "isNews": true,  // Optional: flag article as news submission (default: false)
+  "locationId": 5,  // Optional: ID of a location from /api/locations
+  "useUserLocation": false  // Optional: if true, uses the authenticated user's location
 }
 ```
 
@@ -299,7 +329,9 @@ Content-Type: application/json
   "title": "Updated Title",
   "content": "Updated content",
   "status": "published",
-  "isNews": true  // Optional: flag/unflag as news
+  "isNews": true,  // Optional: flag/unflag as news
+  "locationId": 7,  // Optional: update location
+  "useUserLocation": false  // Optional: if true, uses the authenticated user's location
 }
 ```
 
@@ -325,6 +357,57 @@ Authorization: Bearer jwt_token_here
 
 **Requirements**: Article must have isNews set to true.
 
+### Location Endpoints
+
+#### Get All Countries
+```http
+GET /api/locations/countries
+```
+
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "locations": [
+      {
+        "id": 1,
+        "name": "Greece",
+        "code": "GR",
+        "type": "country",
+        "metadata": {
+          "iso3166": "GR",
+          "officialName": "Hellenic Republic"
+        }
+      },
+      {
+        "id": 2,
+        "name": "International",
+        "code": "INT",
+        "type": "country"
+      }
+    ]
+  }
+}
+```
+
+#### Get Jurisdictions by Country
+```http
+GET /api/locations/countries/:countryId/jurisdictions
+```
+
+#### Get Municipalities by Jurisdiction
+```http
+GET /api/locations/jurisdictions/:jurisdictionId/municipalities
+```
+
+#### Get Location by ID
+```http
+GET /api/locations/:id
+```
+
+Response includes parent and children locations in the hierarchy.
+
 ## Database Schema
 
 ### Users Table
@@ -335,6 +418,7 @@ Authorization: Bearer jwt_token_here
 - `role`: Enum (admin, moderator, editor, viewer), Default: viewer
 - `firstName`: String, Optional
 - `lastName`: String, Optional
+- `locationId`: Integer, Foreign Key to Locations, Optional
 - `createdAt`: Timestamp
 - `updatedAt`: Timestamp
 
@@ -350,6 +434,17 @@ Authorization: Bearer jwt_token_here
 - `isNews`: Boolean, Default: false (user-set flag for news submissions)
 - `newsApprovedAt`: Date, Optional (set when moderator/admin approves)
 - `newsApprovedBy`: Integer, Foreign Key to Users (moderator/admin who approved)
+- `locationId`: Integer, Foreign Key to Locations, Optional
+- `createdAt`: Timestamp
+- `updatedAt`: Timestamp
+
+### Locations Table
+- `id`: Integer, Primary Key, Auto Increment
+- `name`: String, Required (location name)
+- `type`: Enum (country, jurisdiction, municipality, address), Required
+- `code`: String, Optional (ISO codes or standard identifiers)
+- `parentId`: Integer, Foreign Key to Locations (self-referencing), Optional
+- `metadata`: JSONB, Optional (additional data like coordinates, multilingual names)
 - `createdAt`: Timestamp
 - `updatedAt`: Timestamp
 
