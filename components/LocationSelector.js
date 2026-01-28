@@ -30,7 +30,7 @@ export default function LocationSelector({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
   // Fetch countries on mount
   useEffect(() => {
@@ -41,6 +41,9 @@ export default function LocationSelector({
   const fetchCountries = async () => {
     try {
       const response = await fetch(`${apiUrl}/api/locations/countries`);
+      if (!response.ok) {
+        throw new Error('Unexpected response from server.');
+      }
       const data = await response.json();
       if (data.success) {
         setCountries(data.data.locations || []);
@@ -65,6 +68,9 @@ export default function LocationSelector({
     try {
       setLoading(true);
       const response = await fetch(`${apiUrl}/api/locations/countries/${countryId}/jurisdictions`);
+      if (!response.ok) {
+        throw new Error('Unexpected response from server.');
+      }
       const data = await response.json();
       if (data.success) {
         setJurisdictions(data.data.locations || []);
@@ -91,6 +97,9 @@ export default function LocationSelector({
     try {
       setLoading(true);
       const response = await fetch(`${apiUrl}/api/locations/jurisdictions/${jurisdictionId}/municipalities`);
+      if (!response.ok) {
+        throw new Error('Unexpected response from server.');
+      }
       const data = await response.json();
       if (data.success) {
         setMunicipalities(data.data.locations || []);
