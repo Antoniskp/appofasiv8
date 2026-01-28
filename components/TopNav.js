@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
+  ChevronDownIcon,
   PlusIcon,
+  UserCircleIcon,
   UserPlusIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/auth-context';
@@ -15,23 +17,53 @@ export default function TopNav() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const roleLabels = {
-    admin: 'Διαχειριστής',
-    editor: 'Συντάκτης',
-    moderator: 'Συντονιστής',
-    viewer: 'Αναγνώστης'
-  };
-  const roleLabel = user ? roleLabels[user.role] || user.role : '';
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+  const mobileUserMenuRef = useRef(null);
 
   const isActive = (path) => pathname === path ? 'text-blue-600' : '';
 
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsUserMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      setIsUserMenuOpen(false);
+    }
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (!isUserMenuOpen) {
+      return undefined;
+    }
+
+    const handleClickOutside = (event) => {
+      const isDesktopMenu = userMenuRef.current?.contains(event.target);
+      const isMobileMenu = mobileUserMenuRef.current?.contains(event.target);
+      if (!isDesktopMenu && !isMobileMenu) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
 
   const handleLogout = () => {
     logout();
     window.location.href = '/';
+  };
+
+  const handleUserMenuKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setIsUserMenuOpen(false);
+    }
   };
 
   return (
@@ -59,47 +91,58 @@ export default function TopNav() {
           </div>
           <div className="hidden sm:flex flex-wrap items-center gap-4">
             {user ? (
-              <>
-                <span className="text-sm text-black">
-                  Καλώς ήρθες, {user.username} ({roleLabel})
-                </span>
-                <Link
-                  href="/profile"
-                  className={`text-sm font-medium text-black ${isActive('/profile')}`}
-                >
-                  Προφίλ
-                </Link>
-                {user.role === 'admin' && (
-                  <Link
-                    href="/admin"
-                    className={`text-sm font-medium text-black ${isActive('/admin')}`}
-                  >
-                    Διαχείριση
-                  </Link>
-                )}
-                {(user.role === 'admin' || user.role === 'editor') && (
-                  <Link
-                    href="/editor"
-                    className={`text-sm font-medium text-black ${isActive('/editor')}`}
-                  >
-                    Συντάκτης
-                  </Link>
-                )}
-                <Link
-                  href="/editor"
-                  className="inline-flex items-center gap-2 text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
-                >
-                  <PlusIcon className="h-4 w-4" aria-hidden="true" />
-                  Νέο Άρθρο
-                </Link>
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-800"
+                  type="button"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  onClick={() => setIsUserMenuOpen((open) => !open)}
+                  onKeyDown={handleUserMenuKeyDown}
+                  aria-haspopup="true"
+                  aria-expanded={isUserMenuOpen}
+                  aria-controls="desktop-user-menu"
+                  id="desktop-user-menu-button"
                 >
-                  <ArrowRightOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
-                  Έξοδος
+                  Hello {user.username}
+                  <ChevronDownIcon
+                    className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
+                  />
                 </button>
-              </>
+                {isUserMenuOpen && (
+                  <div
+                    id="desktop-user-menu"
+                    role="menu"
+                    aria-labelledby="desktop-user-menu-button"
+                    onKeyDown={handleUserMenuKeyDown}
+                    className="absolute right-0 z-20 mt-2 w-52 rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+                  >
+                    <Link
+                      href="/profile"
+                      role="menuitem"
+                      className={`flex items-center gap-2 px-4 py-2 text-sm text-black hover:bg-gray-50 ${isActive('/profile')}`}
+                    >
+                      <UserCircleIcon className="h-4 w-4" aria-hidden="true" />
+                      Profile
+                    </Link>
+                    <Link
+                      href="/editor"
+                      role="menuitem"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-black hover:bg-gray-50"
+                    >
+                      <PlusIcon className="h-4 w-4" aria-hidden="true" />
+                      New Article
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
+                      Exit
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <Link
@@ -154,50 +197,59 @@ export default function TopNav() {
             Άρθρα
           </Link>
         </div>
-        <div className="border-t border-gray-200 px-4 py-3 space-y-3">
-          {user ? (
-            <>
-              <span className="block text-sm text-black">
-                Καλώς ήρθες, {user.username} ({roleLabel})
-              </span>
-              <Link
-                href="/profile"
-                className={`block text-base font-medium text-black ${isActive('/profile')}`}
-              >
-                Προφίλ
-              </Link>
-              {user.role === 'admin' && (
-                <Link
-                  href="/admin"
-                  className={`block text-base font-medium text-black ${isActive('/admin')}`}
+          <div className="border-t border-gray-200 px-4 py-3 space-y-3">
+            {user ? (
+              <div ref={mobileUserMenuRef}>
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-black shadow-sm"
+                  onClick={() => setIsUserMenuOpen((open) => !open)}
+                  onKeyDown={handleUserMenuKeyDown}
+                  aria-haspopup="true"
+                  aria-expanded={isUserMenuOpen}
+                  aria-controls="mobile-user-menu"
+                  id="mobile-user-menu-button"
                 >
-                  Διαχείριση
-                </Link>
-              )}
-              {(user.role === 'admin' || user.role === 'editor') && (
-                <Link
-                  href="/editor"
-                  className={`block text-base font-medium text-black ${isActive('/editor')}`}
+                  <span>Hello {user.username}</span>
+                  <ChevronDownIcon
+                    className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
+                  />
+                </button>
+                <div
+                  id="mobile-user-menu"
+                  role="menu"
+                  aria-labelledby="mobile-user-menu-button"
+                  onKeyDown={handleUserMenuKeyDown}
+                  className={`${isUserMenuOpen ? 'space-y-2' : 'hidden'} pt-1`}
                 >
-                  Συντάκτης
-                </Link>
-              )}
-              <Link
-                href="/editor"
-                className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
-              >
-                <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                Νέο Άρθρο
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
-              >
-                <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
-                Έξοδος
-              </button>
-            </>
-          ) : (
+                  <Link
+                    href="/profile"
+                    role="menuitem"
+                    className={`flex items-center gap-2 text-base font-medium text-black ${isActive('/profile')}`}
+                  >
+                    <UserCircleIcon className="h-5 w-5" aria-hidden="true" />
+                    Profile
+                  </Link>
+                  <Link
+                    href="/editor"
+                    role="menuitem"
+                    className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+                  >
+                    <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                    New Article
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    role="menuitem"
+                    className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
+                    Exit
+                  </button>
+                </div>
+              </div>
+            ) : (
             <>
               <Link
                 href="/login"
