@@ -58,9 +58,20 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
 
-    // Sync database models
-    await sequelize.sync({ alter: true });
-    console.log('Database models synchronized.');
+    // Check if we should run migrations or use sync
+    const useMigrations = process.env.USE_MIGRATIONS !== 'false';
+    
+    if (useMigrations) {
+      // In production or when migrations are enabled, we rely on migrations being run
+      console.log('Using migration-based schema management.');
+      console.log('Make sure to run migrations with: npx sequelize-cli db:migrate');
+    } else {
+      // Fallback to sync for development (not recommended for production)
+      console.warn('WARNING: Using sequelize.sync() - not recommended for production!');
+      console.warn('Set USE_MIGRATIONS=true and run migrations instead.');
+      await sequelize.sync({ alter: true });
+      console.log('Database models synchronized.');
+    }
 
     // Start server
     app.listen(PORT, () => {

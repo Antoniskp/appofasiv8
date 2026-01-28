@@ -143,7 +143,14 @@ GITHUB_CLIENT_SECRET=your_github_client_secret
 # GITHUB_REDIRECT_URI=http://localhost:3001/auth/github/callback
 ```
 
-5. Start the backend server:
+5. Run database migrations:
+```bash
+npm run migrate
+```
+
+This will create all necessary tables in your database. See [doc/MIGRATIONS.md](doc/MIGRATIONS.md) for more details about database migrations.
+
+6. Start the backend server:
 ```bash
 # Development mode with auto-reload
 npm run dev
