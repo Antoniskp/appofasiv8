@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
-const seedLocations = require('./config/seedLocations');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -62,9 +61,6 @@ const startServer = async () => {
     // Sync database models
     await sequelize.sync({ alter: true });
     console.log('Database models synchronized.');
-
-    // Seed initial location data
-    await seedLocations();
 
     // Start server
     app.listen(PORT, () => {
