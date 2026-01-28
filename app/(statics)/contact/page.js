@@ -12,42 +12,22 @@ export default function ContactPage() {
         <div className="card p-8">
           <div className="max-w-2xl">
             <p className="text-gray-700 mb-6">
-              Θα χαρούμε να επικοινωνήσετε μαζί μας! Αν έχετε ερωτήσεις, σχόλια ή θέλετε απλώς να πείτε ένα γεια,
-              μπορείτε να μας βρείτε μέσω των παρακάτω τρόπων.
+              Η μόνη επικοινωνία γίνεται μέσω Discord στο παρακάτω link. Αφήστε μας ένα μήνυμα ή μπείτε σε κάποιο
+              chatroom για να μιλήσουμε.
             </p>
             
             <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Email</h2>
+                <h2 className="text-xl font-semibold mb-2">Discord</h2>
                 <p className="text-gray-700">
-                  <a href="mailto:info@newsapp.com" className="text-blue-600 hover:text-blue-800">
-                    info@newsapp.com
+                  <a
+                    href="https://discord.gg/pvJftR4T98"
+                    className="text-blue-600 hover:text-blue-800"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    https://discord.gg/pvJftR4T98
                   </a>
-                </p>
-              </div>
-              
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Τηλέφωνο</h2>
-                <p className="text-gray-700">
-                  <a href="tel:+11234567890" className="text-blue-600 hover:text-blue-800">
-                    (123) 456-7890
-                  </a>
-                </p>
-              </div>
-              
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Ώρες Λειτουργίας</h2>
-                <p className="text-gray-700">
-                  Δευτέρα - Παρασκευή: 9:00 - 17:00
-                </p>
-              </div>
-              
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Διεύθυνση</h2>
-                <p className="text-gray-700">
-                  Οδός Ειδήσεων 123<br />
-                  Media City, MC 12345<br />
-                  Ηνωμένες Πολιτείες
                 </p>
               </div>
             </div>
