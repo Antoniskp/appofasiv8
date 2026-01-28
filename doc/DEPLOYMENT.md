@@ -19,7 +19,12 @@ This guide covers different deployment options for the News Application.
 
 1. **Ensure the repository is cloned**
 
-   If you have not cloned the repository yet, follow the Local Development step 1 to clone and `cd` into it.
+   If you have not cloned the repository yet, run:
+
+   ```bash
+   git clone https://github.com/Antoniskp/appofasiv8.git
+   cd appofasiv8
+   ```
 
 2. **Install dependencies**
 ```bash
