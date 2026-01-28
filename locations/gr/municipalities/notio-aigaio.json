@@ -1,0 +1,114 @@
+{
+  "subdivisionCode": "GR-L",
+  "subdivisionName": "Νότιο Αιγαίο",
+  "municipalities": [
+    {
+      "name": "Αμοργός",
+      "kallikratisCode": "8401"
+    },
+    {
+      "name": "Ανάφη",
+      "kallikratisCode": "8402"
+    },
+    {
+      "name": "Αντίπαρος",
+      "kallikratisCode": "8403"
+    },
+    {
+      "name": "Άνδρος",
+      "kallikratisCode": "8404"
+    },
+    {
+      "name": "Θήρα",
+      "kallikratisCode": "8405"
+    },
+    {
+      "name": "Ίος",
+      "kallikratisCode": "8406"
+    },
+    {
+      "name": "Κάλυμνος",
+      "kallikratisCode": "8407"
+    },
+    {
+      "name": "Κάρπαθος",
+      "kallikratisCode": "8408"
+    },
+    {
+      "name": "Κέα - Κύθνος",
+      "kallikratisCode": "8409"
+    },
+    {
+      "name": "Κω",
+      "kallikratisCode": "8410"
+    },
+    {
+      "name": "Λέρος",
+      "kallikratisCode": "8411"
+    },
+    {
+      "name": "Μήλος",
+      "kallikratisCode": "8412"
+    },
+    {
+      "name": "Μύκονος",
+      "kallikratisCode": "8413"
+    },
+    {
+      "name": "Νάξος και Μικρές Κυκλάδες",
+      "kallikratisCode": "8414"
+    },
+    {
+      "name": "Νίσυρος",
+      "kallikratisCode": "8415"
+    },
+    {
+      "name": "Πάρος",
+      "kallikratisCode": "8416"
+    },
+    {
+      "name": "Πάτμος",
+      "kallikratisCode": "8417"
+    },
+    {
+      "name": "Ρόδος",
+      "kallikratisCode": "8418"
+    },
+    {
+      "name": "Σέριφος",
+      "kallikratisCode": "8419"
+    },
+    {
+      "name": "Σίκινος",
+      "kallikratisCode": "8420"
+    },
+    {
+      "name": "Σίφνος",
+      "kallikratisCode": "8421"
+    },
+    {
+      "name": "Σύμη",
+      "kallikratisCode": "8422"
+    },
+    {
+      "name": "Σύρος - Ερμούπολη",
+      "kallikratisCode": "8423"
+    },
+    {
+      "name": "Τήλος",
+      "kallikratisCode": "8424"
+    },
+    {
+      "name": "Τήνος",
+      "kallikratisCode": "8425"
+    },
+    {
+      "name": "Φολέγανδρος",
+      "kallikratisCode": "8426"
+    },
+    {
+      "name": "Χάλκη",
+      "kallikratisCode": "8427"
+    }
+  ]
+}

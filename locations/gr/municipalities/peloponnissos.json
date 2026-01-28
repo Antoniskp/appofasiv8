@@ -1,0 +1,102 @@
+{
+  "subdivisionCode": "GR-J",
+  "subdivisionName": "Πελοπόννησος",
+  "municipalities": [
+    {
+      "name": "Άργος - Μυκήνες",
+      "kallikratisCode": "5701"
+    },
+    {
+      "name": "Βέλο - Βόχα",
+      "kallikratisCode": "5702"
+    },
+    {
+      "name": "Γόρτυνία",
+      "kallikratisCode": "5703"
+    },
+    {
+      "name": "Επίδαυρος",
+      "kallikratisCode": "5704"
+    },
+    {
+      "name": "Ερμιονίδα",
+      "kallikratisCode": "5705"
+    },
+    {
+      "name": "Ευρώτας",
+      "kallikratisCode": "5706"
+    },
+    {
+      "name": "Ζάκυνθος",
+      "kallikratisCode": "5707"
+    },
+    {
+      "name": "Ήλιδα",
+      "kallikratisCode": "5708"
+    },
+    {
+      "name": "Καλαμάτα",
+      "kallikratisCode": "5709"
+    },
+    {
+      "name": "Κορινθία",
+      "kallikratisCode": "5710"
+    },
+    {
+      "name": "Κόρινθος",
+      "kallikratisCode": "5711"
+    },
+    {
+      "name": "Λακωνία",
+      "kallikratisCode": "5712"
+    },
+    {
+      "name": "Μάνη",
+      "kallikratisCode": "5713"
+    },
+    {
+      "name": "Μεγαλόπολη",
+      "kallikratisCode": "5714"
+    },
+    {
+      "name": "Μεσσήνη",
+      "kallikratisCode": "5715"
+    },
+    {
+      "name": "Ναύπλιο",
+      "kallikratisCode": "5716"
+    },
+    {
+      "name": "Νεμέα",
+      "kallikratisCode": "5717"
+    },
+    {
+      "name": "Ξυλόκαστρο - Ευρωστίνη",
+      "kallikratisCode": "5718"
+    },
+    {
+      "name": "Πύλος - Νέστορας",
+      "kallikratisCode": "5719"
+    },
+    {
+      "name": "Πύργος",
+      "kallikratisCode": "5720"
+    },
+    {
+      "name": "Σικυώνα",
+      "kallikratisCode": "5721"
+    },
+    {
+      "name": "Σπάρτη",
+      "kallikratisCode": "5722"
+    },
+    {
+      "name": "Τρίπολη",
+      "kallikratisCode": "5723"
+    },
+    {
+      "name": "Τροιζηνία",
+      "kallikratisCode": "5724"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "subdivisionCode": "GR-H",
+  "subdivisionName": "Στερεά Ελλάδα",
+  "municipalities": [
+    {
+      "name": "Αλιάρτου - Θεσπιέων",
+      "kallikratisCode": "4801"
+    },
+    {
+      "name": "Αμφίκλεια - Ελάτεια",
+      "kallikratisCode": "4802"
+    },
+    {
+      "name": "Δελφοί",
+      "kallikratisCode": "4803"
+    },
+    {
+      "name": "Δίστομο - Αράχωβα - Αντίκυρα",
+      "kallikratisCode": "4804"
+    },
+    {
+      "name": "Δομοκός",
+      "kallikratisCode": "4805"
+    },
+    {
+      "name": "Δωρίδα",
+      "kallikratisCode": "4806"
+    },
+    {
+      "name": "Εύβοια",
+      "kallikratisCode": "4807"
+    },
+    {
+      "name": "Θήβα",
+      "kallikratisCode": "4808"
+    },
+    {
+      "name": "Ιστιαία - Αιδηψός",
+      "kallikratisCode": "4809"
+    },
+    {
+      "name": "Καρπενήσι",
+      "kallikratisCode": "4810"
+    },
+    {
+      "name": "Κύμη - Αλιβέρι",
+      "kallikratisCode": "4811"
+    },
+    {
+      "name": "Λαμία",
+      "kallikratisCode": "4812"
+    },
+    {
+      "name": "Λεβαδεία",
+      "kallikratisCode": "4813"
+    },
+    {
+      "name": "Λοκρών",
+      "kallikratisCode": "4814"
+    },
+    {
+      "name": "Μακρακώμη",
+      "kallikratisCode": "4815"
+    },
+    {
+      "name": "Μαντούδι - Λίμνη - Αγία Άννα",
+      "kallikratisCode": "4816"
+    },
+    {
+      "name": "Ορχομενός",
+      "kallikratisCode": "4817"
+    },
+    {
+      "name": "Σκύρος",
+      "kallikratisCode": "4818"
+    },
+    {
+      "name": "Στυλίδα",
+      "kallikratisCode": "4819"
+    },
+    {
+      "name": "Ταντάλου",
+      "kallikratisCode": "4820"
+    },
+    {
+      "name": "Χαλκίδα",
+      "kallikratisCode": "4821"
+    }
+  ]
+}

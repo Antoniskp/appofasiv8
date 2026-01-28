@@ -1,0 +1,142 @@
+{
+  "subdivisionCode": "GR-B",
+  "subdivisionName": "Κεντρική Μακεδονία",
+  "municipalities": [
+    {
+      "name": "Αλεξάνδρεια",
+      "kallikratisCode": "5401"
+    },
+    {
+      "name": "Αμπελόκηποι - Μενεμένη",
+      "kallikratisCode": "5402"
+    },
+    {
+      "name": "Αριστοτέλης",
+      "kallikratisCode": "5403"
+    },
+    {
+      "name": "Βέροια",
+      "kallikratisCode": "5404"
+    },
+    {
+      "name": "Βισαλτία",
+      "kallikratisCode": "5405"
+    },
+    {
+      "name": "Βόλβη",
+      "kallikratisCode": "5406"
+    },
+    {
+      "name": "Δέλτα",
+      "kallikratisCode": "5407"
+    },
+    {
+      "name": "Δήμος Θέρμης",
+      "kallikratisCode": "5408"
+    },
+    {
+      "name": "Εδεσσα",
+      "kallikratisCode": "5409"
+    },
+    {
+      "name": "Εμμανουήλ Παππάς",
+      "kallikratisCode": "5410"
+    },
+    {
+      "name": "Ηράκλεια",
+      "kallikratisCode": "5411"
+    },
+    {
+      "name": "Θερμαϊκός",
+      "kallikratisCode": "5412"
+    },
+    {
+      "name": "Θέρμη",
+      "kallikratisCode": "5413"
+    },
+    {
+      "name": "Θεσσαλονίκη",
+      "kallikratisCode": "5414"
+    },
+    {
+      "name": "Καλαμαριά",
+      "kallikratisCode": "5415"
+    },
+    {
+      "name": "Κασσάνδρα",
+      "kallikratisCode": "5416"
+    },
+    {
+      "name": "Κατερίνη",
+      "kallikratisCode": "5417"
+    },
+    {
+      "name": "Κιλκίς",
+      "kallikratisCode": "5418"
+    },
+    {
+      "name": "Κορδελιό - Ευόσμος",
+      "kallikratisCode": "5419"
+    },
+    {
+      "name": "Λαγκαδάς",
+      "kallikratisCode": "5420"
+    },
+    {
+      "name": "Ναούσα",
+      "kallikratisCode": "5421"
+    },
+    {
+      "name": "Νέα Πρόποντιδα",
+      "kallikratisCode": "5422"
+    },
+    {
+      "name": "Νέαπολη - Συκεών",
+      "kallikratisCode": "5423"
+    },
+    {
+      "name": "Νησιώτικα",
+      "kallikratisCode": "5424"
+    },
+    {
+      "name": "Πάργα",
+      "kallikratisCode": "5425"
+    },
+    {
+      "name": "Παύλος Μελάς",
+      "kallikratisCode": "5426"
+    },
+    {
+      "name": "Πέλλα",
+      "kallikratisCode": "5427"
+    },
+    {
+      "name": "Πολύγυρος",
+      "kallikratisCode": "5428"
+    },
+    {
+      "name": "Πυλαία - Χορτιάτης",
+      "kallikratisCode": "5429"
+    },
+    {
+      "name": "Σέρρες",
+      "kallikratisCode": "5430"
+    },
+    {
+      "name": "Σίνδος - Εχέδωρος",
+      "kallikratisCode": "5431"
+    },
+    {
+      "name": "Σιθωνία",
+      "kallikratisCode": "5432"
+    },
+    {
+      "name": "Σκύδρα",
+      "kallikratisCode": "5433"
+    },
+    {
+      "name": "Χαλκηδόνα",
+      "kallikratisCode": "5434"
+    }
+  ]
+}

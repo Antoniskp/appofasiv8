@@ -1,0 +1,12 @@
+{
+  "countries": [
+    {
+      "code": "GR",
+      "name": "Ελλάδα",
+      "iso3166_alpha2": "GR",
+      "iso3166_alpha3": "GRC",
+      "iso3166_numeric": "300",
+      "officialName": "Ελληνική Δημοκρατία"
+    }
+  ]
+}

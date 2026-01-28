@@ -1,0 +1,70 @@
+{
+  "subdivisionCode": "GR-D",
+  "subdivisionName": "Ήπειρος",
+  "municipalities": [
+    {
+      "name": "Άρτα",
+      "kallikratisCode": "3301"
+    },
+    {
+      "name": "Αρχαία Ολυμπία",
+      "kallikratisCode": "3302"
+    },
+    {
+      "name": "Βόρεια Τζουμέρκα",
+      "kallikratisCode": "3303"
+    },
+    {
+      "name": "Δωδώνη",
+      "kallikratisCode": "3304"
+    },
+    {
+      "name": "Ζαγόρι",
+      "kallikratisCode": "3305"
+    },
+    {
+      "name": "Ζηρός",
+      "kallikratisCode": "3306"
+    },
+    {
+      "name": "Ηγουμενίτσα",
+      "kallikratisCode": "3307"
+    },
+    {
+      "name": "Ζίτσα",
+      "kallikratisCode": "3308"
+    },
+    {
+      "name": "Ιωάννινα",
+      "kallikratisCode": "3309"
+    },
+    {
+      "name": "Κόνιτσα",
+      "kallikratisCode": "3310"
+    },
+    {
+      "name": "Μέτσοβο",
+      "kallikratisCode": "3311"
+    },
+    {
+      "name": "Νικόλαος Σκουφάς",
+      "kallikratisCode": "3312"
+    },
+    {
+      "name": "Παργα",
+      "kallikratisCode": "3313"
+    },
+    {
+      "name": "Πωγώνι",
+      "kallikratisCode": "3314"
+    },
+    {
+      "name": "Σουλί",
+      "kallikratisCode": "3315"
+    },
+    {
+      "name": "Φιλιάτες",
+      "kallikratisCode": "3316"
+    }
+  ]
+}

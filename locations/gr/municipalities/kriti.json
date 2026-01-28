@@ -1,0 +1,102 @@
+{
+  "subdivisionCode": "GR-M",
+  "subdivisionName": "Κρήτη",
+  "municipalities": [
+    {
+      "name": "Αγιος Βασίλειος",
+      "kallikratisCode": "9501"
+    },
+    {
+      "name": "Αγιος Νικόλαος",
+      "kallikratisCode": "9502"
+    },
+    {
+      "name": "Αμαρίου",
+      "kallikratisCode": "9503"
+    },
+    {
+      "name": "Ανατολικό Σέλινο",
+      "kallikratisCode": "9504"
+    },
+    {
+      "name": "Ανώγεια",
+      "kallikratisCode": "9505"
+    },
+    {
+      "name": "Αποκόρωνας",
+      "kallikratisCode": "9506"
+    },
+    {
+      "name": "Αρχανές - Αστερούσια",
+      "kallikratisCode": "9507"
+    },
+    {
+      "name": "Βιάννος",
+      "kallikratisCode": "9508"
+    },
+    {
+      "name": "Γάβδος",
+      "kallikratisCode": "9509"
+    },
+    {
+      "name": "Γόρτυνα",
+      "kallikratisCode": "9510"
+    },
+    {
+      "name": "Ηράκλειο",
+      "kallikratisCode": "9511"
+    },
+    {
+      "name": "Ιεράπετρα",
+      "kallikratisCode": "9512"
+    },
+    {
+      "name": "Καντανός - Σέλινο",
+      "kallikratisCode": "9513"
+    },
+    {
+      "name": "Κίσσαμος",
+      "kallikratisCode": "9514"
+    },
+    {
+      "name": "Λασίθι",
+      "kallikratisCode": "9515"
+    },
+    {
+      "name": "Μαλεβιζίου",
+      "kallikratisCode": "9516"
+    },
+    {
+      "name": "Μινώα Πεδιάδας",
+      "kallikratisCode": "9517"
+    },
+    {
+      "name": "Μυλοπόταμος",
+      "kallikratisCode": "9518"
+    },
+    {
+      "name": "Οροπέδιο Λασιθίου",
+      "kallikratisCode": "9519"
+    },
+    {
+      "name": "Πλατανιάς",
+      "kallikratisCode": "9520"
+    },
+    {
+      "name": "Ρέθυμνο",
+      "kallikratisCode": "9521"
+    },
+    {
+      "name": "Σητεία",
+      "kallikratisCode": "9522"
+    },
+    {
+      "name": "Σφακιά",
+      "kallikratisCode": "9523"
+    },
+    {
+      "name": "Χανιά",
+      "kallikratisCode": "9524"
+    }
+  ]
+}

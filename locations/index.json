@@ -1,0 +1,16 @@
+{
+  "supportedCountries": [
+    {
+      "code": "gr",
+      "name": "Ελλάδα",
+      "iso3166": "GR",
+      "dataFiles": {
+        "subdivisions": "gr/subdivisions.json",
+        "municipalities": "gr/municipalities/"
+      }
+    }
+  ],
+  "globalDataFiles": {
+    "countries": "global/countries.json"
+  }
+}

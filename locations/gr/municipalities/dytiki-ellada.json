@@ -1,0 +1,50 @@
+{
+  "subdivisionCode": "GR-G",
+  "subdivisionName": "Δυτική Ελλάδα",
+  "municipalities": [
+    {
+      "name": "Αγρίνιο",
+      "kallikratisCode": "3001"
+    },
+    {
+      "name": "Αιγιάλεια",
+      "kallikratisCode": "3002"
+    },
+    {
+      "name": "Ακτίου - Βόνιτσας",
+      "kallikratisCode": "3003"
+    },
+    {
+      "name": "Αμφιλοχία",
+      "kallikratisCode": "3004"
+    },
+    {
+      "name": "Ανδρίτσαινα - Κρεστένα",
+      "kallikratisCode": "3005"
+    },
+    {
+      "name": "Αντίρριο",
+      "kallikratisCode": "3006"
+    },
+    {
+      "name": "Ερύμανθος",
+      "kallikratisCode": "3007"
+    },
+    {
+      "name": "Θέρμο",
+      "kallikratisCode": "3008"
+    },
+    {
+      "name": "Ιεράς Πόλεως Μεσολογγίου",
+      "kallikratisCode": "3009"
+    },
+    {
+      "name": "Ναυπακτία",
+      "kallikratisCode": "3010"
+    },
+    {
+      "name": "Πάτρα",
+      "kallikratisCode": "3011"
+    }
+  ]
+}
