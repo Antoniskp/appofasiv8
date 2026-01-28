@@ -16,11 +16,19 @@ function EditorDashboardContent() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    subtitle: '',
     content: '',
     summary: '',
     category: '',
     status: 'draft',
     isNews: false,
+    isFeatured: false,
+    coverImageUrl: '',
+    coverImageCaption: '',
+    sourceName: '',
+    sourceUrl: '',
+    tags: '',
+    readingTimeMinutes: '',
     locationId: null,
     useUserLocation: false
   });
@@ -45,6 +53,18 @@ function EditorDashboardContent() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (type === 'number') {
+      if (value === '') {
+        setFormData({
+          ...formData,
+          [name]: '',
+        });
+        return;
+      }
+      if (Number.isNaN(Number(value))) {
+        return;
+      }
+    }
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
@@ -56,17 +76,40 @@ function EditorDashboardContent() {
     setSubmitting(true);
 
     try {
-      const response = await articleAPI.create(formData);
+      const parsedReadingTime = formData.readingTimeMinutes
+        ? Number(formData.readingTimeMinutes)
+        : null;
+      const payload = {
+        ...formData,
+        tags: formData.tags
+          ? formData.tags
+            .split(',')
+            .map(tag => tag.trim())
+            .filter(Boolean)
+          : [],
+        readingTimeMinutes: parsedReadingTime && parsedReadingTime >= 1
+          ? parsedReadingTime
+          : null
+      };
+      const response = await articleAPI.create(payload);
       if (response.success) {
         alert('Article created successfully!');
         setShowForm(false);
         setFormData({
           title: '',
+          subtitle: '',
           content: '',
           summary: '',
           category: '',
           status: 'draft',
           isNews: false,
+          isFeatured: false,
+          coverImageUrl: '',
+          coverImageCaption: '',
+          sourceName: '',
+          sourceUrl: '',
+          tags: '',
+          readingTimeMinutes: '',
           locationId: null,
           useUserLocation: false
         });
@@ -137,6 +180,21 @@ function EditorDashboardContent() {
               </div>
 
               <div>
+                <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">
+                  Subtitle
+                </label>
+                <input
+                  type="text"
+                  id="subtitle"
+                  name="subtitle"
+                  value={formData.subtitle}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter article subtitle"
+                />
+              </div>
+
+              <div>
                 <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
                   Summary
                 </label>
@@ -169,6 +227,68 @@ function EditorDashboardContent() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label htmlFor="coverImageUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                    Cover Image URL
+                  </label>
+                  <input
+                    type="url"
+                    id="coverImageUrl"
+                    name="coverImageUrl"
+                    value={formData.coverImageUrl}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="coverImageCaption" className="block text-sm font-medium text-gray-700 mb-1">
+                    Cover Image Caption
+                  </label>
+                  <input
+                    type="text"
+                    id="coverImageCaption"
+                    name="coverImageCaption"
+                    value={formData.coverImageCaption}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Image caption (optional)"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="sourceName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Source Name
+                  </label>
+                  <input
+                    type="text"
+                    id="sourceName"
+                    name="sourceName"
+                    value={formData.sourceName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="News agency or source"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="sourceUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                    Source URL
+                  </label>
+                  <input
+                    type="url"
+                    id="sourceUrl"
+                    name="sourceUrl"
+                    value={formData.sourceUrl}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://source.example.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
                     Category
                   </label>
@@ -183,6 +303,38 @@ function EditorDashboardContent() {
                   />
                 </div>
 
+                <div>
+                  <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+                    Tags (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    id="tags"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="politics, economy, local"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="readingTimeMinutes" className="block text-sm font-medium text-gray-700 mb-1">
+                    Reading Time (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    id="readingTimeMinutes"
+                    name="readingTimeMinutes"
+                    min="1"
+                    value={formData.readingTimeMinutes}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="5"
+                  />
+                </div>
                 <div>
                   <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
                     Status *
@@ -201,18 +353,33 @@ function EditorDashboardContent() {
                 </div>
               </div>
 
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isNews"
-                  name="isNews"
-                  checked={formData.isNews}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
-                  Flag as news (requires moderator approval for publication)
-                </label>
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isNews"
+                    name="isNews"
+                    checked={formData.isNews}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
+                    Flag as news (requires moderator approval for publication)
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isFeatured"
+                    name="isFeatured"
+                    checked={formData.isFeatured}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
+                    Featured article
+                  </label>
+                </div>
               </div>
 
               {/* Location Selection */}

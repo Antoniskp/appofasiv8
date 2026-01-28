@@ -25,6 +25,40 @@ const Article = sequelize.define('Article', {
     type: DataTypes.STRING(500),
     allowNull: true
   },
+  subtitle: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  coverImageUrl: {
+    type: DataTypes.STRING(500),
+    allowNull: true
+  },
+  coverImageCaption: {
+    type: DataTypes.STRING(500),
+    allowNull: true
+  },
+  sourceName: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  sourceUrl: {
+    type: DataTypes.STRING(500),
+    allowNull: true
+  },
+  tags: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    defaultValue: []
+  },
+  readingTimeMinutes: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  isFeatured: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
   authorId: {
     type: DataTypes.INTEGER,
     allowNull: false,

@@ -13,6 +13,7 @@ export default function ArticleDetailPage() {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const tags = Array.isArray(article?.tags) ? article.tags : [];
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -81,17 +82,32 @@ export default function ArticleDetailPage() {
         <div className="bg-white rounded-lg shadow-md p-8">
           {/* Article Header */}
           <div className="mb-8">
-            {article.category && (
-              <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded mb-4">
-                {article.category}
-              </span>
-            )}
-            {article.status !== 'published' && (
-              <span className="inline-block bg-orange-100 text-orange-800 text-sm px-3 py-1 rounded mb-4 ml-2">
-                {article.status}
-              </span>
-            )}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              {article.category && (
+                <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded">
+                  {article.category}
+                </span>
+              )}
+              {article.status !== 'published' && (
+                <span className="inline-block bg-orange-100 text-orange-800 text-sm px-3 py-1 rounded">
+                  {article.status}
+                </span>
+              )}
+              {article.isFeatured && (
+                <span className="inline-block bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded">
+                  Featured
+                </span>
+              )}
+              {tags.map((tag, index) => (
+                <span key={`${tag}-${index}`} className="inline-block bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded">
+                  {tag}
+                </span>
+              ))}
+            </div>
             <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+            {article.subtitle && (
+              <p className="text-xl text-gray-600 mb-4">{article.subtitle}</p>
+            )}
             
             <div className="flex flex-wrap items-center gap-4 text-gray-600 text-sm border-b border-gray-200 pb-4">
               <div className="flex items-center">
@@ -101,6 +117,14 @@ export default function ArticleDetailPage() {
               <div>
                 <span>Published: {new Date(article.createdAt).toLocaleDateString()}</span>
               </div>
+              {article.readingTimeMinutes && (
+                <>
+                  <span>•</span>
+                  <div>
+                    <span>{article.readingTimeMinutes} min read</span>
+                  </div>
+                </>
+              )}
               {article.updatedAt !== article.createdAt && (
                 <>
                   <span>•</span>
@@ -111,6 +135,27 @@ export default function ArticleDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Cover Image */}
+          {article.coverImageUrl && (
+            <div className="mb-8">
+              <figure>
+                <img
+                  src={article.coverImageUrl}
+                  alt={article.coverImageCaption || article.title}
+                  className="w-full max-h-[28rem] rounded-lg object-cover"
+                  width="1200"
+                  height="630"
+                  loading="lazy"
+                />
+                {article.coverImageCaption && (
+                  <figcaption className="text-sm text-gray-500 mt-2">
+                    {article.coverImageCaption}
+                  </figcaption>
+                )}
+              </figure>
+            </div>
+          )}
 
           {/* Article Summary */}
           {article.summary && (
@@ -127,6 +172,24 @@ export default function ArticleDetailPage() {
               {article.content}
             </div>
           </div>
+
+          {(article.sourceName || article.sourceUrl) && (
+            <div className="border-t border-gray-200 pt-4 text-sm text-gray-600">
+              <span className="font-medium">Source:</span>{' '}
+              {article.sourceUrl ? (
+                <a
+                  href={article.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  {article.sourceName || article.sourceUrl}
+                </a>
+              ) : (
+                <span>{article.sourceName}</span>
+              )}
+            </div>
+          )}
 
           {/* Action Buttons */}
           {(canEdit || canDelete) && (
