@@ -17,11 +17,14 @@ This guide covers different deployment options for the News Application.
 
 ### Steps
 
-1. **Clone the repository**
-```bash
-git clone https://github.com/Antoniskp/appofasiv8.git
-cd appofasiv8
-```
+1. **Ensure the repository is cloned**
+
+   If you have not cloned the repository yet, run:
+
+   ```bash
+   git clone https://github.com/Antoniskp/appofasiv8.git
+   cd appofasiv8
+   ```
 
 2. **Install dependencies**
 ```bash
