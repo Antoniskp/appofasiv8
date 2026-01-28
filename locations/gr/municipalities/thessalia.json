@@ -1,0 +1,78 @@
+{
+  "subdivisionCode": "GR-E",
+  "subdivisionName": "Θεσσαλία",
+  "municipalities": [
+    {
+      "name": "Αγιά",
+      "kallikratisCode": "4201"
+    },
+    {
+      "name": "Αλμυρός",
+      "kallikratisCode": "4202"
+    },
+    {
+      "name": "Ελασσόνα",
+      "kallikratisCode": "4203"
+    },
+    {
+      "name": "Ζαγορά - Μουρέσι",
+      "kallikratisCode": "4204"
+    },
+    {
+      "name": "Καρδίτσα",
+      "kallikratisCode": "4206"
+    },
+    {
+      "name": "Κιλελέρ",
+      "kallikratisCode": "4207"
+    },
+    {
+      "name": "Λάρισα",
+      "kallikratisCode": "4208"
+    },
+    {
+      "name": "Μουζάκι",
+      "kallikratisCode": "4209"
+    },
+    {
+      "name": "Νοτίου Πηλίου",
+      "kallikratisCode": "4210"
+    },
+    {
+      "name": "Παλαμάς",
+      "kallikratisCode": "4211"
+    },
+    {
+      "name": "Ρήγας Φεραίος",
+      "kallikratisCode": "4212"
+    },
+    {
+      "name": "Σκιάθος",
+      "kallikratisCode": "4213"
+    },
+    {
+      "name": "Σκόπελος",
+      "kallikratisCode": "4214"
+    },
+    {
+      "name": "Σοφάδες",
+      "kallikratisCode": "4215"
+    },
+    {
+      "name": "Τέμπη",
+      "kallikratisCode": "4216"
+    },
+    {
+      "name": "Τρίκαλα",
+      "kallikratisCode": "4217"
+    },
+    {
+      "name": "Φάρσαλα",
+      "kallikratisCode": "4218"
+    },
+    {
+      "name": "Βόλος",
+      "kallikratisCode": "4219"
+    }
+  ]
+}

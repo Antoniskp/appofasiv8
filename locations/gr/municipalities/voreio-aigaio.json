@@ -1,0 +1,42 @@
+{
+  "subdivisionCode": "GR-K",
+  "subdivisionName": "Βόρειο Αιγαίο",
+  "municipalities": [
+    {
+      "name": "Αγαθονήσι",
+      "kallikratisCode": "8101"
+    },
+    {
+      "name": "Αγιος Ευστράτιος",
+      "kallikratisCode": "8102"
+    },
+    {
+      "name": "Λέσβος",
+      "kallikratisCode": "8103"
+    },
+    {
+      "name": "Λήμνος",
+      "kallikratisCode": "8104"
+    },
+    {
+      "name": "Οινούσσες",
+      "kallikratisCode": "8105"
+    },
+    {
+      "name": "Σάμος",
+      "kallikratisCode": "8106"
+    },
+    {
+      "name": "Φούρνοι Κορσέων",
+      "kallikratisCode": "8107"
+    },
+    {
+      "name": "Χίος",
+      "kallikratisCode": "8108"
+    },
+    {
+      "name": "Ψαρά",
+      "kallikratisCode": "8109"
+    }
+  ]
+}

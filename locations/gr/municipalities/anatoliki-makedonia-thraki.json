@@ -1,0 +1,74 @@
+{
+  "subdivisionCode": "GR-A",
+  "subdivisionName": "Ανατολική Μακεδονία και Θράκη",
+  "municipalities": [
+    {
+      "name": "Αβδήρων",
+      "kallikratisCode": "6901"
+    },
+    {
+      "name": "Αλεξανδρούπολη",
+      "kallikratisCode": "6902"
+    },
+    {
+      "name": "Αρριανών",
+      "kallikratisCode": "6903"
+    },
+    {
+      "name": "Δήμος Διδυμοτείχου",
+      "kallikratisCode": "6904"
+    },
+    {
+      "name": "Δράμα",
+      "kallikratisCode": "6905"
+    },
+    {
+      "name": "Θάσος",
+      "kallikratisCode": "6906"
+    },
+    {
+      "name": "Ιάσμος",
+      "kallikratisCode": "6907"
+    },
+    {
+      "name": "Καβάλα",
+      "kallikratisCode": "6908"
+    },
+    {
+      "name": "Κομοτηνή",
+      "kallikratisCode": "6909"
+    },
+    {
+      "name": "Ξάνθη",
+      "kallikratisCode": "6910"
+    },
+    {
+      "name": "Νέστος",
+      "kallikratisCode": "6911"
+    },
+    {
+      "name": "Ορεστιάδα",
+      "kallikratisCode": "6912"
+    },
+    {
+      "name": "Παγγαίο",
+      "kallikratisCode": "6913"
+    },
+    {
+      "name": "Προσοτσάνη",
+      "kallikratisCode": "6914"
+    },
+    {
+      "name": "Σαμοθράκη",
+      "kallikratisCode": "6915"
+    },
+    {
+      "name": "Σουφλί",
+      "kallikratisCode": "6916"
+    },
+    {
+      "name": "Τοπείρο",
+      "kallikratisCode": "6917"
+    }
+  ]
+}

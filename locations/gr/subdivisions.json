@@ -1,0 +1,95 @@
+{
+  "subdivisions": [
+    {
+      "code": "GR-I",
+      "name": "Αττική",
+      "iso3166_2": "GR-I",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "attiki.json"
+    },
+    {
+      "code": "GR-A",
+      "name": "Ανατολική Μακεδονία και Θράκη",
+      "iso3166_2": "GR-A",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "anatoliki-makedonia-thraki.json"
+    },
+    {
+      "code": "GR-B",
+      "name": "Κεντρική Μακεδονία",
+      "iso3166_2": "GR-B",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "kentriki-makedonia.json"
+    },
+    {
+      "code": "GR-C",
+      "name": "Δυτική Μακεδονία",
+      "iso3166_2": "GR-C",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "dytiki-makedonia.json"
+    },
+    {
+      "code": "GR-D",
+      "name": "Ήπειρος",
+      "iso3166_2": "GR-D",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "ipeiros.json"
+    },
+    {
+      "code": "GR-E",
+      "name": "Θεσσαλία",
+      "iso3166_2": "GR-E",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "thessalia.json"
+    },
+    {
+      "code": "GR-F",
+      "name": "Ιόνια Νησιά",
+      "iso3166_2": "GR-F",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "ionia-nisia.json"
+    },
+    {
+      "code": "GR-G",
+      "name": "Δυτική Ελλάδα",
+      "iso3166_2": "GR-G",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "dytiki-ellada.json"
+    },
+    {
+      "code": "GR-H",
+      "name": "Στερεά Ελλάδα",
+      "iso3166_2": "GR-H",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "sterea-ellada.json"
+    },
+    {
+      "code": "GR-J",
+      "name": "Πελοπόννησος",
+      "iso3166_2": "GR-J",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "peloponnissos.json"
+    },
+    {
+      "code": "GR-K",
+      "name": "Βόρειο Αιγαίο",
+      "iso3166_2": "GR-K",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "voreio-aigaio.json"
+    },
+    {
+      "code": "GR-L",
+      "name": "Νότιο Αιγαίο",
+      "iso3166_2": "GR-L",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "notio-aigaio.json"
+    },
+    {
+      "code": "GR-M",
+      "name": "Κρήτη",
+      "iso3166_2": "GR-M",
+      "type": "Περιφέρεια",
+      "municipalitiesFile": "kriti.json"
+    }
+  ]
+}

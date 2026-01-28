@@ -1,0 +1,210 @@
+{
+  "subdivisionCode": "GR-I",
+  "subdivisionName": "Αττική",
+  "municipalities": [
+    {
+      "name": "Αγία Παρασκευή",
+      "kallikratisCode": "6101"
+    },
+    {
+      "name": "Αγιοι Ανάργυροι - Καματερό",
+      "kallikratisCode": "6102"
+    },
+    {
+      "name": "Αίγινα",
+      "kallikratisCode": "6103"
+    },
+    {
+      "name": "Αθήνα",
+      "kallikratisCode": "6104"
+    },
+    {
+      "name": "Αλιμος",
+      "kallikratisCode": "6105"
+    },
+    {
+      "name": "Αμαρούσιο",
+      "kallikratisCode": "6106"
+    },
+    {
+      "name": "Ασπρόπυργος",
+      "kallikratisCode": "6107"
+    },
+    {
+      "name": "Βάρη - Βούλα - Βουλιαγμένη",
+      "kallikratisCode": "6108"
+    },
+    {
+      "name": "Βριλήσσια",
+      "kallikratisCode": "6109"
+    },
+    {
+      "name": "Γαλάτσι",
+      "kallikratisCode": "6110"
+    },
+    {
+      "name": "Γλυφάδα",
+      "kallikratisCode": "6111"
+    },
+    {
+      "name": "Διόνυσος",
+      "kallikratisCode": "6112"
+    },
+    {
+      "name": "Ελευσίνα",
+      "kallikratisCode": "6113"
+    },
+    {
+      "name": "Ζωγράφου",
+      "kallikratisCode": "6114"
+    },
+    {
+      "name": "Ηλιούπολη",
+      "kallikratisCode": "6115"
+    },
+    {
+      "name": "Ηράκλειο",
+      "kallikratisCode": "6116"
+    },
+    {
+      "name": "Καισαριανή",
+      "kallikratisCode": "6118"
+    },
+    {
+      "name": "Καλλιθέα",
+      "kallikratisCode": "6119"
+    },
+    {
+      "name": "Κηφισιά",
+      "kallikratisCode": "6120"
+    },
+    {
+      "name": "Κορυδαλλός",
+      "kallikratisCode": "6121"
+    },
+    {
+      "name": "Κρωπία",
+      "kallikratisCode": "6122"
+    },
+    {
+      "name": "Κύθηρα",
+      "kallikratisCode": "6123"
+    },
+    {
+      "name": "Λαύριο",
+      "kallikratisCode": "6124"
+    },
+    {
+      "name": "Λυκόβρυση - Πεύκη",
+      "kallikratisCode": "6125"
+    },
+    {
+      "name": "Μάνδρα - Ειδυλλία",
+      "kallikratisCode": "6126"
+    },
+    {
+      "name": "Μαραθώνας",
+      "kallikratisCode": "6127"
+    },
+    {
+      "name": "Μαρκόπουλο Μεσογαίας",
+      "kallikratisCode": "6128"
+    },
+    {
+      "name": "Μεγαρα",
+      "kallikratisCode": "6129"
+    },
+    {
+      "name": "Μεταμόρφωση",
+      "kallikratisCode": "6130"
+    },
+    {
+      "name": "Μοσχάτο - Ταύρος",
+      "kallikratisCode": "6131"
+    },
+    {
+      "name": "Νέα Ιωνία",
+      "kallikratisCode": "6132"
+    },
+    {
+      "name": "Νέα Σμύρνη",
+      "kallikratisCode": "6133"
+    },
+    {
+      "name": "Νίκαια - Αγιος Ιωάννης Ρέντης",
+      "kallikratisCode": "6134"
+    },
+    {
+      "name": "Παιανία",
+      "kallikratisCode": "6135"
+    },
+    {
+      "name": "Παλαιό Φάληρο",
+      "kallikratisCode": "6136"
+    },
+    {
+      "name": "Παλλήνη",
+      "kallikratisCode": "6137"
+    },
+    {
+      "name": "Παπάγου - Χολαργός",
+      "kallikratisCode": "6138"
+    },
+    {
+      "name": "Πειραιάς",
+      "kallikratisCode": "6139"
+    },
+    {
+      "name": "Πεντέλη",
+      "kallikratisCode": "6140"
+    },
+    {
+      "name": "Περιστέρι",
+      "kallikratisCode": "6141"
+    },
+    {
+      "name": "Πετρούπολη",
+      "kallikratisCode": "6142"
+    },
+    {
+      "name": "Ραφήνα - Πικέρμι",
+      "kallikratisCode": "6143"
+    },
+    {
+      "name": "Σαλαμίνα",
+      "kallikratisCode": "6144"
+    },
+    {
+      "name": "Σαρωνικός",
+      "kallikratisCode": "6145"
+    },
+    {
+      "name": "Σπάτα - Αρτέμιδα",
+      "kallikratisCode": "6146"
+    },
+    {
+      "name": "Τροιζηνία - Μέθανα",
+      "kallikratisCode": "6147"
+    },
+    {
+      "name": "Υδρα",
+      "kallikratisCode": "6148"
+    },
+    {
+      "name": "Φιλαδέλφεια - Χαλκηδόνα",
+      "kallikratisCode": "6149"
+    },
+    {
+      "name": "Χαϊδάρι",
+      "kallikratisCode": "6150"
+    },
+    {
+      "name": "Χαλάνδρι",
+      "kallikratisCode": "6151"
+    },
+    {
+      "name": "Ωρωπός",
+      "kallikratisCode": "6152"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "subdivisionCode": "GR-C",
+  "subdivisionName": "Δυτική Μακεδονία",
+  "municipalities": [
+    {
+      "name": "Αμύνταιο",
+      "kallikratisCode": "6301"
+    },
+    {
+      "name": "Βόιο",
+      "kallikratisCode": "6302"
+    },
+    {
+      "name": "Γρεβενά",
+      "kallikratisCode": "6303"
+    },
+    {
+      "name": "Δεσκάτη",
+      "kallikratisCode": "6304"
+    },
+    {
+      "name": "Εορδαία",
+      "kallikratisCode": "6305"
+    },
+    {
+      "name": "Καστοριά",
+      "kallikratisCode": "6306"
+    },
+    {
+      "name": "Κοζάνη",
+      "kallikratisCode": "6307"
+    },
+    {
+      "name": "Νεστόριο",
+      "kallikratisCode": "6308"
+    },
+    {
+      "name": "Πρεσπών",
+      "kallikratisCode": "6309"
+    },
+    {
+      "name": "Σέρβια - Βελβεντό",
+      "kallikratisCode": "6310"
+    },
+    {
+      "name": "Φλώρινα",
+      "kallikratisCode": "6311"
+    }
+  ]
+}

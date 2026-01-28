@@ -1,0 +1,34 @@
+{
+  "subdivisionCode": "GR-F",
+  "subdivisionName": "Ιόνια Νησιά",
+  "municipalities": [
+    {
+      "name": "Ζάκυνθος",
+      "kallikratisCode": "2901"
+    },
+    {
+      "name": "Ιθάκη",
+      "kallikratisCode": "2902"
+    },
+    {
+      "name": "Κέρκυρα",
+      "kallikratisCode": "2903"
+    },
+    {
+      "name": "Κεφαλονία",
+      "kallikratisCode": "2904"
+    },
+    {
+      "name": "Λευκάδα",
+      "kallikratisCode": "2905"
+    },
+    {
+      "name": "Μεγανήσι",
+      "kallikratisCode": "2906"
+    },
+    {
+      "name": "Παξοί",
+      "kallikratisCode": "2907"
+    }
+  ]
+}
