@@ -9,7 +9,7 @@ and frontend.
 | Role | Primary Focus | Typical Actions |
 | --- | --- | --- |
 | **Admin** | Full system control | Manage all articles, approve news submissions, access admin dashboard |
-| **Moderator** | News moderation | Approve or reject news submissions, access admin dashboard |
+| **Moderator** | News moderation | Approve news submissions, manage news flags, access admin dashboard |
 | **Editor** | Content management | Create articles, edit any article, flag articles as news |
 | **Viewer** | Reading and personal publishing | Read published articles, create and manage their own articles |
 
@@ -23,6 +23,7 @@ and frontend.
 ### Moderator
 - Reviews and approves articles flagged as news.
 - Can publish approved news submissions.
+- Can flag or unflag their own articles as news submissions.
 - Access to the admin dashboard for moderation tasks.
 - Manages their own articles but cannot edit or delete other users’ articles.
 
@@ -41,3 +42,7 @@ and frontend.
 
 Use these role values when registering users:
 `admin`, `moderator`, `editor`, `viewer`.
+
+The frontend registration form only exposes `viewer`, `editor`, and `admin`. Moderator
+accounts are typically created through backend tooling or by updating the user role
+via the API/database.
