@@ -16,10 +16,8 @@ A professional news application with JWT authentication, PostgreSQL database, ro
 
 ## User Roles
 
-1. **Admin**: Full access - can create, read, update, and delete all articles; can approve news submissions
-2. **Moderator**: Can approve news submissions and manage content - similar to admin for news moderation
-3. **Editor**: Can create articles and edit/update all articles
-4. **Viewer**: Can only read published articles and create their own articles
+See [doc/USER_ROLES.md](doc/USER_ROLES.md) for a detailed breakdown of each role
+and their responsibilities.
 
 ## News Submission and Moderation Workflow
 
