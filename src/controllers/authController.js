@@ -354,6 +354,14 @@ const authController = {
         });
       }
 
+      // Validate locationId format if provided (should be a string code)
+      if (locationId !== undefined && locationId !== null && typeof locationId !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid location ID format. Location ID must be a string code.'
+        });
+      }
+
       // Create new user
       const user = await User.create({
         username,

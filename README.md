@@ -46,11 +46,13 @@ The application includes a hierarchical location system based on JSON data files
 
 ### Location Hierarchy
 - **Country**: Top level (e.g., Greece, International, Greece+International)
-  - Greece (Ελλάδα) - code: GR
-  - International (Διεθνής) - code: INT
-  - Greece + International (Ελλάδα + Διεθνής) - code: GR+INT
+  - Greece (Ελλάδα) - code: GR (ISO 3166-1 alpha-2 standard)
+  - International (Διεθνής) - code: INT (custom extension, non-ISO)
+  - Greece + International (Ελλάδα + Διεθνής) - code: GR+INT (custom extension, non-ISO)
 - **Jurisdiction**: Administrative regions within Greece (e.g., Attica, Central Macedonia, Crete)
+  - Uses ISO 3166-2 codes (e.g., GR-I for Attica, GR-B for Central Macedonia)
 - **Municipality**: Cities or municipalities within a jurisdiction (e.g., Athens, Thessaloniki, Heraklion)
+  - Uses Kallikratis codes where available (Greek administrative standard)
 
 ### Features
 - **JSON-backed**: Location data is stored in JSON files under `/locations` directory for easy maintenance

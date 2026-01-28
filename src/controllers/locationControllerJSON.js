@@ -1,12 +1,19 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 const LOCATIONS_DIR = path.join(__dirname, '../../locations');
 
+// Cache for location data to avoid repeated file reads
+let locationCache = {
+  countries: null,
+  subdivisions: null,
+  municipalities: {}
+};
+
 // Helper function to read JSON file
-const readJSONFile = (filePath) => {
+const readJSONFile = async (filePath) => {
   try {
-    const data = fs.readFileSync(filePath, 'utf-8');
+    const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
     console.error(`Error reading file ${filePath}:`, error);
@@ -14,12 +21,26 @@ const readJSONFile = (filePath) => {
   }
 };
 
+// Helper function to validate file path (prevent path traversal)
+const isValidFilePath = (fileName) => {
+  // Only allow alphanumeric, hyphens, and .json extension
+  return /^[a-z0-9-]+\.json$/i.test(fileName);
+};
+
 const locationControllerJSON = {
   // Get all countries
   getCountries: async (req, res) => {
     try {
+      // Use cached data if available
+      if (locationCache.countries) {
+        return res.status(200).json({
+          success: true,
+          data: { locations: locationCache.countries }
+        });
+      }
+
       const countriesFile = path.join(LOCATIONS_DIR, 'global/countries.json');
-      const data = readJSONFile(countriesFile);
+      const data = await readJSONFile(countriesFile);
       
       if (!data || !data.countries) {
         return res.status(500).json({
@@ -42,6 +63,9 @@ const locationControllerJSON = {
         }
       }));
 
+      // Cache the countries
+      locationCache.countries = countries;
+
       res.status(200).json({
         success: true,
         data: { locations: countries }
@@ -50,8 +74,7 @@ const locationControllerJSON = {
       console.error('Get countries error:', error);
       res.status(500).json({
         success: false,
-        message: 'Error fetching countries.',
-        error: error.message
+        message: 'Error fetching countries.'
       });
     }
   },
@@ -76,9 +99,17 @@ const locationControllerJSON = {
         });
       }
 
+      // Use cached data if available
+      if (locationCache.subdivisions) {
+        return res.status(200).json({
+          success: true,
+          data: { locations: locationCache.subdivisions }
+        });
+      }
+
       // Load Greek subdivisions
       const subdivisionsFile = path.join(LOCATIONS_DIR, 'gr/subdivisions.json');
-      const data = readJSONFile(subdivisionsFile);
+      const data = await readJSONFile(subdivisionsFile);
       
       if (!data || !data.subdivisions) {
         return res.status(500).json({
@@ -101,6 +132,9 @@ const locationControllerJSON = {
         }
       }));
 
+      // Cache the subdivisions
+      locationCache.subdivisions = jurisdictions;
+
       res.status(200).json({
         success: true,
         data: { locations: jurisdictions }
@@ -109,8 +143,7 @@ const locationControllerJSON = {
       console.error('Get jurisdictions error:', error);
       res.status(500).json({
         success: false,
-        message: 'Error fetching jurisdictions.',
-        error: error.message
+        message: 'Error fetching jurisdictions.'
       });
     }
   },
@@ -127,9 +160,17 @@ const locationControllerJSON = {
         });
       }
 
+      // Check cache first
+      if (locationCache.municipalities[jurisdictionId]) {
+        return res.status(200).json({
+          success: true,
+          data: { locations: locationCache.municipalities[jurisdictionId] }
+        });
+      }
+
       // Load jurisdiction data to find the municipalities file
       const subdivisionsFile = path.join(LOCATIONS_DIR, 'gr/subdivisions.json');
-      const subdivisionsData = readJSONFile(subdivisionsFile);
+      const subdivisionsData = await readJSONFile(subdivisionsFile);
       
       if (!subdivisionsData || !subdivisionsData.subdivisions) {
         return res.status(500).json({
@@ -150,13 +191,22 @@ const locationControllerJSON = {
         });
       }
 
+      // Validate municipalities file name (prevent path traversal)
+      if (!isValidFilePath(jurisdiction.municipalitiesFile)) {
+        console.error('Invalid municipalities file path:', jurisdiction.municipalitiesFile);
+        return res.status(500).json({
+          success: false,
+          message: 'Invalid municipalities data file.'
+        });
+      }
+
       // Load municipalities file
       const municipalitiesFile = path.join(
         LOCATIONS_DIR,
         'gr/municipalities',
         jurisdiction.municipalitiesFile
       );
-      const municipalitiesData = readJSONFile(municipalitiesFile);
+      const municipalitiesData = await readJSONFile(municipalitiesFile);
       
       if (!municipalitiesData || !municipalitiesData.municipalities) {
         return res.status(500).json({
@@ -166,8 +216,8 @@ const locationControllerJSON = {
       }
 
       // Format municipalities to match expected format
-      const municipalities = municipalitiesData.municipalities.map((municipality, index) => ({
-        id: `${jurisdictionId}-${municipality.kallikratisCode || index}`,
+      const municipalities = municipalitiesData.municipalities.map((municipality) => ({
+        id: municipality.kallikratisCode ? `${jurisdictionId}-${municipality.kallikratisCode}` : `${jurisdictionId}-${municipality.name.toLowerCase().replace(/\s+/g, '-')}`,
         name: municipality.name,
         code: municipality.kallikratisCode || null,
         type: 'municipality',
@@ -179,6 +229,9 @@ const locationControllerJSON = {
         }
       }));
 
+      // Cache the municipalities
+      locationCache.municipalities[jurisdictionId] = municipalities;
+
       res.status(200).json({
         success: true,
         data: { locations: municipalities }
@@ -187,8 +240,7 @@ const locationControllerJSON = {
       console.error('Get municipalities error:', error);
       res.status(500).json({
         success: false,
-        message: 'Error fetching municipalities.',
-        error: error.message
+        message: 'Error fetching municipalities.'
       });
     }
   },
@@ -200,7 +252,7 @@ const locationControllerJSON = {
 
       // Try to find in countries
       const countriesFile = path.join(LOCATIONS_DIR, 'global/countries.json');
-      const countriesData = readJSONFile(countriesFile);
+      const countriesData = await readJSONFile(countriesFile);
       
       if (countriesData && countriesData.countries) {
         const country = countriesData.countries.find(c => c.code === id);
@@ -227,7 +279,7 @@ const locationControllerJSON = {
 
       // Try to find in Greek subdivisions
       const subdivisionsFile = path.join(LOCATIONS_DIR, 'gr/subdivisions.json');
-      const subdivisionsData = readJSONFile(subdivisionsFile);
+      const subdivisionsData = await readJSONFile(subdivisionsFile);
       
       if (subdivisionsData && subdivisionsData.subdivisions) {
         const subdivision = subdivisionsData.subdivisions.find(s => s.code === id);
@@ -252,8 +304,7 @@ const locationControllerJSON = {
         }
       }
 
-      // Try to find in municipalities
-      // This requires checking all municipality files - for now return not found
+      // Location not found
       return res.status(404).json({
         success: false,
         message: 'Location not found.'
@@ -262,8 +313,7 @@ const locationControllerJSON = {
       console.error('Get location error:', error);
       res.status(500).json({
         success: false,
-        message: 'Error fetching location.',
-        error: error.message
+        message: 'Error fetching location.'
       });
     }
   }
