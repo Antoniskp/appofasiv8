@@ -9,6 +9,13 @@ export default function TopNav() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const roleLabels = {
+    admin: 'Διαχειριστής',
+    editor: 'Συντάκτης',
+    moderator: 'Συντονιστής',
+    viewer: 'Αναγνώστης'
+  };
+  const roleLabel = user ? roleLabels[user.role] || user.role : '';
 
   const isActive = (path) => pathname === path ? 'text-blue-600' : '';
 
@@ -27,20 +34,20 @@ export default function TopNav() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center text-xl font-bold text-black">
-              News App
+              Εφαρμογή Ειδήσεων
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/"
                 className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/')}`}
               >
-                Home
+                Αρχική
               </Link>
               <Link
                 href="/articles"
                 className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/articles')}`}
               >
-                Articles
+                Άρθρα
               </Link>
             </div>
           </div>
@@ -48,20 +55,20 @@ export default function TopNav() {
             {user ? (
               <>
                 <span className="text-sm text-black">
-                  Welcome, {user.username} ({user.role})
+                  Καλώς ήρθες, {user.username} ({roleLabel})
                 </span>
                 <Link
                   href="/profile"
                   className={`text-sm font-medium text-black ${isActive('/profile')}`}
                 >
-                  Profile
+                  Προφίλ
                 </Link>
                 {user.role === 'admin' && (
                   <Link
                     href="/admin"
                     className={`text-sm font-medium text-black ${isActive('/admin')}`}
                   >
-                    Admin
+                    Διαχείριση
                   </Link>
                 )}
                 {(user.role === 'admin' || user.role === 'editor') && (
@@ -69,20 +76,20 @@ export default function TopNav() {
                     href="/editor"
                     className={`text-sm font-medium text-black ${isActive('/editor')}`}
                   >
-                    Editor
+                    Συντάκτης
                   </Link>
                 )}
                 <Link
                   href="/editor"
                   className="text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
                 >
-                  Add Article
+                  ➕ Νέο Άρθρο
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="text-sm font-medium text-red-600 hover:text-red-800"
                 >
-                  Logout
+                  🚪 Έξοδος
                 </button>
               </>
             ) : (
@@ -91,13 +98,13 @@ export default function TopNav() {
                   href="/login"
                   className="text-sm font-medium text-black hover:text-blue-700"
                 >
-                  Login
+                  🔑 Είσοδος
                 </Link>
                 <Link
                   href="/register"
                   className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
-                  Register
+                  ✍️ Εγγραφή
                 </Link>
               </>
             )}
@@ -109,7 +116,7 @@ export default function TopNav() {
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((open) => !open)}
           >
-            <span className="sr-only">Open main menu</span>
+            <span className="sr-only">Άνοιγμα κύριου μενού</span>
             {isMenuOpen ? (
               <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -128,33 +135,33 @@ export default function TopNav() {
             href="/"
             className={`block text-base font-medium text-black ${isActive('/')}`}
           >
-            Home
+            Αρχική
           </Link>
           <Link
             href="/articles"
             className={`block text-base font-medium text-black ${isActive('/articles')}`}
           >
-            Articles
+            Άρθρα
           </Link>
         </div>
         <div className="border-t border-gray-200 px-4 py-3 space-y-3">
           {user ? (
             <>
               <span className="block text-sm text-black">
-                Welcome, {user.username} ({user.role})
+                Καλώς ήρθες, {user.username} ({roleLabel})
               </span>
               <Link
                 href="/profile"
                 className={`block text-base font-medium text-black ${isActive('/profile')}`}
               >
-                Profile
+                Προφίλ
               </Link>
               {user.role === 'admin' && (
                 <Link
                   href="/admin"
                   className={`block text-base font-medium text-black ${isActive('/admin')}`}
                 >
-                  Admin
+                  Διαχείριση
                 </Link>
               )}
               {(user.role === 'admin' || user.role === 'editor') && (
@@ -162,20 +169,20 @@ export default function TopNav() {
                   href="/editor"
                   className={`block text-base font-medium text-black ${isActive('/editor')}`}
                 >
-                  Editor
+                  Συντάκτης
                 </Link>
               )}
               <Link
                 href="/editor"
                 className="inline-flex w-full items-center justify-center text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
               >
-                Add Article
+                ➕ Νέο Άρθρο
               </Link>
               <button
                 onClick={handleLogout}
                 className="w-full text-left text-base font-medium text-red-600 hover:text-red-800"
               >
-                Logout
+                🚪 Έξοδος
               </button>
             </>
           ) : (
@@ -184,13 +191,13 @@ export default function TopNav() {
                 href="/login"
                 className="block text-base font-medium text-black hover:text-blue-700"
               >
-                Login
+                🔑 Είσοδος
               </Link>
               <Link
                 href="/register"
                 className="inline-flex w-full items-center justify-center text-base font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
-                Register
+                ✍️ Εγγραφή
               </Link>
             </>
           )}

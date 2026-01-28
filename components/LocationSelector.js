@@ -47,7 +47,7 @@ export default function LocationSelector({
       }
     } catch (error) {
       console.error('Failed to fetch countries:', error);
-      setError('Failed to load countries');
+      setError('Αποτυχία φόρτωσης χωρών');
     }
   };
 
@@ -71,7 +71,7 @@ export default function LocationSelector({
       }
     } catch (error) {
       console.error('Failed to fetch jurisdictions:', error);
-      setError('Failed to load jurisdictions');
+      setError('Αποτυχία φόρτωσης περιφερειών');
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export default function LocationSelector({
       }
     } catch (error) {
       console.error('Failed to fetch municipalities:', error);
-      setError('Failed to load municipalities');
+      setError('Αποτυχία φόρτωσης δήμων');
     } finally {
       setLoading(false);
     }
@@ -158,11 +158,11 @@ export default function LocationSelector({
             onChange={(e) => onUseUserLocationChange(e.target.checked)}
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />
-          <label htmlFor="useUserLocation" className="ml-2 block text-sm text-gray-700">
-            Use my location (from profile)
-          </label>
-        </div>
-      )}
+            <label htmlFor="useUserLocation" className="ml-2 block text-sm text-gray-700">
+            Χρήση της τοποθεσίας μου (από το προφίλ)
+            </label>
+          </div>
+        )}
 
       {/* Only show dropdowns if not using user location */}
       {(!showUseUserLocation || !useUserLocation) && (
@@ -170,7 +170,7 @@ export default function LocationSelector({
           {/* Country Dropdown */}
           <div>
             <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-              Country
+              Χώρα
             </label>
             <select
               id="country"
@@ -178,7 +178,7 @@ export default function LocationSelector({
               onChange={handleCountryChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">Select a country</option>
+              <option value="">Επιλέξτε χώρα</option>
               {countries.map((country) => (
                 <option key={country.id} value={country.id}>
                   {country.name}
@@ -191,7 +191,7 @@ export default function LocationSelector({
           {selectedCountry && (
             <div>
               <label htmlFor="jurisdiction" className="block text-sm font-medium text-gray-700 mb-1">
-                Jurisdiction / Region
+                Περιφέρεια / Περιοχή
               </label>
               <select
                 id="jurisdiction"
@@ -201,7 +201,7 @@ export default function LocationSelector({
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
               >
                 <option value="">
-                  {loading ? 'Loading...' : jurisdictions.length === 0 ? 'No jurisdictions available' : 'Select a jurisdiction'}
+                  {loading ? 'Φόρτωση...' : jurisdictions.length === 0 ? 'Δεν υπάρχουν διαθέσιμες περιφέρειες' : 'Επιλέξτε περιφέρεια'}
                 </option>
                 {jurisdictions.map((jurisdiction) => (
                   <option key={jurisdiction.id} value={jurisdiction.id}>
@@ -216,7 +216,7 @@ export default function LocationSelector({
           {selectedJurisdiction && (
             <div>
               <label htmlFor="municipality" className="block text-sm font-medium text-gray-700 mb-1">
-                Municipality / City
+                Δήμος / Πόλη
               </label>
               <select
                 id="municipality"
@@ -226,7 +226,7 @@ export default function LocationSelector({
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
               >
                 <option value="">
-                  {loading ? 'Loading...' : municipalities.length === 0 ? 'No municipalities available' : 'Select a municipality'}
+                  {loading ? 'Φόρτωση...' : municipalities.length === 0 ? 'Δεν υπάρχουν διαθέσιμοι δήμοι' : 'Επιλέξτε δήμο'}
                 </option>
                 {municipalities.map((municipality) => (
                   <option key={municipality.id} value={municipality.id}>
@@ -240,18 +240,18 @@ export default function LocationSelector({
           {/* Location Notes (placeholder for future map integration) */}
           <div>
             <label htmlFor="locationNotes" className="block text-sm font-medium text-gray-700 mb-1">
-              Additional Location Details (Optional)
+              Επιπλέον στοιχεία τοποθεσίας (Προαιρετικό)
             </label>
             <input
               type="text"
               id="locationNotes"
               value={locationNotes}
               onChange={handleLocationNotesChange}
-              placeholder="e.g., specific address, landmark, or coordinates (for future use)"
+              placeholder="π.χ. διεύθυνση, σημείο αναφοράς ή συντεταγμένες"
               className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
             />
             <p className="mt-1 text-xs text-gray-500">
-              This field is reserved for future map integration and does not currently affect the location selection.
+              Αυτό το πεδίο προορίζεται για μελλοντική χρήση και δεν επηρεάζει την επιλογή τοποθεσίας.
             </p>
           </div>
 
