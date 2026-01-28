@@ -72,15 +72,9 @@ export default function TopNav() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center text-xl font-bold text-black">
-              Εφαρμογή Ειδήσεων
+              Απόφαση
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link
-                href="/"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/')}`}
-              >
-                Αρχική
-              </Link>
               <Link
                 href="/articles"
                 className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/articles')}`}
@@ -182,14 +176,8 @@ export default function TopNav() {
           </button>
         </div>
       </div>
-      <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
+        <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
         <div className="border-t border-gray-200 px-4 py-3 space-y-2">
-          <Link
-            href="/"
-            className={`block text-base font-medium text-black ${isActive('/')}`}
-          >
-            Αρχική
-          </Link>
           <Link
             href="/articles"
             className={`block text-base font-medium text-black ${isActive('/articles')}`}
