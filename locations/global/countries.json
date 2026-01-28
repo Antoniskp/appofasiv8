@@ -7,6 +7,22 @@
       "iso3166_alpha3": "GRC",
       "iso3166_numeric": "300",
       "officialName": "Ελληνική Δημοκρατία"
+    },
+    {
+      "code": "INT",
+      "name": "Διεθνής",
+      "iso3166_alpha2": "INT",
+      "iso3166_alpha3": "INT",
+      "iso3166_numeric": "999",
+      "officialName": "International"
+    },
+    {
+      "code": "GR+INT",
+      "name": "Ελλάδα + Διεθνής",
+      "iso3166_alpha2": "GR+INT",
+      "iso3166_alpha3": "GR+INT",
+      "iso3166_numeric": "998",
+      "officialName": "Greece + International"
     }
   ]
 }

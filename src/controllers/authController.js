@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
-const { User, Location } = require('../models');
+const { User } = require('../models');
 require('dotenv').config();
 
 const normalizeAvatarUrl = (avatarUrl) => {
@@ -354,6 +354,14 @@ const authController = {
         });
       }
 
+      // Validate locationId format if provided (should be a string code)
+      if (locationId !== undefined && locationId !== null && typeof locationId !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid location ID format. Location ID must be a string code.'
+        });
+      }
+
       // Create new user
       const user = await User.create({
         username,
@@ -446,12 +454,7 @@ const authController = {
   getProfile: async (req, res) => {
     try {
       const user = await User.findByPk(req.user.id, {
-        attributes: { exclude: ['password'] },
-        include: [{
-          model: Location,
-          as: 'location',
-          attributes: ['id', 'name', 'code', 'type']
-        }]
+        attributes: { exclude: ['password'] }
       });
 
       if (!user) {
@@ -555,15 +558,12 @@ const authController = {
       }
 
       if (locationId !== undefined) {
-        // Validate locationId if provided
-        if (locationId !== null) {
-          const location = await Location.findByPk(locationId);
-          if (!location) {
-            return res.status(400).json({
-              success: false,
-              message: 'Invalid location ID. Location does not exist.'
-            });
-          }
+        // Validate locationId format if provided (should be a string code)
+        if (locationId !== null && typeof locationId !== 'string') {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid location ID format. Location ID must be a string code.'
+          });
         }
         user.locationId = locationId;
       }
@@ -571,12 +571,7 @@ const authController = {
       await user.save();
 
       const updatedUser = await User.findByPk(user.id, {
-        attributes: { exclude: ['password'] },
-        include: [{
-          model: Location,
-          as: 'location',
-          attributes: ['id', 'name', 'code', 'type']
-        }]
+        attributes: { exclude: ['password'] }
       });
 
       res.status(200).json({

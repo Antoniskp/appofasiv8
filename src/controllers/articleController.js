@@ -1,4 +1,4 @@
-const { Article, User, Location } = require('../models');
+const { Article, User } = require('../models');
 const { Op } = require('sequelize');
 
 const TAG_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N}\s-]{0,39}$/u;
@@ -116,13 +116,12 @@ const articleController = {
         finalLocationId = user.locationId;
       }
 
-      // Validate locationId if provided
+      // Validate locationId format if provided (should be a string code)
       if (finalLocationId !== null && finalLocationId !== undefined) {
-        const location = await Location.findByPk(finalLocationId);
-        if (!location) {
+        if (typeof finalLocationId !== 'string') {
           return res.status(400).json({
             success: false,
-            message: 'Invalid location ID. Location does not exist.'
+            message: 'Invalid location ID format. Location ID must be a string code.'
           });
         }
       }
@@ -195,11 +194,6 @@ const articleController = {
             model: User,
             as: 'author',
             attributes: ['id', 'username', 'firstName', 'lastName']
-          },
-          {
-            model: Location,
-            as: 'location',
-            attributes: ['id', 'name', 'code', 'type']
           }
         ]
       });
@@ -258,11 +252,6 @@ const articleController = {
             model: User,
             as: 'author',
             attributes: ['id', 'username', 'firstName', 'lastName']
-          },
-          {
-            model: Location,
-            as: 'location',
-            attributes: ['id', 'name', 'code', 'type']
           }
         ],
         order: [['createdAt', 'DESC']],
@@ -303,11 +292,6 @@ const articleController = {
             model: User,
             as: 'author',
             attributes: ['id', 'username', 'firstName', 'lastName']
-          },
-          {
-            model: Location,
-            as: 'location',
-            attributes: ['id', 'name', 'code', 'type']
           }
         ]
       });
@@ -463,15 +447,12 @@ const articleController = {
         const user = await User.findByPk(req.user.id);
         article.locationId = user.locationId;
       } else if (locationId !== undefined) {
-        // Validate locationId if provided
-        if (locationId !== null) {
-          const location = await Location.findByPk(locationId);
-          if (!location) {
-            return res.status(400).json({
-              success: false,
-              message: 'Invalid location ID. Location does not exist.'
-            });
-          }
+        // Validate locationId format if provided (should be a string code)
+        if (locationId !== null && typeof locationId !== 'string') {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid location ID format. Location ID must be a string code.'
+          });
         }
         article.locationId = locationId;
       }
@@ -485,11 +466,6 @@ const articleController = {
             model: User,
             as: 'author',
             attributes: ['id', 'username', 'firstName', 'lastName']
-          },
-          {
-            model: Location,
-            as: 'location',
-            attributes: ['id', 'name', 'code', 'type']
           }
         ]
       });
@@ -586,11 +562,6 @@ const articleController = {
             model: User,
             as: 'author',
             attributes: ['id', 'username', 'firstName', 'lastName']
-          },
-          {
-            model: Location,
-            as: 'location',
-            attributes: ['id', 'name', 'code', 'type']
           }
         ]
       });

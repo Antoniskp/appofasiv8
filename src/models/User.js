@@ -71,12 +71,9 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   locationId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING(100),
     allowNull: true,
-    references: {
-      model: 'Locations',
-      key: 'id'
-    }
+    comment: 'Location code (e.g., GR, GR-I, GR-I-6104) from JSON location data'
   }
 }, {
   timestamps: true,

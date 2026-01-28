@@ -42,29 +42,42 @@ The application includes a comprehensive news workflow that allows users to subm
 
 ## Location System
 
-The application includes a hierarchical location system that allows users and articles to be tagged with geographical locations:
+The application includes a hierarchical location system based on JSON data files that allows users and articles to be tagged with geographical locations:
 
 ### Location Hierarchy
-- **Country**: Top level (e.g., Greece, International)
-- **Jurisdiction**: Administrative regions within a country (e.g., Attica, Central Macedonia, Crete)
+- **Country**: Top level (e.g., Greece, International, Greece+International)
+  - Greece (Ελλάδα) - code: GR (ISO 3166-1 alpha-2 standard)
+  - International (Διεθνής) - code: INT (custom extension, non-ISO)
+  - Greece + International (Ελλάδα + Διεθνής) - code: GR+INT (custom extension, non-ISO)
+- **Jurisdiction**: Administrative regions within Greece (e.g., Attica, Central Macedonia, Crete)
+  - Uses ISO 3166-2 codes (e.g., GR-I for Attica, GR-B for Central Macedonia)
 - **Municipality**: Cities or municipalities within a jurisdiction (e.g., Athens, Thessaloniki, Heraklion)
-- **Address**: Reserved for future use (detailed addresses)
+  - Uses Kallikratis codes where available (Greek administrative standard)
 
 ### Features
+- **JSON-backed**: Location data is stored in JSON files under `/locations` directory for easy maintenance
 - **Optional Location for Users**: Users can optionally select a location in their profile
 - **Optional Location for Articles**: Articles can have an optional location tag
 - **Use User Location**: When creating articles, users can choose to use their profile location
 - **Hierarchical Dropdowns**: Frontend provides dependent dropdowns for easy location selection
+  - Country dropdown always shown
+  - Jurisdiction dropdown appears only after country selection (only for Greece)
+  - Municipality dropdown appears only after jurisdiction selection
 - **Standards-Oriented**: Location data includes ISO codes and metadata for interoperability
-- **Seeded Data**: Pre-populated with Greece and International countries, plus sample Greek regions and cities
+- **Greece+International Option**: Special combined option for content that applies to both Greece and international audiences
 
-### Location Fields
-Each location record includes:
+### Location Data Structure
+Each location in the JSON files includes:
 - `name`: Human-readable name
-- `type`: Location type (country, jurisdiction, municipality, address)
-- `code`: Standard code (e.g., ISO 3166 country codes)
-- `parentId`: Reference to parent location for hierarchy
-- `metadata`: JSONB field for additional data (coordinates, multilingual names, etc.)
+- `code`: Standard code (e.g., ISO 3166 country codes, ISO 3166-2 subdivision codes)
+- `type`: Location type (country, jurisdiction, municipality)
+- Additional metadata like ISO codes, official names, and references to related data files
+
+### Data Files
+- `/locations/index.json`: Main index defining supported countries and data file paths
+- `/locations/global/countries.json`: List of all available countries
+- `/locations/gr/subdivisions.json`: Greek administrative regions (Περιφέρειες)
+- `/locations/gr/municipalities/*.json`: Greek municipalities organized by region
 
 ## Technology Stack
 

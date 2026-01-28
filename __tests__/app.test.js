@@ -647,4 +647,94 @@ describe('News Application Integration Tests', () => {
       expect(response.body.data.article.newsApprovedAt).toBeNull();
     });
   });
+
+  describe('Location System Tests', () => {
+    test('should get all countries including Greece+International', async () => {
+      const response = await request(app)
+        .get('/api/locations/countries');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.locations).toBeDefined();
+      expect(response.body.data.locations.length).toBeGreaterThanOrEqual(3);
+      
+      // Check for Greece, International, and Greece+International
+      const countryCodes = response.body.data.locations.map(c => c.code);
+      expect(countryCodes).toContain('GR');
+      expect(countryCodes).toContain('INT');
+      expect(countryCodes).toContain('GR+INT');
+    });
+
+    test('should get jurisdictions for Greece', async () => {
+      const response = await request(app)
+        .get('/api/locations/countries/GR/jurisdictions');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.locations).toBeDefined();
+      expect(response.body.data.locations.length).toBeGreaterThan(0);
+      
+      // Check first jurisdiction has expected structure
+      const firstJurisdiction = response.body.data.locations[0];
+      expect(firstJurisdiction.id).toBeDefined();
+      expect(firstJurisdiction.name).toBeDefined();
+      expect(firstJurisdiction.type).toBe('jurisdiction');
+      expect(firstJurisdiction.parentId).toBe('GR');
+    });
+
+    test('should return empty jurisdictions for International', async () => {
+      const response = await request(app)
+        .get('/api/locations/countries/INT/jurisdictions');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.locations).toEqual([]);
+    });
+
+    test('should get municipalities for a Greek jurisdiction', async () => {
+      const response = await request(app)
+        .get('/api/locations/jurisdictions/GR-I/municipalities');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.locations).toBeDefined();
+      expect(response.body.data.locations.length).toBeGreaterThan(0);
+      
+      // Check first municipality has expected structure
+      const firstMunicipality = response.body.data.locations[0];
+      expect(firstMunicipality.id).toBeDefined();
+      expect(firstMunicipality.name).toBeDefined();
+      expect(firstMunicipality.type).toBe('municipality');
+      expect(firstMunicipality.parentId).toBe('GR-I');
+    });
+
+    test('should create article with location code', async () => {
+      const response = await request(app)
+        .post('/api/articles')
+        .set('Authorization', `Bearer ${editorToken}`)
+        .send({
+          title: 'Article with Location',
+          content: 'This article has a location assigned.',
+          status: 'published',
+          locationId: 'GR-I'
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.article.locationId).toBe('GR-I');
+    });
+
+    test('should update user profile with location', async () => {
+      const response = await request(app)
+        .put('/api/auth/profile')
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({
+          locationId: 'GR+INT'
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.user.locationId).toBe('GR+INT');
+    });
+  });
 });
