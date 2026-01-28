@@ -40,6 +40,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/contribute" className="text-gray-400 hover:text-white text-sm">
+                  Συνεισφορά
+                </Link>
+              </li>
+              <li>
                 <Link href="/login" className="text-gray-400 hover:text-white text-sm">
                   Είσοδος
                 </Link>
