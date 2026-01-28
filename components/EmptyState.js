@@ -3,7 +3,7 @@
  * @param {string} type - 'empty' or 'error'
  * @param {string} title - Title message
  * @param {string} description - Optional description
- * @param {Object} action - Optional action button with { text, href, onClick }
+ * @param {Object} action - Optional action button with { text, href, onClick, icon }
  */
 export default function EmptyState({ 
   type = 'empty', 
@@ -12,6 +12,7 @@ export default function EmptyState({
   action 
 }) {
   const isError = type === 'error';
+  const ActionIcon = action?.icon;
 
   return (
     <div className={`text-center py-12 px-4 rounded-lg ${
@@ -72,11 +73,13 @@ export default function EmptyState({
         {/* Action Button */}
         {action && (
           action.href ? (
-            <a href={action.href} className="btn-primary">
+            <a href={action.href} className="btn-primary inline-flex items-center gap-2">
+              {ActionIcon && <ActionIcon className="h-5 w-5" aria-hidden="true" />}
               {action.text}
             </a>
           ) : (
-            <button onClick={action.onClick} className="btn-primary">
+            <button onClick={action.onClick} className="btn-primary inline-flex items-center gap-2">
+              {ActionIcon && <ActionIcon className="h-5 w-5" aria-hidden="true" />}
               {action.text}
             </button>
           )

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LocationSelector from '@/components/LocationSelector';
 import { articleAPI } from '@/lib/api';
@@ -141,8 +142,9 @@ function EditArticleContent() {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           <p>{loadError}</p>
         </div>
-        <Link href="/articles" className="inline-block mt-4 text-blue-600 hover:text-blue-800">
-          ← Πίσω στα άρθρα
+        <Link href="/articles" className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800">
+          <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
+          Πίσω στα άρθρα
         </Link>
       </div>
     );
@@ -153,8 +155,9 @@ function EditArticleContent() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h1 className="text-3xl font-bold">Επεξεργασία Άρθρου</h1>
-          <Link href={`/articles/${params.id}`} className="text-blue-600 hover:text-blue-800">
-            ← Πίσω στο άρθρο
+          <Link href={`/articles/${params.id}`} className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800">
+            <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
+            Πίσω στο άρθρο
           </Link>
         </div>
 

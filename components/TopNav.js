@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/lib/auth-context';
 import { usePathname } from 'next/navigation';
+import {
+  ArrowLeftOnRectangleIcon,
+  ArrowRightOnRectangleIcon,
+  PlusIcon,
+  UserPlusIcon
+} from '@heroicons/react/24/outline';
+import { useAuth } from '@/lib/auth-context';
 
 export default function TopNav() {
   const { user, logout } = useAuth();
@@ -81,30 +87,34 @@ export default function TopNav() {
                 )}
                 <Link
                   href="/editor"
-                  className="text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 text-sm font-medium bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
                 >
-                  ➕ Νέο Άρθρο
+                  <PlusIcon className="h-4 w-4" aria-hidden="true" />
+                  Νέο Άρθρο
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-sm font-medium text-red-600 hover:text-red-800"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-800"
                 >
-                  🚪 Έξοδος
+                  <ArrowRightOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
+                  Έξοδος
                 </button>
               </>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-black hover:text-blue-700"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-blue-700"
                 >
-                  🔑 Είσοδος
+                  <ArrowLeftOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
+                  Είσοδος
                 </Link>
                 <Link
                   href="/register"
-                  className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
-                  ✍️ Εγγραφή
+                  <UserPlusIcon className="h-4 w-4" aria-hidden="true" />
+                  Εγγραφή
                 </Link>
               </>
             )}
@@ -174,30 +184,34 @@ export default function TopNav() {
               )}
               <Link
                 href="/editor"
-                className="inline-flex w-full items-center justify-center text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+                className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
               >
-                ➕ Νέο Άρθρο
+                <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                Νέο Άρθρο
               </Link>
               <button
                 onClick={handleLogout}
-                className="w-full text-left text-base font-medium text-red-600 hover:text-red-800"
+                className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
               >
-                🚪 Έξοδος
+                <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
+                Έξοδος
               </button>
             </>
           ) : (
             <>
               <Link
                 href="/login"
-                className="block text-base font-medium text-black hover:text-blue-700"
+                className="inline-flex items-center gap-2 text-base font-medium text-black hover:text-blue-700"
               >
-                🔑 Είσοδος
+                <ArrowLeftOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
+                Είσοδος
               </Link>
               <Link
                 href="/register"
-                className="inline-flex w-full items-center justify-center text-base font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
-                ✍️ Εγγραφή
+                <UserPlusIcon className="h-5 w-5" aria-hidden="true" />
+                Εγγραφή
               </Link>
             </>
           )}

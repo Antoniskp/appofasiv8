@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 /**
  * Reusable article card component
@@ -118,9 +119,10 @@ export default function ArticleCard({ article, variant = 'grid' }) {
           </div>
           <Link
             href={`/articles/${article.id}`}
-            className="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium"
+            className="inline-flex items-center gap-1 mt-4 text-blue-600 hover:text-blue-800 font-medium"
           >
-            Περισσότερα →
+            Περισσότερα
+            <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
       )}

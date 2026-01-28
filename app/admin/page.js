@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { BookOpenIcon, CheckBadgeIcon, ClockIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
@@ -127,15 +128,17 @@ function AdminDashboardContent() {
           <div className="flex flex-wrap gap-4">
             <Link
               href="/editor"
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
             >
-              ➕ Νέο Άρθρο
+              <PlusIcon className="h-5 w-5" aria-hidden="true" />
+              Νέο Άρθρο
             </Link>
             <Link
               href="/articles"
-              className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition"
+              className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition"
             >
-              📚 Όλα τα Άρθρα
+              <BookOpenIcon className="h-5 w-5" aria-hidden="true" />
+              Όλα τα Άρθρα
             </Link>
           </div>
         </div>
@@ -210,7 +213,17 @@ function AdminDashboardContent() {
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             article.newsApprovedAt ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
                           }`}>
-                            {article.newsApprovedAt ? '✓ Εγκεκριμένο' : '⏳ Εκκρεμεί'}
+                            {article.newsApprovedAt ? (
+                              <span className="inline-flex items-center gap-1">
+                                <CheckBadgeIcon className="h-4 w-4" aria-hidden="true" />
+                                Εγκεκριμένο
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1">
+                                <ClockIcon className="h-4 w-4" aria-hidden="true" />
+                                Εκκρεμεί
+                              </span>
+                            )}
                           </span>
                         ) : (
                           <span className="text-gray-400 text-xs">—</span>
@@ -239,9 +252,10 @@ function AdminDashboardContent() {
                         )}
                         <button
                           onClick={() => handleDelete(article.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="inline-flex items-center gap-1 text-red-600 hover:text-red-900"
                         >
-                          🗑️ Διαγραφή
+                          <TrashIcon className="h-4 w-4" aria-hidden="true" />
+                          Διαγραφή
                         </button>
                       </td>
                     </tr>
