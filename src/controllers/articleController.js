@@ -222,7 +222,7 @@ const articleController = {
   // Get all articles
   getAllArticles: async (req, res) => {
     try {
-      const { status, category, page = 1, limit = 10 } = req.query;
+      const { status, category, authorId, page = 1, limit = 10 } = req.query;
       
       const where = {};
       
@@ -236,6 +236,17 @@ const articleController = {
       // Filter by category
       if (category) {
         where.category = category;
+      }
+
+      if (authorId !== undefined) {
+        const parsedAuthorId = parseInt(authorId, 10);
+        if (isNaN(parsedAuthorId)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Author ID must be a number.'
+          });
+        }
+        where.authorId = parsedAuthorId;
       }
 
       const offset = (page - 1) * limit;

@@ -40,12 +40,14 @@ function EditorDashboardContent() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchArticles();
-  }, []);
+    if (user?.id) {
+      fetchArticles();
+    }
+  }, [user?.id]);
 
   const fetchArticles = async () => {
     try {
-      const response = await articleAPI.getAll({ limit: 50 });
+      const response = await articleAPI.getAll({ limit: 50, authorId: user?.id });
       if (response.success) {
         setArticles(response.data.articles || []);
       }
@@ -473,7 +475,7 @@ function EditorDashboardContent() {
                             {article.category}
                           </span>
                         )}
-                        <span>Από {article.User?.username || 'Άγνωστος'}</span>
+                        <span>Από {article.author?.username || article.User?.username || 'Άγνωστος'}</span>
                         <span>•</span>
                         <span>{new Date(article.createdAt).toLocaleDateString()}</span>
                       </div>
