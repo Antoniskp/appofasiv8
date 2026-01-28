@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ArrowLeftIcon, ArrowPathIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { articleAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
@@ -110,7 +111,8 @@ export default function ArticlesPage() {
             title="Σφάλμα φόρτωσης άρθρων"
             description={error}
             action={{
-              text: '🔄 Δοκιμή ξανά',
+              text: 'Δοκιμή ξανά',
+              icon: ArrowPathIcon,
               onClick: () => window.location.reload()
             }}
           />
@@ -137,9 +139,10 @@ export default function ArticlesPage() {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
             >
-              ← Προηγούμενο
+              <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
+              Προηγούμενο
             </button>
             <span className="text-gray-700">
               Σελίδα {page} από {totalPages}
@@ -147,9 +150,10 @@ export default function ArticlesPage() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
             >
-              Επόμενο →
+              Επόμενο
+              <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         )}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { BookOpenIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LocationSelector from '@/components/LocationSelector';
 import { articleAPI } from '@/lib/api';
@@ -467,7 +468,7 @@ function EditorDashboardContent() {
                           <span className={`px-2 py-1 rounded ${
                             article.newsApprovedAt ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
                           }`}>
-                            {article.newsApprovedAt ? '📰 Εγκεκριμένη είδηση' : '📰 Εκκρεμής είδηση'}
+                            {article.newsApprovedAt ? 'Εγκεκριμένη είδηση' : 'Εκκρεμής είδηση'}
                           </span>
                         )}
                         {article.category && (
@@ -490,9 +491,10 @@ function EditorDashboardContent() {
                       {canDelete && (
                         <button
                           onClick={() => handleDelete(article.id)}
-                          className="text-red-600 hover:text-red-800 text-sm"
+                          className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 text-sm"
                         >
-                          🗑️ Διαγραφή
+                          <TrashIcon className="h-4 w-4" aria-hidden="true" />
+                          Διαγραφή
                         </button>
                       )}
                     </div>
@@ -505,8 +507,9 @@ function EditorDashboardContent() {
 
           {articles.length > 10 && (
             <div className="px-6 py-4 bg-gray-50 text-center">
-              <Link href="/articles" className="text-blue-600 hover:text-blue-800 font-medium">
-                📚 Όλα τα άρθρα →
+              <Link href="/articles" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
+                <BookOpenIcon className="h-4 w-4" aria-hidden="true" />
+                Όλα τα άρθρα
               </Link>
             </div>
           )}

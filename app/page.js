@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ArrowPathIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import { articleAPI } from '@/lib/api';
 import HomeHero from '@/components/HomeHero';
 import ArticleCard from '@/components/ArticleCard';
@@ -55,7 +56,8 @@ export default function HomePage() {
             title="Σφάλμα φόρτωσης άρθρων"
             description={error}
             action={{
-              text: '🔄 Δοκιμή ξανά',
+              text: 'Δοκιμή ξανά',
+              icon: ArrowPathIcon,
               onClick: () => window.location.reload()
             }}
           />
@@ -77,8 +79,9 @@ export default function HomePage() {
 
         {latestArticles.length > 0 && (
           <div className="text-center mt-12">
-            <Link href="/articles" className="btn-primary">
-              📚 Όλα τα άρθρα
+            <Link href="/articles" className="btn-primary inline-flex items-center gap-2">
+              <BookOpenIcon className="h-5 w-5" aria-hidden="true" />
+              Όλα τα άρθρα
             </Link>
           </div>
         )}

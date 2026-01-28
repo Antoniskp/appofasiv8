@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ArrowLeftIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
@@ -68,8 +69,9 @@ export default function ArticleDetailPage() {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           <p>Σφάλμα φόρτωσης άρθρου: {error || 'Το άρθρο δεν βρέθηκε'}</p>
         </div>
-        <Link href="/articles" className="inline-block mt-4 text-blue-600 hover:text-blue-800">
-          ← Πίσω στα άρθρα
+        <Link href="/articles" className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800">
+          <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
+          Πίσω στα άρθρα
         </Link>
       </div>
     );
@@ -81,8 +83,9 @@ export default function ArticleDetailPage() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link href="/articles" className="inline-block mb-6 text-blue-600 hover:text-blue-800">
-          ← Πίσω στα άρθρα
+        <Link href="/articles" className="inline-flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800">
+          <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
+          Πίσω στα άρθρα
         </Link>
 
         <div className="bg-white rounded-lg shadow-md p-8">
@@ -203,17 +206,19 @@ export default function ArticleDetailPage() {
               {canEdit && (
                 <Link
                   href={`/articles/${article.id}/edit`}
-                  className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
                 >
-                  ✏️ Επεξεργασία
+                  <PencilSquareIcon className="h-5 w-5" aria-hidden="true" />
+                  Επεξεργασία
                 </Link>
               )}
               {canDelete && (
                 <button
                   onClick={handleDelete}
-                  className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition"
+                  className="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition"
                 >
-                  🗑️ Διαγραφή
+                  <TrashIcon className="h-5 w-5" aria-hidden="true" />
+                  Διαγραφή
                 </button>
               )}
             </div>
