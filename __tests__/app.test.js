@@ -306,15 +306,31 @@ describe('News Application Integration Tests', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'Test Article',
+          subtitle: 'Test Subtitle',
           content: 'This is a test article content that is long enough to pass validation.',
           summary: 'Test summary',
           category: 'Technology',
-          status: 'published'
+          status: 'published',
+          coverImageUrl: 'https://example.com/cover.jpg',
+          coverImageCaption: 'Cover caption',
+          sourceName: 'Test Source',
+          sourceUrl: 'https://example.com/source',
+          tags: ['tech', 'news', 'news'],
+          readingTimeMinutes: 6,
+          isFeatured: true
         });
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
       expect(response.body.data.article.title).toBe('Test Article');
+      expect(response.body.data.article.subtitle).toBe('Test Subtitle');
+      expect(response.body.data.article.coverImageUrl).toBe('https://example.com/cover.jpg');
+      expect(response.body.data.article.coverImageCaption).toBe('Cover caption');
+      expect(response.body.data.article.sourceName).toBe('Test Source');
+      expect(response.body.data.article.sourceUrl).toBe('https://example.com/source');
+      expect(response.body.data.article.tags).toEqual(['tech', 'news']);
+      expect(response.body.data.article.readingTimeMinutes).toBe(6);
+      expect(response.body.data.article.isFeatured).toBe(true);
       testArticleId = response.body.data.article.id;
     });
 
@@ -354,12 +370,34 @@ describe('News Application Integration Tests', () => {
         .put(`/api/articles/${testArticleId}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          title: 'Updated Test Article'
+          title: 'Updated Test Article',
+          subtitle: 'Updated subtitle',
+          tags: ['updated', ''],
+          readingTimeMinutes: 4,
+          isFeatured: false
         });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.article.title).toBe('Updated Test Article');
+      expect(response.body.data.article.subtitle).toBe('Updated subtitle');
+      expect(response.body.data.article.tags).toEqual(['updated']);
+      expect(response.body.data.article.readingTimeMinutes).toBe(4);
+      expect(response.body.data.article.isFeatured).toBe(false);
+    });
+
+    test('should reject invalid metadata values', async () => {
+      const response = await request(app)
+        .put(`/api/articles/${testArticleId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          tags: ['this-tag-is-way-too-long-to-be-valid-because-it-exceeds-forty-characters'],
+          readingTimeMinutes: 0,
+          coverImageUrl: 'javascript:alert(1)'
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.success).toBe(false);
     });
 
     test('should update article as editor (different user)', async () => {

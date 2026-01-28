@@ -8,7 +8,7 @@ A professional news application with JWT authentication, PostgreSQL database, ro
 - **GitHub OAuth**: Optional GitHub sign up/login with profile sync
 - **User Roles**: Four-tier role system (Admin, Moderator, Editor, Viewer)
 - **PostgreSQL Database**: Robust data persistence with Sequelize ORM
-- **News Management**: Complete CRUD operations for news articles
+- **News Management**: Complete CRUD operations with professional article metadata (subtitle, featured flags, tags, cover images, sources)
 - **News Submission & Moderation Workflow**: Users can flag articles as news; moderators/admins approve them for publication
 - **Hierarchical Location System**: Optional location tagging for users and articles with support for country, jurisdiction, and municipality levels
 - **Role-Based Access Control**: Different permissions based on user roles
