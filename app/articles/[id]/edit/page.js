@@ -58,10 +58,10 @@ function EditArticleContent() {
             useUserLocation: false
           });
         } else {
-          setLoadError(response.message || 'Failed to load article.');
+          setLoadError(response.message || 'Αποτυχία φόρτωσης άρθρου.');
         }
       } catch (err) {
-        setLoadError(err.message || 'Failed to load article.');
+        setLoadError(err.message || 'Αποτυχία φόρτωσης άρθρου.');
       } finally {
         setLoading(false);
       }
@@ -115,13 +115,13 @@ function EditArticleContent() {
       };
       const response = await articleAPI.update(params.id, payload);
       if (response.success) {
-        alert('Article updated successfully!');
+        alert('Το άρθρο ενημερώθηκε με επιτυχία!');
         router.push(`/articles/${params.id}`);
       } else {
-        setSubmitError(response.message || 'Failed to update article.');
+        setSubmitError(response.message || 'Αποτυχία ενημέρωσης άρθρου.');
       }
     } catch (err) {
-      setSubmitError(err.message || 'Failed to update article.');
+      setSubmitError(err.message || 'Αποτυχία ενημέρωσης άρθρου.');
     } finally {
       setSubmitting(false);
     }
@@ -130,7 +130,7 @@ function EditArticleContent() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <p className="text-gray-600">Loading article...</p>
+        <p className="text-gray-600">Φόρτωση άρθρου...</p>
       </div>
     );
   }
@@ -142,7 +142,7 @@ function EditArticleContent() {
           <p>{loadError}</p>
         </div>
         <Link href="/articles" className="inline-block mt-4 text-blue-600 hover:text-blue-800">
-          ← Back to Articles
+          ← Πίσω στα άρθρα
         </Link>
       </div>
     );
@@ -152,9 +152,9 @@ function EditArticleContent() {
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold">Edit Article</h1>
+          <h1 className="text-3xl font-bold">Επεξεργασία Άρθρου</h1>
           <Link href={`/articles/${params.id}`} className="text-blue-600 hover:text-blue-800">
-            ← Back to Article
+            ← Πίσω στο άρθρο
           </Link>
         </div>
 
@@ -167,7 +167,7 @@ function EditArticleContent() {
             )}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Title *
+                Τίτλος *
               </label>
               <input
                 type="text"
@@ -177,13 +177,13 @@ function EditArticleContent() {
                 value={formData.title}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter article title"
+                placeholder="Εισάγετε τίτλο άρθρου"
               />
             </div>
 
             <div>
               <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">
-                Subtitle
+                Υπότιτλος
               </label>
               <input
                 type="text"
@@ -192,13 +192,13 @@ function EditArticleContent() {
                 value={formData.subtitle}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter article subtitle"
+                placeholder="Εισάγετε υπότιτλο άρθρου"
               />
             </div>
 
             <div>
               <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
-                Summary
+                Περίληψη
               </label>
               <input
                 type="text"
@@ -207,13 +207,13 @@ function EditArticleContent() {
                 value={formData.summary}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Brief summary (optional)"
+                placeholder="Σύντομη περίληψη (προαιρετικό)"
               />
             </div>
 
             <div>
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-                Content *
+                Περιεχόμενο *
               </label>
               <textarea
                 id="content"
@@ -223,15 +223,15 @@ function EditArticleContent() {
                 onChange={handleInputChange}
                 rows={10}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Write your article content here..."
+                placeholder="Γράψτε εδώ το περιεχόμενο του άρθρου..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="coverImageUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                  Cover Image URL
-                </label>
+              <label htmlFor="coverImageUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                URL Εικόνας Εξωφύλλου
+              </label>
                 <input
                   type="url"
                   id="coverImageUrl"
@@ -243,9 +243,9 @@ function EditArticleContent() {
                 />
               </div>
               <div>
-                <label htmlFor="coverImageCaption" className="block text-sm font-medium text-gray-700 mb-1">
-                  Cover Image Caption
-                </label>
+              <label htmlFor="coverImageCaption" className="block text-sm font-medium text-gray-700 mb-1">
+                Λεζάντα Εικόνας
+              </label>
                 <input
                   type="text"
                   id="coverImageCaption"
@@ -253,16 +253,16 @@ function EditArticleContent() {
                   value={formData.coverImageCaption}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Image caption (optional)"
-                />
-              </div>
+                placeholder="Λεζάντα εικόνας (προαιρετικό)"
+              />
             </div>
+          </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="sourceName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Source Name
-                </label>
+              <label htmlFor="sourceName" className="block text-sm font-medium text-gray-700 mb-1">
+                Πηγή
+              </label>
                 <input
                   type="text"
                   id="sourceName"
@@ -270,13 +270,13 @@ function EditArticleContent() {
                   value={formData.sourceName}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="News agency or source"
-                />
-              </div>
-              <div>
-                <label htmlFor="sourceUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                  Source URL
-                </label>
+                placeholder="Πρακτορείο ή πηγή"
+              />
+            </div>
+            <div>
+              <label htmlFor="sourceUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                URL Πηγής
+              </label>
                 <input
                   type="url"
                   id="sourceUrl"
@@ -291,9 +291,9 @@ function EditArticleContent() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                Κατηγορία
+              </label>
                 <input
                   type="text"
                   id="category"
@@ -301,14 +301,14 @@ function EditArticleContent() {
                   value={formData.category}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="e.g., Technology, Sports"
-                />
-              </div>
+                placeholder="π.χ. Τεχνολογία, Αθλητισμός"
+              />
+            </div>
 
-              <div>
-                <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
-                  Tags (comma-separated)
-                </label>
+            <div>
+              <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+                Ετικέτες (με κόμμα)
+              </label>
                 <input
                   type="text"
                   id="tags"
@@ -316,16 +316,16 @@ function EditArticleContent() {
                   value={formData.tags}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="politics, economy, local"
-                />
-              </div>
+                placeholder="πολιτική, οικονομία, τοπικά"
+              />
             </div>
+          </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="readingTimeMinutes" className="block text-sm font-medium text-gray-700 mb-1">
-                  Reading Time (minutes)
-                </label>
+              <label htmlFor="readingTimeMinutes" className="block text-sm font-medium text-gray-700 mb-1">
+                Χρόνος ανάγνωσης (λεπτά)
+              </label>
                 <input
                   type="number"
                   id="readingTimeMinutes"
@@ -338,9 +338,9 @@ function EditArticleContent() {
                 />
               </div>
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                  Status *
-                </label>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                Κατάσταση *
+              </label>
                 <select
                   id="status"
                   name="status"
@@ -348,12 +348,12 @@ function EditArticleContent() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                  <option value="archived">Archived</option>
-                </select>
-              </div>
+                <option value="draft">Πρόχειρο</option>
+                <option value="published">Δημοσιευμένο</option>
+                <option value="archived">Αρχειοθετημένο</option>
+              </select>
             </div>
+          </div>
 
             <div className="flex flex-wrap items-center gap-6">
               <div className="flex items-center">
@@ -366,7 +366,7 @@ function EditArticleContent() {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
-                  Flag as news (requires moderator approval for publication)
+                  Σήμανση ως είδηση (απαιτείται έγκριση για δημοσίευση)
                 </label>
               </div>
               <div className="flex items-center">
@@ -379,14 +379,14 @@ function EditArticleContent() {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
-                  Featured article
+                  Προτεινόμενο άρθρο
                 </label>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location (Optional)
+                Τοποθεσία (Προαιρετικό)
               </label>
               <LocationSelector
                 selectedLocationId={formData.locationId}
@@ -403,13 +403,13 @@ function EditArticleContent() {
                 disabled={submitting}
                 className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
               >
-                {submitting ? 'Saving...' : 'Save Changes'}
+                {submitting ? 'Αποθήκευση...' : 'Αποθήκευση'}
               </button>
               <Link
                 href={`/articles/${params.id}`}
                 className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400 transition"
               >
-                Cancel
+                Ακύρωση
               </Link>
             </div>
           </form>
