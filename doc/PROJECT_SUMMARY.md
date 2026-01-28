@@ -112,7 +112,7 @@ The application is ready for deployment with:
 4. **doc/SECURITY.md** - Security features and best practices
 5. **doc/VPS_DEPLOYMENT.md** - VPS deployment guide
 6. **doc/ARCHITECTURE.md** - Architecture overview
-5. **postman_collection.json** - Postman API collection
+7. **postman_collection.json** - Postman API collection
 
 ## 🧪 Testing
 
