@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="app-container py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-4">Εφαρμογή Ειδήσεων</h3>
+            <h3 className="text-lg font-semibold mb-4">Απόφαση</h3>
             <p className="text-gray-400 text-sm">
               Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις και άρθρα.
             </p>
@@ -14,11 +14,6 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Γρήγοροι Σύνδεσμοι</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-400 hover:text-white text-sm">
-                  Αρχική
-                </Link>
-              </li>
               <li>
                 <Link href="/articles" className="text-gray-400 hover:text-white text-sm">
                   Άρθρα
@@ -63,7 +58,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            © 2024 Εφαρμογή Ειδήσεων. Με επιφύλαξη παντός δικαιώματος.
+            © 2024 Απόφαση. Με επιφύλαξη παντός δικαιώματος.
           </p>
         </div>
       </div>

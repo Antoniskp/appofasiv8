@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import './globals.css';
 
 export const metadata = {
-  title: 'Εφαρμογή Ειδήσεων',
+  title: 'Απόφαση',
   description: 'Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις',
 };
 

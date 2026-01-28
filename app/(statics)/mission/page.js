@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Αποστολή - Εφαρμογή Ειδήσεων',
+  title: 'Αποστολή - Απόφαση',
   description: 'Η αποστολή και οι αρχές του Apofasi',
 };
 
