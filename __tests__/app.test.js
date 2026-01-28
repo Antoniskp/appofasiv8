@@ -356,6 +356,20 @@ describe('News Application Integration Tests', () => {
       expect(Array.isArray(response.body.data.articles)).toBe(true);
     });
 
+    test('should filter articles by authorId', async () => {
+      const response = await request(app)
+        .get('/api/articles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .query({ authorId: 1 });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.articles.length).toBeGreaterThan(0);
+      response.body.data.articles.forEach((article) => {
+        expect(article.authorId).toBe(1);
+      });
+    });
+
     test('should get single article by ID', async () => {
       const response = await request(app)
         .get(`/api/articles/${testArticleId}`);
