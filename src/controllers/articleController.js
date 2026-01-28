@@ -240,7 +240,7 @@ const articleController = {
 
       if (authorId !== undefined) {
         const parsedAuthorId = parseInt(authorId, 10);
-        if (Number.isNaN(parsedAuthorId)) {
+        if (isNaN(parsedAuthorId)) {
           return res.status(400).json({
             success: false,
             message: 'Author ID must be a number.'

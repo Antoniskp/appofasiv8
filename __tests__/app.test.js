@@ -370,6 +370,16 @@ describe('News Application Integration Tests', () => {
       });
     });
 
+    test('should reject non-numeric authorId filter', async () => {
+      const response = await request(app)
+        .get('/api/articles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .query({ authorId: 'not-a-number' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.success).toBe(false);
+    });
+
     test('should get single article by ID', async () => {
       const response = await request(app)
         .get(`/api/articles/${testArticleId}`);
