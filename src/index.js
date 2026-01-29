@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { sequelize } = require('./models');
+const { sequelize, Poll, PollOption, PollVote } = require('./models');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -31,14 +31,17 @@ const ensurePollTables = async () => {
     .map(normalizeTableName)
     .filter(Boolean)
     .map((name) => name.replace(/"/g, '').split('.').pop().toLowerCase());
-  const requiredTables = ['polls', 'polloptions', 'pollvotes'];
+  const requiredTables = [Poll, PollOption, PollVote]
+    .map((model) => normalizeTableName(model.getTableName()))
+    .filter(Boolean)
+    .map((name) => name.replace(/"/g, '').split('.').pop().toLowerCase());
   const missingTables = requiredTables.filter((tableName) => !normalizedTables.includes(tableName));
 
   if (missingTables.length > 0) {
     console.warn(
-      `Poll tables missing (${missingTables.join(', ')}). Creating missing tables with sequelize.sync().`
+      `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
     );
-    await sequelize.sync();
+    await sequelize.sync({ models: [Poll, PollOption, PollVote] });
   }
 };
 
@@ -104,6 +107,7 @@ const startServer = async () => {
       // Fallback to sync for development (not recommended for production)
       console.warn('WARNING: Using sequelize.sync() - not recommended for production!');
       console.warn('Set USE_MIGRATIONS=true and run migrations instead.');
+      await ensurePollTables();
       await sequelize.sync({ alter: true });
       console.log('Database models synchronized.');
     }
@@ -119,7 +123,8 @@ const startServer = async () => {
   }
 };
 
+app.ensurePollTables = ensurePollTables;
+
 startServer();
 
 module.exports = app;
-module.exports.ensurePollTables = ensurePollTables;

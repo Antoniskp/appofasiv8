@@ -155,7 +155,7 @@ npm run migrate
 ```
 
 ### Poll endpoints return 500 errors
-If `/api/polls` fails after an update, the poll tables may be missing. The server now creates missing poll tables on startup, but you should still run migrations to keep schemas aligned:
+If `/api/polls` fails after an update, the poll tables may be missing. The server includes a startup safeguard that recreates missing poll tables, but this is a fallback only and does not replace migrations. Run migrations to keep schemas aligned:
 ```bash
 npm run migrate
 ```

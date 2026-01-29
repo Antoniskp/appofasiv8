@@ -101,7 +101,7 @@ describe('Poll API Tests', () => {
       expect(Array.isArray(response.body.data.polls)).toBe(true);
     });
 
-    it('should return polls when poll tables are missing and are re-created', async () => {
+    it('should recreate missing poll tables and handle requests', async () => {
       const shouldSkip = process.env.SKIP_POLL_TABLE_DROP === 'true';
       if (shouldSkip) {
         return;
@@ -112,6 +112,17 @@ describe('Poll API Tests', () => {
       await Poll.drop();
 
       await app.ensurePollTables();
+      const tables = await sequelize.getQueryInterface().showAllTables();
+      const normalizedTables = tables.map((table) => {
+        if (typeof table === 'string') {
+          return table.toLowerCase();
+        }
+        const name = table.tableName || table.name || table.tablename || String(table);
+        return name.replace(/"/g, '').split('.').pop().toLowerCase();
+      });
+      expect(normalizedTables).toEqual(
+        expect.arrayContaining(['polls', 'polloptions', 'pollvotes'])
+      );
 
       const response = await request(app)
         .get('/api/polls')
