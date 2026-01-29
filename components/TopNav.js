@@ -67,23 +67,23 @@ export default function TopNav() {
   };
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-sand shadow-md border-b border-seafoam/70">
       <div className="app-container">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center text-xl font-bold text-black">
+            <Link href="/" className="flex items-center text-xl font-bold text-blue-900">
               Απόφαση
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/articles"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/articles')}`}
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/articles')}`}
               >
                 Άρθρα
               </Link>
               <Link
                 href="/news"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/news')}`}
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/news')}`}
               >
                 Ειδήσεις
               </Link>
@@ -94,7 +94,7 @@ export default function TopNav() {
               <div className="relative" ref={userMenuRef}>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-blue-900 hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                   onClick={() => setIsUserMenuOpen((open) => !open)}
                   onKeyDown={handleUserMenuKeyDown}
                   aria-haspopup="true"
@@ -114,12 +114,12 @@ export default function TopNav() {
                     role="menu"
                     aria-labelledby="desktop-user-menu-button"
                     onKeyDown={handleUserMenuKeyDown}
-                    className="absolute right-0 z-20 mt-2 w-52 rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+                    className="absolute right-0 z-20 mt-2 w-52 rounded-md border border-seafoam bg-white py-1 shadow-lg"
                   >
                     <Link
                       href="/profile"
                       role="menuitem"
-                      className={`flex items-center gap-2 px-4 py-2 text-sm text-black hover:bg-gray-50 ${isActive('/profile')}`}
+                      className={`flex items-center gap-2 px-4 py-2 text-sm text-blue-900 hover:bg-seafoam/40 ${isActive('/profile')}`}
                     >
                       <UserCircleIcon className="h-4 w-4" aria-hidden="true" />
                       Profile
@@ -127,7 +127,7 @@ export default function TopNav() {
                     <Link
                       href="/editor"
                       role="menuitem"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-black hover:bg-gray-50"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-blue-900 hover:bg-seafoam/40"
                     >
                       <PlusIcon className="h-4 w-4" aria-hidden="true" />
                       New Article
@@ -135,7 +135,7 @@ export default function TopNav() {
                     <button
                       onClick={handleLogout}
                       role="menuitem"
-                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-seafoam/40"
                     >
                       <ArrowRightOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
                       Exit
@@ -147,7 +147,7 @@ export default function TopNav() {
               <>
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-blue-700"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-blue-900 hover:text-blue-700"
                 >
                   <ArrowLeftOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
                   Είσοδος
@@ -164,7 +164,7 @@ export default function TopNav() {
           </div>
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-100 sm:hidden"
+            className="inline-flex items-center justify-center rounded-md p-2 text-blue-900 hover:bg-seafoam/40 sm:hidden"
             aria-controls="mobile-menu"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((open) => !open)}
@@ -182,78 +182,78 @@ export default function TopNav() {
           </button>
         </div>
       </div>
-        <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
-        <div className="border-t border-gray-200 px-4 py-3 space-y-2">
+      <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
+        <div className="border-t border-seafoam px-4 py-3 space-y-2">
           <Link
             href="/articles"
-            className={`block text-base font-medium text-black ${isActive('/articles')}`}
+            className={`block text-base font-medium text-blue-900 ${isActive('/articles')}`}
           >
             Άρθρα
           </Link>
           <Link
             href="/news"
-            className={`block text-base font-medium text-black ${isActive('/news')}`}
+            className={`block text-base font-medium text-blue-900 ${isActive('/news')}`}
           >
             Ειδήσεις
           </Link>
         </div>
-          <div className="border-t border-gray-200 px-4 py-3 space-y-3">
-            {user ? (
-              <div ref={mobileUserMenuRef}>
+        <div className="border-t border-seafoam px-4 py-3 space-y-3">
+          {user ? (
+            <div ref={mobileUserMenuRef}>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between rounded-md border border-seafoam bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm"
+                onClick={() => setIsUserMenuOpen((open) => !open)}
+                onKeyDown={handleUserMenuKeyDown}
+                aria-haspopup="true"
+                aria-expanded={isUserMenuOpen}
+                aria-controls="mobile-user-menu"
+                id="mobile-user-menu-button"
+              >
+                <span>Hello {user.username}</span>
+                <ChevronDownIcon
+                  className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
+              <div
+                id="mobile-user-menu"
+                role="menu"
+                aria-labelledby="mobile-user-menu-button"
+                onKeyDown={handleUserMenuKeyDown}
+                className={`${isUserMenuOpen ? 'space-y-2' : 'hidden'} pt-1`}
+              >
+                <Link
+                  href="/profile"
+                  role="menuitem"
+                  className={`flex items-center gap-2 text-base font-medium text-blue-900 ${isActive('/profile')}`}
+                >
+                  <UserCircleIcon className="h-5 w-5" aria-hidden="true" />
+                  Profile
+                </Link>
+                <Link
+                  href="/editor"
+                  role="menuitem"
+                  className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+                >
+                  <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                  New Article
+                </Link>
                 <button
-                  type="button"
-                  className="flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-black shadow-sm"
-                  onClick={() => setIsUserMenuOpen((open) => !open)}
-                  onKeyDown={handleUserMenuKeyDown}
-                  aria-haspopup="true"
-                  aria-expanded={isUserMenuOpen}
-                  aria-controls="mobile-user-menu"
-                  id="mobile-user-menu-button"
+                  onClick={handleLogout}
+                  role="menuitem"
+                  className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
                 >
-                  <span>Hello {user.username}</span>
-                  <ChevronDownIcon
-                    className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
-                    aria-hidden="true"
-                  />
+                  <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
+                  Exit
                 </button>
-                <div
-                  id="mobile-user-menu"
-                  role="menu"
-                  aria-labelledby="mobile-user-menu-button"
-                  onKeyDown={handleUserMenuKeyDown}
-                  className={`${isUserMenuOpen ? 'space-y-2' : 'hidden'} pt-1`}
-                >
-                  <Link
-                    href="/profile"
-                    role="menuitem"
-                    className={`flex items-center gap-2 text-base font-medium text-black ${isActive('/profile')}`}
-                  >
-                    <UserCircleIcon className="h-5 w-5" aria-hidden="true" />
-                    Profile
-                  </Link>
-                  <Link
-                    href="/editor"
-                    role="menuitem"
-                    className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
-                  >
-                    <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                    New Article
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    role="menuitem"
-                    className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
-                  >
-                    <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
-                    Exit
-                  </button>
-                </div>
               </div>
-            ) : (
+            </div>
+          ) : (
             <>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 text-base font-medium text-black hover:text-blue-700"
+                className="inline-flex items-center gap-2 text-base font-medium text-blue-900 hover:text-blue-700"
               >
                 <ArrowLeftOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
                 Είσοδος
