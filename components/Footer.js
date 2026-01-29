@@ -17,11 +17,6 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Γρήγοροι Σύνδεσμοι</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/articles" className="text-gray-400 hover:text-white text-sm">
-                  Άρθρα
-                </Link>
-              </li>
-              <li>
                 <Link href="/contact" className="text-gray-400 hover:text-white text-sm">
                   Επικοινωνία
                 </Link>
@@ -39,16 +34,6 @@ export default function Footer() {
               <li>
                 <Link href="/contribute" className="text-gray-400 hover:text-white text-sm">
                   Συνεισφορά
-                </Link>
-              </li>
-              <li>
-                <Link href="/login" className="text-gray-400 hover:text-white text-sm">
-                  Είσοδος
-                </Link>
-              </li>
-              <li>
-                <Link href="/register" className="text-gray-400 hover:text-white text-sm">
-                  Εγγραφή
                 </Link>
               </li>
             </ul>
