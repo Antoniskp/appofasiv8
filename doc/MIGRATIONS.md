@@ -154,6 +154,12 @@ Your database schema is out of date. Run:
 npm run migrate
 ```
 
+### Poll endpoints return 500 errors
+If `/api/polls` fails after an update, the poll tables may be missing. The server now creates missing poll tables on startup, but you should still run migrations to keep schemas aligned:
+```bash
+npm run migrate
+```
+
 ### Migration fails with foreign key error
 1. Check what migrations have run: `npm run migrate:status`
 2. Make sure you're not mixing `sequelize.sync()` with migrations
