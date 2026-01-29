@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
+const CURRENT_YEAR = new Date().getFullYear();
 
+export default function Footer() {
   return (
     <footer className="bg-gray-800 text-white mt-auto">
       <div className="app-container py-4">
@@ -65,7 +65,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-700 mt-4 pt-4 text-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} Απόφαση. Με επιφύλαξη παντός δικαιώματος.
+            © {CURRENT_YEAR} Απόφαση. Με επιφύλαξη παντός δικαιώματος.
           </p>
         </div>
       </div>
