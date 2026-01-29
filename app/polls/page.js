@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/auth-context';
+import { getAuthToken } from '@/lib/api';
 import PollCard from '@/components/PollCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 
 export default function PollsPage() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,11 +19,12 @@ export default function PollsPage() {
 
   useEffect(() => {
     fetchPolls();
-  }, [filter, page, token]);
+  }, [filter, page]);
 
   const fetchPolls = async () => {
     try {
       setLoading(true);
+      const token = getAuthToken();
       const headers = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
