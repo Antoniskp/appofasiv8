@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
+  ChartBarIcon,
   ChevronDownIcon,
   PlusIcon,
   UserCircleIcon,
@@ -87,6 +88,12 @@ export default function TopNav() {
               >
                 Ειδήσεις
               </Link>
+              <Link
+                href="/polls"
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/polls')}`}
+              >
+                Ψηφοφορίες
+              </Link>
             </div>
           </div>
           <div className="hidden sm:flex flex-wrap items-center gap-4">
@@ -131,6 +138,14 @@ export default function TopNav() {
                     >
                       <PlusIcon className="h-4 w-4" aria-hidden="true" />
                       New Article
+                    </Link>
+                    <Link
+                      href="/polls/create"
+                      role="menuitem"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-blue-900 hover:bg-seafoam/40"
+                    >
+                      <ChartBarIcon className="h-4 w-4" aria-hidden="true" />
+                      Create Poll
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -196,6 +211,12 @@ export default function TopNav() {
           >
             Ειδήσεις
           </Link>
+          <Link
+            href="/polls"
+            className={`block text-base font-medium text-blue-900 ${isActive('/polls')}`}
+          >
+            Ψηφοφορίες
+          </Link>
         </div>
         <div className="border-t border-seafoam px-4 py-3 space-y-3">
           {user ? (
@@ -238,6 +259,14 @@ export default function TopNav() {
                 >
                   <PlusIcon className="h-5 w-5" aria-hidden="true" />
                   New Article
+                </Link>
+                <Link
+                  href="/polls/create"
+                  role="menuitem"
+                  className="inline-flex w-full items-center justify-center gap-2 text-base font-medium border border-blue-600 text-blue-600 px-3 py-2 rounded hover:bg-blue-50"
+                >
+                  <ChartBarIcon className="h-5 w-5" aria-hidden="true" />
+                  Create Poll
                 </Link>
                 <button
                   onClick={handleLogout}
