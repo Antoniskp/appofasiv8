@@ -34,9 +34,15 @@ export default function LocationSelector({
 
   useEffect(() => {
     if (!selectedLocationId || typeof selectedLocationId !== 'string') {
-      setSelectedCountry('');
-      setSelectedJurisdiction('');
-      setSelectedMunicipality('');
+      if (selectedCountry) {
+        setSelectedCountry('');
+      }
+      if (selectedJurisdiction) {
+        setSelectedJurisdiction('');
+      }
+      if (selectedMunicipality) {
+        setSelectedMunicipality('');
+      }
       return;
     }
 
@@ -45,10 +51,35 @@ export default function LocationSelector({
     const jurisdictionCode = parts.length >= 2 ? `${parts[0]}-${parts[1]}` : '';
     const municipalityCode = parts.length >= 3 ? selectedLocationId : '';
 
-    setSelectedCountry(countryCode);
-    setSelectedJurisdiction(jurisdictionCode || '');
-    setSelectedMunicipality(municipalityCode || '');
-  }, [selectedLocationId]);
+    if (countryCode && selectedCountry !== countryCode) {
+      setSelectedCountry(countryCode);
+    } else if (!countryCode && selectedCountry) {
+      setSelectedCountry('');
+    }
+
+    const jurisdictionReady =
+      jurisdictionCode && jurisdictions.some((jurisdiction) => jurisdiction.id === jurisdictionCode);
+    if (jurisdictionCode && jurisdictionReady && selectedJurisdiction !== jurisdictionCode) {
+      setSelectedJurisdiction(jurisdictionCode);
+    } else if (!jurisdictionCode && selectedJurisdiction) {
+      setSelectedJurisdiction('');
+    }
+
+    const municipalityReady =
+      municipalityCode && municipalities.some((municipality) => municipality.id === municipalityCode);
+    if (municipalityCode && municipalityReady && selectedMunicipality !== municipalityCode) {
+      setSelectedMunicipality(municipalityCode);
+    } else if (!municipalityCode && selectedMunicipality) {
+      setSelectedMunicipality('');
+    }
+  }, [
+    selectedLocationId,
+    selectedCountry,
+    selectedJurisdiction,
+    selectedMunicipality,
+    jurisdictions,
+    municipalities
+  ]);
 
   // Fetch countries on mount
   useEffect(() => {
