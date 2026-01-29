@@ -32,6 +32,55 @@ export default function LocationSelector({
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
+  useEffect(() => {
+    if (!selectedLocationId || typeof selectedLocationId !== 'string') {
+      if (selectedCountry) {
+        setSelectedCountry('');
+      }
+      if (selectedJurisdiction) {
+        setSelectedJurisdiction('');
+      }
+      if (selectedMunicipality) {
+        setSelectedMunicipality('');
+      }
+      return;
+    }
+
+    const parts = selectedLocationId.split('-');
+    const countryCode = parts[0] || '';
+    const jurisdictionCode = parts.length >= 2 ? `${parts[0]}-${parts[1]}` : '';
+    const municipalityCode = parts.length >= 3 ? selectedLocationId : '';
+
+    if (countryCode && selectedCountry !== countryCode) {
+      setSelectedCountry(countryCode);
+    } else if (!countryCode && selectedCountry) {
+      setSelectedCountry('');
+    }
+
+    const jurisdictionReady =
+      jurisdictionCode && jurisdictions.some((jurisdiction) => jurisdiction.id === jurisdictionCode);
+    if (jurisdictionCode && jurisdictionReady && selectedJurisdiction !== jurisdictionCode) {
+      setSelectedJurisdiction(jurisdictionCode);
+    } else if (!jurisdictionCode && selectedJurisdiction) {
+      setSelectedJurisdiction('');
+    }
+
+    const municipalityReady =
+      municipalityCode && municipalities.some((municipality) => municipality.id === municipalityCode);
+    if (municipalityCode && municipalityReady && selectedMunicipality !== municipalityCode) {
+      setSelectedMunicipality(municipalityCode);
+    } else if (!municipalityCode && selectedMunicipality) {
+      setSelectedMunicipality('');
+    }
+  }, [
+    selectedLocationId,
+    selectedCountry,
+    selectedJurisdiction,
+    selectedMunicipality,
+    jurisdictions,
+    municipalities
+  ]);
+
   // Fetch countries on mount
   useEffect(() => {
     fetchCountries();
