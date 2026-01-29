@@ -75,18 +75,18 @@ export default function TopNav() {
               Απόφαση
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link
-                href="/articles"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/articles')}`}
-              >
-                Άρθρα
-              </Link>
-              <Link
-                href="/news"
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-black ${isActive('/news')}`}
-              >
-                Ειδήσεις
-              </Link>
+                <Link
+                  href="/articles"
+                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/articles')}`}
+                >
+                  Άρθρα
+                </Link>
+                <Link
+                  href="/news"
+                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/news')}`}
+                >
+                  Ειδήσεις
+                </Link>
             </div>
           </div>
           <div className="hidden sm:flex flex-wrap items-center gap-4">
@@ -135,7 +135,7 @@ export default function TopNav() {
                     <button
                       onClick={handleLogout}
                       role="menuitem"
-                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-seafoam/40"
                     >
                       <ArrowRightOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
                       Exit
@@ -184,18 +184,18 @@ export default function TopNav() {
       </div>
         <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
         <div className="border-t border-seafoam px-4 py-3 space-y-2">
-          <Link
-            href="/articles"
-            className={`block text-base font-medium text-black ${isActive('/articles')}`}
-          >
-            Άρθρα
-          </Link>
-          <Link
-            href="/news"
-            className={`block text-base font-medium text-black ${isActive('/news')}`}
-          >
-            Ειδήσεις
-          </Link>
+            <Link
+              href="/articles"
+              className={`block text-base font-medium text-blue-900 ${isActive('/articles')}`}
+            >
+              Άρθρα
+            </Link>
+            <Link
+              href="/news"
+              className={`block text-base font-medium text-blue-900 ${isActive('/news')}`}
+            >
+              Ειδήσεις
+            </Link>
         </div>
           <div className="border-t border-seafoam px-4 py-3 space-y-3">
             {user ? (
