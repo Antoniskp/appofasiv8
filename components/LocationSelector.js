@@ -32,6 +32,24 @@ export default function LocationSelector({
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
+  useEffect(() => {
+    if (!selectedLocationId || typeof selectedLocationId !== 'string') {
+      setSelectedCountry('');
+      setSelectedJurisdiction('');
+      setSelectedMunicipality('');
+      return;
+    }
+
+    const parts = selectedLocationId.split('-');
+    const countryCode = parts[0] || '';
+    const jurisdictionCode = parts.length >= 2 ? `${parts[0]}-${parts[1]}` : '';
+    const municipalityCode = parts.length >= 3 ? selectedLocationId : '';
+
+    setSelectedCountry(countryCode);
+    setSelectedJurisdiction(jurisdictionCode || '');
+    setSelectedMunicipality(municipalityCode || '');
+  }, [selectedLocationId]);
+
   // Fetch countries on mount
   useEffect(() => {
     fetchCountries();
