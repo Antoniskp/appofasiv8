@@ -100,6 +100,38 @@ describe('Poll API Tests', () => {
       expect(response.body.data.polls).toBeDefined();
       expect(Array.isArray(response.body.data.polls)).toBe(true);
     });
+
+    it('should recreate missing poll tables and handle requests', async () => {
+      const shouldSkip = process.env.SKIP_POLL_TABLE_DROP === 'true';
+      if (shouldSkip) {
+        return;
+      }
+
+      await PollVote.drop();
+      await PollOption.drop();
+      await Poll.drop();
+
+      await app.ensurePollTables();
+      const tables = await sequelize.getQueryInterface().showAllTables();
+      const normalizedTables = tables.map((table) => {
+        if (typeof table === 'string') {
+          return table.toLowerCase();
+        }
+        const name = table.tableName || table.name || table.tablename || String(table);
+        return name.replace(/"/g, '').split('.').pop().toLowerCase();
+      });
+      expect(normalizedTables).toEqual(
+        expect.arrayContaining(['polls', 'polloptions', 'pollvotes'])
+      );
+
+      const response = await request(app)
+        .get('/api/polls')
+        .query({ status: 'active' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data.polls)).toBe(true);
+    });
   });
 
   describe('GET /api/polls/:id', () => {
