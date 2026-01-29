@@ -75,18 +75,18 @@ export default function TopNav() {
               Απόφαση
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link
-                  href="/articles"
-                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/articles')}`}
-                >
-                  Άρθρα
-                </Link>
-                <Link
-                  href="/news"
-                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/news')}`}
-                >
-                  Ειδήσεις
-                </Link>
+              <Link
+                href="/articles"
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/articles')}`}
+              >
+                Άρθρα
+              </Link>
+              <Link
+                href="/news"
+                className={`inline-flex items-center px-1 pt-1 text-sm font-medium text-blue-900 ${isActive('/news')}`}
+              >
+                Ειδήσεις
+              </Link>
             </div>
           </div>
           <div className="hidden sm:flex flex-wrap items-center gap-4">
@@ -182,74 +182,74 @@ export default function TopNav() {
           </button>
         </div>
       </div>
-        <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
+      <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
         <div className="border-t border-seafoam px-4 py-3 space-y-2">
-            <Link
-              href="/articles"
-              className={`block text-base font-medium text-blue-900 ${isActive('/articles')}`}
-            >
-              Άρθρα
-            </Link>
-            <Link
-              href="/news"
-              className={`block text-base font-medium text-blue-900 ${isActive('/news')}`}
-            >
-              Ειδήσεις
-            </Link>
+          <Link
+            href="/articles"
+            className={`block text-base font-medium text-blue-900 ${isActive('/articles')}`}
+          >
+            Άρθρα
+          </Link>
+          <Link
+            href="/news"
+            className={`block text-base font-medium text-blue-900 ${isActive('/news')}`}
+          >
+            Ειδήσεις
+          </Link>
         </div>
-          <div className="border-t border-seafoam px-4 py-3 space-y-3">
-            {user ? (
-              <div ref={mobileUserMenuRef}>
+        <div className="border-t border-seafoam px-4 py-3 space-y-3">
+          {user ? (
+            <div ref={mobileUserMenuRef}>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between rounded-md border border-seafoam bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm"
+                onClick={() => setIsUserMenuOpen((open) => !open)}
+                onKeyDown={handleUserMenuKeyDown}
+                aria-haspopup="true"
+                aria-expanded={isUserMenuOpen}
+                aria-controls="mobile-user-menu"
+                id="mobile-user-menu-button"
+              >
+                <span>Hello {user.username}</span>
+                <ChevronDownIcon
+                  className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
+              <div
+                id="mobile-user-menu"
+                role="menu"
+                aria-labelledby="mobile-user-menu-button"
+                onKeyDown={handleUserMenuKeyDown}
+                className={`${isUserMenuOpen ? 'space-y-2' : 'hidden'} pt-1`}
+              >
+                <Link
+                  href="/profile"
+                  role="menuitem"
+                  className={`flex items-center gap-2 text-base font-medium text-blue-900 ${isActive('/profile')}`}
+                >
+                  <UserCircleIcon className="h-5 w-5" aria-hidden="true" />
+                  Profile
+                </Link>
+                <Link
+                  href="/editor"
+                  role="menuitem"
+                  className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+                >
+                  <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                  New Article
+                </Link>
                 <button
-                  type="button"
-                  className="flex w-full items-center justify-between rounded-md border border-seafoam bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm"
-                  onClick={() => setIsUserMenuOpen((open) => !open)}
-                  onKeyDown={handleUserMenuKeyDown}
-                  aria-haspopup="true"
-                  aria-expanded={isUserMenuOpen}
-                  aria-controls="mobile-user-menu"
-                  id="mobile-user-menu-button"
+                  onClick={handleLogout}
+                  role="menuitem"
+                  className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
                 >
-                  <span>Hello {user.username}</span>
-                  <ChevronDownIcon
-                    className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
-                    aria-hidden="true"
-                  />
+                  <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
+                  Exit
                 </button>
-                <div
-                  id="mobile-user-menu"
-                  role="menu"
-                  aria-labelledby="mobile-user-menu-button"
-                  onKeyDown={handleUserMenuKeyDown}
-                  className={`${isUserMenuOpen ? 'space-y-2' : 'hidden'} pt-1`}
-                >
-                  <Link
-                    href="/profile"
-                    role="menuitem"
-                      className={`flex items-center gap-2 text-base font-medium text-blue-900 ${isActive('/profile')}`}
-                  >
-                    <UserCircleIcon className="h-5 w-5" aria-hidden="true" />
-                    Profile
-                  </Link>
-                  <Link
-                    href="/editor"
-                    role="menuitem"
-                    className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
-                  >
-                    <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                    New Article
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    role="menuitem"
-                    className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
-                  >
-                    <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
-                    Exit
-                  </button>
-                </div>
               </div>
-            ) : (
+            </div>
+          ) : (
             <>
               <Link
                 href="/login"
