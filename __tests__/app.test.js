@@ -356,6 +356,18 @@ describe('News Application Integration Tests', () => {
       expect(Array.isArray(response.body.data.articles)).toBe(true);
     });
 
+    test('should filter articles by isNews flag', async () => {
+      const response = await request(app)
+        .get('/api/articles')
+        .query({ isNews: true });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      response.body.data.articles.forEach((article) => {
+        expect(article.isNews).toBe(true);
+      });
+    });
+
     test('should filter articles by authorId', async () => {
       const response = await request(app)
         .get('/api/articles')

@@ -216,7 +216,7 @@ const articleController = {
   // Get all articles
   getAllArticles: async (req, res) => {
     try {
-      const { status, category, authorId, page = 1, limit = 10 } = req.query;
+      const { status, category, authorId, isNews, page = 1, limit = 10 } = req.query;
       
       const where = {};
       
@@ -230,6 +230,10 @@ const articleController = {
       // Filter by category
       if (category) {
         where.category = category;
+      }
+
+      if (isNews !== undefined) {
+        where.isNews = isNews === 'true';
       }
 
       if (authorId !== undefined) {
