@@ -34,7 +34,6 @@ function EditorDashboardContent() {
     sourceName: '',
     sourceUrl: '',
     tags: '',
-    readingTimeMinutes: '',
     locationId: null,
     useUserLocation: false
   });
@@ -62,18 +61,6 @@ function EditorDashboardContent() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === 'number') {
-      if (value === '') {
-        setFormData({
-          ...formData,
-          [name]: '',
-        });
-        return;
-      }
-      if (Number.isNaN(Number(value))) {
-        return;
-      }
-    }
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
@@ -90,9 +77,6 @@ function EditorDashboardContent() {
     setSubmitting(true);
 
     try {
-      const parsedReadingTime = formData.readingTimeMinutes
-        ? Number(formData.readingTimeMinutes)
-        : null;
       const payload = {
         ...formData,
         tags: formData.tags
@@ -100,10 +84,7 @@ function EditorDashboardContent() {
             .split(',')
             .map(tag => tag.trim())
             .filter(Boolean)
-          : [],
-        readingTimeMinutes: parsedReadingTime && parsedReadingTime >= 1
-          ? parsedReadingTime
-          : null
+          : []
       };
       const response = await articleAPI.create(payload);
       if (response.success) {
@@ -123,7 +104,6 @@ function EditorDashboardContent() {
           sourceName: '',
           sourceUrl: '',
           tags: '',
-          readingTimeMinutes: '',
           locationId: null,
           useUserLocation: false
         });
@@ -168,10 +148,8 @@ function EditorDashboardContent() {
 
           {showForm && (
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Section 1: Mandatory Fields */}
+              {/* Main Fields Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Υποχρεωτικά Πεδία</h3>
-                
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                     Τίτλος *
@@ -185,6 +163,51 @@ function EditorDashboardContent() {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Εισάγετε τίτλο άρθρου"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">
+                    Υπότιτλος (προαιρετικό)
+                  </label>
+                  <input
+                    type="text"
+                    id="subtitle"
+                    name="subtitle"
+                    value={formData.subtitle}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Εισάγετε υπότιτλο άρθρου"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                    Κατηγορία (προαιρετικό)
+                  </label>
+                  <input
+                    type="text"
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="π.χ. Τεχνολογία, Αθλητισμός"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+                    Ετικέτες (προαιρετικό)
+                  </label>
+                  <input
+                    type="text"
+                    id="tags"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="με κόμμα, π.χ. πολιτική, οικονομία, τοπικά"
                   />
                 </div>
 
@@ -220,122 +243,35 @@ function EditorDashboardContent() {
                     <option value="archived">Αρχειοθετημένο</option>
                   </select>
                 </div>
-              </div>
 
-              {/* Section 2: Categories and Tags */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Κατηγορίες & Ετικέτες</h3>
-                
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                    Κατηγορία
+                  <label htmlFor="coverImageUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                    URL Εικόνας Εξωφύλλου (προαιρετικό)
+                  </label>
+                  <input
+                    type="url"
+                    id="coverImageUrl"
+                    name="coverImageUrl"
+                    value={formData.coverImageUrl}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="coverImageCaption" className="block text-sm font-medium text-gray-700 mb-1">
+                    Λεζάντα Εικόνας (προαιρετικό)
                   </label>
                   <input
                     type="text"
-                    id="category"
-                    name="category"
-                    value={formData.category}
+                    id="coverImageCaption"
+                    name="coverImageCaption"
+                    value={formData.coverImageCaption}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="π.χ. Τεχνολογία, Αθλητισμός"
+                    placeholder="Λεζάντα εικόνας"
                   />
-                </div>
-
-                <div>
-                  <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
-                    Ετικέτες (με κόμμα)
-                  </label>
-                  <input
-                    type="text"
-                    id="tags"
-                    name="tags"
-                    value={formData.tags}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="πολιτική, οικονομία, τοπικά"
-                  />
-                </div>
-              </div>
-
-              {/* Section 3: Other Options */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Επιπλέον Επιλογές</h3>
-                
-                <div>
-                  <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">
-                    Υπότιτλος
-                  </label>
-                  <input
-                    type="text"
-                    id="subtitle"
-                    name="subtitle"
-                    value={formData.subtitle}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Εισάγετε υπότιτλο άρθρου"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
-                    Περίληψη
-                  </label>
-                  <input
-                    type="text"
-                    id="summary"
-                    name="summary"
-                    value={formData.summary}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Σύντομη περίληψη (προαιρετικό)"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="readingTimeMinutes" className="block text-sm font-medium text-gray-700 mb-1">
-                    Χρόνος ανάγνωσης (λεπτά)
-                  </label>
-                  <input
-                    type="number"
-                    id="readingTimeMinutes"
-                    name="readingTimeMinutes"
-                    min="1"
-                    value={formData.readingTimeMinutes}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="5"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="coverImageUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                      URL Εικόνας Εξωφύλλου
-                    </label>
-                    <input
-                      type="url"
-                      id="coverImageUrl"
-                      name="coverImageUrl"
-                      value={formData.coverImageUrl}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="coverImageCaption" className="block text-sm font-medium text-gray-700 mb-1">
-                      Λεζάντα Εικόνας
-                    </label>
-                    <input
-                      type="text"
-                      id="coverImageCaption"
-                      name="coverImageCaption"
-                      value={formData.coverImageCaption}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Λεζάντα εικόνας (προαιρετικό)"
-                    />
-                  </div>
                 </div>
 
                 {/* Image Preview */}
@@ -360,78 +296,95 @@ function EditorDashboardContent() {
                     </div>
                   </div>
                 )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="sourceName" className="block text-sm font-medium text-gray-700 mb-1">
-                      Πηγή
-                    </label>
-                    <input
-                      type="text"
-                      id="sourceName"
-                      name="sourceName"
-                      value={formData.sourceName}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Πρακτορείο ή πηγή"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="sourceUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                      URL Πηγής
-                    </label>
-                    <input
-                      type="url"
-                      id="sourceUrl"
-                      name="sourceUrl"
-                      value={formData.sourceUrl}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://source.example.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-6">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="isNews"
-                      name="isNews"
-                      checked={formData.isNews}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
-                      Σήμανση ως είδηση (απαιτείται έγκριση για δημοσίευση)
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="isFeatured"
-                      name="isFeatured"
-                      checked={formData.isFeatured}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
-                      Προτεινόμενο άρθρο
-                    </label>
-                  </div>
-                </div>
               </div>
 
-              {/* Section 4: Location (at the end) */}
+              {/* Additional Options Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Τοποθεσία (Προαιρετικό)</h3>
-                <LocationSelector
-                  selectedLocationId={formData.locationId}
-                  onLocationChange={(locationId) => setFormData({ ...formData, locationId })}
-                  showUseUserLocation={true}
-                  useUserLocation={formData.useUserLocation}
-                  onUseUserLocationChange={(checked) => setFormData({ ...formData, useUserLocation: checked })}
-                />
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Επιπλέον Επιλογές</h3>
+                
+                <div>
+                  <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
+                    Περίληψη (προαιρετικό)
+                  </label>
+                  <input
+                    type="text"
+                    id="summary"
+                    name="summary"
+                    value={formData.summary}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Σύντομη περίληψη"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="sourceName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Πηγή
+                  </label>
+                  <input
+                    type="text"
+                    id="sourceName"
+                    name="sourceName"
+                    value={formData.sourceName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Πρακτορείο ή πηγή"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="sourceUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                    URL Πηγής
+                  </label>
+                  <input
+                    type="url"
+                    id="sourceUrl"
+                    name="sourceUrl"
+                    value={formData.sourceUrl}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://source.example.com"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isNews"
+                    name="isNews"
+                    checked={formData.isNews}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
+                    Σήμανση ως είδηση (απαιτείται έγκριση για δημοσίευση) (Προαιρετικό)
+                  </label>
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isFeatured"
+                    name="isFeatured"
+                    checked={formData.isFeatured}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
+                    Προτεινόμενο άρθρο (Προαιρετικό)
+                  </label>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Τοποθεσία (Προαιρετικό)</h4>
+                  <LocationSelector
+                    selectedLocationId={formData.locationId}
+                    onLocationChange={(locationId) => setFormData({ ...formData, locationId })}
+                    showUseUserLocation={true}
+                    useUserLocation={formData.useUserLocation}
+                    onUseUserLocationChange={(checked) => setFormData({ ...formData, useUserLocation: checked })}
+                  />
+                </div>
               </div>
 
               <div className="flex gap-4 pt-4 border-t">
