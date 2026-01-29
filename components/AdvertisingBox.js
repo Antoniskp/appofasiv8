@@ -1,5 +1,16 @@
 import Link from 'next/link';
 
+/**
+ * AdvertisingBox component displays a visually appealing call-to-action box
+ * for advertising and donations. Appears above the footer on all pages.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.title - The title/heading of the advertising box (default: "Χώρος Διαφήμισης")
+ * @param {string} props.message - The main message text (default: advertising and donation invitation in Greek)
+ * @param {string} props.contactLink - The URL for the contact link (default: "/contact")
+ * @param {string} props.contactText - The text for the contact button (default: "Επικοινωνήστε μαζί μας")
+ * @returns {JSX.Element} The AdvertisingBox component
+ */
 export default function AdvertisingBox({ 
   title = "Χώρος Διαφήμισης", 
   message = "Αυτός είναι ένας χώρος για διαφήμιση. Επικοινωνήστε μαζί μας για να τοποθετήσετε τη διαφήμισή σας εδώ ή να κάνετε μια δωρεά!",
@@ -16,6 +27,7 @@ export default function AdvertisingBox({
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path 
                 strokeLinecap="round" 
@@ -39,6 +51,7 @@ export default function AdvertisingBox({
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path 
                 strokeLinecap="round" 
