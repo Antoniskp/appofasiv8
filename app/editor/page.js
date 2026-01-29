@@ -39,6 +39,7 @@ function EditorDashboardContent() {
     useUserLocation: false
   });
   const [submitting, setSubmitting] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -77,6 +78,11 @@ function EditorDashboardContent() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
+    
+    // Reset image error when URL changes
+    if (name === 'coverImageUrl') {
+      setImageError(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -121,6 +127,7 @@ function EditorDashboardContent() {
           locationId: null,
           useUserLocation: false
         });
+        setImageError(false);
         fetchArticles();
       }
     } catch (error) {
@@ -338,18 +345,18 @@ function EditorDashboardContent() {
                       Προεπισκόπηση Εικόνας
                     </label>
                     <div className="border border-gray-300 rounded-md overflow-hidden">
-                      <img 
-                        src={formData.coverImageUrl} 
-                        alt={formData.coverImageCaption || "Εικόνα εξωφύλλου"} 
-                        className="w-full h-auto max-h-96 object-contain bg-gray-100"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'block';
-                        }}
-                      />
-                      <div className="hidden p-4 text-center text-red-600 text-sm">
-                        Αδυναμία φόρτωσης εικόνας. Ελέγξτε το URL.
-                      </div>
+                      {!imageError ? (
+                        <img 
+                          src={formData.coverImageUrl} 
+                          alt={formData.coverImageCaption || "Προεπισκόπηση εικόνας εξωφύλλου άρθρου"} 
+                          className="w-full h-auto max-h-96 object-contain bg-gray-100"
+                          onError={() => setImageError(true)}
+                        />
+                      ) : (
+                        <div className="p-4 text-center text-red-600 text-sm">
+                          Αδυναμία φόρτωσης εικόνας. Ελέγξτε το URL.
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -417,7 +424,7 @@ function EditorDashboardContent() {
 
               {/* Section 4: Location (at the end) */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Τοποθεσία</h3>
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Τοποθεσία (Προαιρετικό)</h3>
                 <LocationSelector
                   selectedLocationId={formData.locationId}
                   onLocationChange={(locationId) => setFormData({ ...formData, locationId })}
