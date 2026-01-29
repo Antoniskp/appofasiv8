@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { getAuthToken } from '@/lib/api';
 import PollForm from '@/components/PollForm';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 function CreatePollPageContent() {
   const router = useRouter();
-  const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,6 +17,7 @@ function CreatePollPageContent() {
     setError(null);
 
     try {
+      const token = getAuthToken();
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/polls`,
         {

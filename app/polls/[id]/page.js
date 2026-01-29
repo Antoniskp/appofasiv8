@@ -5,12 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChartBarIcon, ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/auth-context';
+import { getAuthToken } from '@/lib/api';
 import SkeletonLoader from '@/components/SkeletonLoader';
 
 export default function PollDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [poll, setPoll] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,11 +26,12 @@ export default function PollDetailPage() {
     if (params.id) {
       fetchPoll();
     }
-  }, [params.id, token]);
+  }, [params.id]);
 
   const fetchPoll = async () => {
     try {
       setLoading(true);
+      const token = getAuthToken();
       const headers = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -73,6 +75,7 @@ export default function PollDetailPage() {
     setSubmitting(true);
 
     try {
+      const token = getAuthToken();
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -122,6 +125,7 @@ export default function PollDetailPage() {
     }
 
     try {
+      const token = getAuthToken();
       const headers = {
         'Content-Type': 'application/json'
       };
