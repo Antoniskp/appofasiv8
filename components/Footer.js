@@ -50,7 +50,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-700 mt-4 pt-4 text-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} Απόφαση. Με επιφύλαξη παντός δικαιώματος.
+            © {currentYear} Απόφαση. Με επιφύλαξη παντός δικαιώματος. Χτισμένο με ανοιχτό κώδικα, AI και φροντίδα.
           </p>
         </div>
       </div>
