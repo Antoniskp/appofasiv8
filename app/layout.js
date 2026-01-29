@@ -1,5 +1,6 @@
 import { AuthProvider } from '@/lib/auth-context';
 import TopNav from '@/components/TopNav';
+import AdvertisingBox from '@/components/AdvertisingBox';
 import Footer from '@/components/Footer';
 import './globals.css';
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
           <main className="flex-grow">
             {children}
           </main>
+          <AdvertisingBox />
           <Footer />
         </AuthProvider>
       </body>
