@@ -72,11 +72,13 @@ export default function NewsPage() {
           />
         )}
 
-        <div className="space-y-6">
-          {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} variant="list" />
-          ))}
-        </div>
+        {!loading && !error && articles.length > 0 && (
+          <div className="space-y-6">
+            {articles.map((article) => (
+              <ArticleCard key={article.id} article={article} variant="list" />
+            ))}
+          </div>
+        )}
 
         {totalPages > 1 && (
           <div className="flex justify-center items-center space-x-4 mt-8">
