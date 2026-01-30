@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Απόφαση</h3>
             <p className="text-gray-400 text-sm">
-              Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις και άρθρα.
+              Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις και άρθρα. Απάντησε και κάνε τα αποτελέσματα εγκυρότερα.
             </p>
           </div>
           <div>
