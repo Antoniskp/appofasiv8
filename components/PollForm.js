@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PlusIcon, TrashIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
 export default function PollForm({ initialData = null, onSubmit, isLoading = false }) {
+  const canEditOptions = !(initialData?.voteCount > 0);
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -28,6 +29,9 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
   };
 
   const handleOptionChange = (index, field, value) => {
+    if (!canEditOptions) {
+      return;
+    }
     setFormData(prev => {
       const newOptions = [...prev.options];
       newOptions[index] = {
@@ -39,6 +43,9 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
   };
 
   const addOption = () => {
+    if (!canEditOptions) {
+      return;
+    }
     setFormData(prev => ({
       ...prev,
       options: [...prev.options, { text: '', photoUrl: '', linkUrl: '' }]
@@ -46,6 +53,9 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
   };
 
   const removeOption = (index) => {
+    if (!canEditOptions) {
+      return;
+    }
     if (formData.options.length <= 2) {
       alert('A poll must have at least 2 options');
       return;
@@ -227,12 +237,18 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
           <button
             type="button"
             onClick={addOption}
-            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+            disabled={!canEditOptions}
+            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
             <PlusIcon className="h-4 w-4" />
             Προσθήκη Επιλογής
           </button>
         </div>
+        {!canEditOptions && (
+          <p className="text-sm text-gray-600">
+            Οι επιλογές δεν μπορούν να αλλάξουν μετά την καταχώρηση ψήφων.
+          </p>
+        )}
 
         <div className="space-y-4">
           {formData.options.map((option, index) => (
@@ -245,7 +261,8 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
                   <button
                     type="button"
                     onClick={() => removeOption(index)}
-                    className="text-red-600 hover:text-red-700"
+                    disabled={!canEditOptions}
+                    className="text-red-600 hover:text-red-700 disabled:text-gray-300 disabled:cursor-not-allowed"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
@@ -260,6 +277,7 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
                   type="text"
                   value={option.text}
                   onChange={(e) => handleOptionChange(index, 'text', e.target.value)}
+                  disabled={!canEditOptions}
                   className="mt-1 block w-full rounded-md border-seafoam shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Εισάγετε το κείμενο της επιλογής..."
                   required
@@ -277,6 +295,7 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
                       type="url"
                       value={option.photoUrl}
                       onChange={(e) => handleOptionChange(index, 'photoUrl', e.target.value)}
+                      disabled={!canEditOptions}
                       className="mt-1 block w-full rounded-md border-seafoam shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       placeholder="https://example.com/image.jpg"
                     />
@@ -302,6 +321,7 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
                       type="url"
                       value={option.linkUrl}
                       onChange={(e) => handleOptionChange(index, 'linkUrl', e.target.value)}
+                      disabled={!canEditOptions}
                       className="mt-1 block w-full rounded-md border-seafoam shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       placeholder="https://example.com/profile"
                     />
