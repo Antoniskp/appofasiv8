@@ -18,13 +18,16 @@ Professional news application with JWT authentication, PostgreSQL, role-based ac
 
 ## Quick start
 
+Create the PostgreSQL database and edit `.env` with your credentials (see
+[Deployment](doc/DEPLOYMENT.md)) before running migrations.
+
 ```bash
 npm install
 cp .env.example .env
 npm run migrate
 ```
 
-Start servers:
+### Start servers
 
 ```bash
 # Backend
