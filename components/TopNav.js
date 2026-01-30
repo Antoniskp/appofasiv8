@@ -77,9 +77,10 @@ export default function TopNav() {
               <Image
                 src="/images/branding/appofasi-high-resolution-logo-transparent.png"
                 alt="Appofasi"
-                width={2000}
-                height={461}
+                width={312}
+                height={72}
                 className="h-9 w-auto"
+                priority
               />
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
