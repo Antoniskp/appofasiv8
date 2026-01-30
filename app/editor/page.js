@@ -8,16 +8,18 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import ArticleForm from '@/components/ArticleForm';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { stripHtml } from '@/lib/html-sanitizer';
 
 function EditorDashboardContent() {
   const { user } = useAuth();
   const router = useRouter();
   const [articles, setArticles] = useState([]);
-  const statusLabels = {
-    draft: 'Πρόχειρο',
-    published: 'Δημοσιευμένο',
-    archived: 'Αρχειοθετημένο'
-  };
+   const statusLabels = {
+     draft: 'Πρόχειρο',
+     published: 'Δημοσιευμένο',
+     archived: 'Αρχειοθετημένο'
+   };
+   const emptyPreviewMessage = 'Δεν υπάρχει διαθέσιμη προεπισκόπηση.';
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -194,6 +196,8 @@ function EditorDashboardContent() {
                 const canEdit = user.role === 'admin' || user.role === 'editor' || user.id === article.authorId;
                 const canDelete = user.role === 'admin' || user.id === article.authorId;
                 
+                const contentPreview = stripHtml(article.content);
+
                 return (
                   <div key={article.id} className="p-6 hover:bg-gray-50">
                     <div className="flex justify-between items-start">
@@ -204,7 +208,9 @@ function EditorDashboardContent() {
                           </Link>
                         </h3>
                         <p className="text-sm text-gray-600 mb-2">
-                          {article.summary || article.content?.substring(0, 100) + '...'}
+                          {article.summary || (contentPreview
+                            ? `${contentPreview.slice(0, 100)}...`
+                            : emptyPreviewMessage)}
                         </p>
                         <div className="flex flex-wrap gap-3 text-sm text-gray-500">
                           <span className={`px-2 py-1 rounded ${
