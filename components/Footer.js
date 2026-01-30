@@ -46,10 +46,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Επικοινωνία</h3>
             <p className="text-gray-400 text-sm">
-              Email: info@newsapp.com
+              Email: eimaiautospou@gmail.com
             </p>
             <p className="text-gray-400 text-sm">
-              Τηλέφωνο: (123) 456-7890
+              Τηλέφωνο: Προσεχώς
             </p>
           </div>
         </div>
