@@ -8,10 +8,10 @@ export default function HomeHero() {
     <section className="bg-blue-600 text-white py-20">
       <div className="app-container text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          Πάρε μια Απόφαση. Μπλέξε.
+          Η πρώτη ιστοσελίδα ψηφιακών δημοσκοπήσεων.
         </h1>
         <p className="text-xl md:text-2xl mb-8">
-          Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις και άρθρα
+          Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις και άρθρα.
         </p>
         <Link href="/articles" className="btn-secondary bg-white">
           Όλα τα Άρθρα
