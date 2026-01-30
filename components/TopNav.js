@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -72,8 +73,15 @@ export default function TopNav() {
       <div className="app-container">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center text-xl font-bold text-blue-900">
-              Απόφαση
+            <Link href="/" className="flex items-center" aria-label="Appofasi home">
+              <Image
+                src="/images/branding/appofasi-high-resolution-logo-transparent.png"
+                alt="Appofasi"
+                width={312}
+                height={72}
+                className="h-9 w-auto"
+                priority
+              />
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
