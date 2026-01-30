@@ -72,8 +72,12 @@ export default function TopNav() {
       <div className="app-container">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center text-xl font-bold text-blue-900">
-              Απόφαση
+            <Link href="/" className="flex items-center" aria-label="Appofasi home">
+              <img
+                src="/images/branding/appofasi-high-resolution-logo-transparent.png"
+                alt="Appofasi"
+                className="h-9 w-auto"
+              />
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
