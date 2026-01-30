@@ -286,6 +286,369 @@ sudo certbot --nginx -d your-domain.com
 
 ---
 
+## Domain Configuration & HTTPS Setup
+
+This section covers setting up a custom domain (e.g., `appofasi.gr`) with proper HTTPS configuration, including www-to-non-www redirects and SSL certificates for both domain variants.
+
+### Prerequisites
+
+Before starting, ensure you have:
+- Domain DNS A records pointing to your VPS IP address
+  - `appofasi.gr` → Your VPS IP
+  - `www.appofasi.gr` → Your VPS IP
+- Completed the basic nginx setup from step 6 above
+
+### Step 1: Update Environment Variables
+
+Update your `.env` file to use the production domain instead of localhost or IP addresses:
+
+```bash
+cd /var/www/appofasiv8
+nano .env
+```
+
+Update the following variables:
+
+```env
+# Backend API URL for frontend
+NEXT_PUBLIC_API_URL=https://appofasi.gr
+
+# Frontend App URL (used for OAuth redirects)
+NEXT_PUBLIC_APP_URL=https://appofasi.gr
+
+# GitHub OAuth redirect URI (if using GitHub OAuth)
+GITHUB_REDIRECT_URI=https://appofasi.gr/auth/github/callback
+```
+
+**Important:** After updating `.env`, rebuild the frontend and restart the services:
+
+```bash
+# Rebuild frontend with new environment variables
+npm run frontend:build
+
+# Restart both services
+pm2 restart newsapp-backend newsapp-frontend
+pm2 save
+```
+
+### Step 2: Configure Nginx for Domain and www Redirect
+
+Update your nginx configuration to handle both domain variants and redirect www to non-www. This configuration also resolves the common "conflicting server_name" issue.
+
+```bash
+sudo nano /etc/nginx/sites-available/newsapp
+```
+
+Replace the existing configuration with the following. **Important:** Only ONE server block on port 80 should claim the server IP to avoid nginx conflicts.
+
+```nginx
+# HTTP: Redirect www to non-www
+server {
+    listen 80;
+    server_name www.appofasi.gr;
+    
+    # Redirect all www traffic to non-www
+    return 301 http://appofasi.gr$request_uri;
+}
+
+# HTTP: Main server block for non-www domain and IP
+server {
+    listen 80;
+    # Include both the non-www domain and server IP
+    # This is the ONLY port 80 block that should claim the IP
+    server_name appofasi.gr YOUR_SERVER_IP;
+
+    # Route API requests to Express backend on port 3000
+    location /api/ {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Route Next.js static assets to frontend on port 3001
+    location /_next/ {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Route all other requests to Next.js frontend on port 3001
+    location / {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+**Key Points:**
+- **Two separate server blocks on port 80:** One for www redirect, one for the main domain + IP
+- **Only the main (non-www) block includes the server IP** to avoid "conflicting server_name" warnings
+- **www.appofasi.gr** has its own dedicated redirect block that sends all traffic to the non-www version
+- Replace `YOUR_SERVER_IP` with your actual VPS IP address (e.g., `185.92.192.81`)
+
+Test the nginx configuration:
+
+```bash
+# Test for syntax errors
+sudo nginx -t
+
+# Reload nginx if test passes
+sudo systemctl reload nginx
+```
+
+### Step 3: Obtain SSL Certificates with Certbot
+
+Run certbot to obtain SSL certificates for both the main domain and www subdomain. Certbot will automatically update the nginx configuration to add HTTPS server blocks.
+
+```bash
+# Install certbot if not already installed
+sudo apt install -y certbot python3-certbot-nginx
+
+# Obtain certificates for both domains
+sudo certbot --nginx -d appofasi.gr -d www.appofasi.gr
+```
+
+**During the certbot process:**
+1. Provide your email address for renewal notifications
+2. Agree to the terms of service
+3. Choose whether to redirect HTTP to HTTPS (recommended: select "Yes" or option 2)
+
+Certbot will:
+- Obtain SSL certificates from Let's Encrypt
+- Automatically update your nginx configuration
+- Add HTTPS (port 443) server blocks
+- Set up automatic HTTP-to-HTTPS redirects
+
+### Step 4: Add HTTPS www-to-non-www Redirect
+
+After certbot completes, you need to manually add a redirect for HTTPS www traffic. Edit the nginx configuration:
+
+```bash
+sudo nano /etc/nginx/sites-available/newsapp
+```
+
+Certbot will have added HTTPS server blocks. Add a new HTTPS redirect block for www at the top of the file:
+
+```nginx
+# HTTPS: Redirect www to non-www
+server {
+    listen 443 ssl;
+    server_name www.appofasi.gr;
+    
+    # SSL certificate paths (certbot manages these)
+    ssl_certificate /etc/letsencrypt/live/appofasi.gr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/appofasi.gr/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    
+    # Redirect all www HTTPS traffic to non-www HTTPS
+    return 301 https://appofasi.gr$request_uri;
+}
+```
+
+**Important:** This HTTPS redirect block should be added **above** the main HTTPS server block that certbot created for `appofasi.gr`.
+
+Test and reload nginx:
+
+```bash
+# Test configuration
+sudo nginx -t
+
+# Reload nginx
+sudo systemctl reload nginx
+```
+
+### Step 5: Verify the Setup
+
+Test that everything is working correctly:
+
+```bash
+# Test non-www HTTP (should redirect to HTTPS)
+curl -I http://appofasi.gr
+
+# Test www HTTP (should redirect to non-www HTTPS)
+curl -I http://www.appofasi.gr
+
+# Test www HTTPS (should redirect to non-www HTTPS)
+curl -I https://www.appofasi.gr
+
+# Test non-www HTTPS (should return 200 OK)
+curl -I https://appofasi.gr
+```
+
+Expected results:
+- `http://appofasi.gr` → redirects to `https://appofasi.gr`
+- `http://www.appofasi.gr` → redirects to `https://appofasi.gr`
+- `https://www.appofasi.gr` → redirects to `https://appofasi.gr`
+- `https://appofasi.gr` → serves the application (200 OK)
+
+### Complete nginx Configuration Example
+
+After completing all steps, your final nginx configuration should look similar to this:
+
+```nginx
+# HTTPS: Redirect www to non-www
+server {
+    listen 443 ssl;
+    server_name www.appofasi.gr;
+    
+    ssl_certificate /etc/letsencrypt/live/appofasi.gr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/appofasi.gr/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    
+    return 301 https://appofasi.gr$request_uri;
+}
+
+# HTTP: Redirect www to non-www
+server {
+    listen 80;
+    server_name www.appofasi.gr;
+    return 301 http://appofasi.gr$request_uri;
+}
+
+# HTTP: Main server (certbot will add redirect to HTTPS here)
+server {
+    listen 80;
+    server_name appofasi.gr YOUR_SERVER_IP;
+    
+    # Certbot will add: return 301 https://$host$request_uri;
+    
+    # ... rest of HTTP config (may be replaced by redirect)
+}
+
+# HTTPS: Main application server
+server {
+    listen 443 ssl;
+    server_name appofasi.gr YOUR_SERVER_IP;
+    
+    ssl_certificate /etc/letsencrypt/live/appofasi.gr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/appofasi.gr/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # Route API requests to Express backend
+    location /api/ {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Route Next.js static assets
+    location /_next/ {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Route all other requests to Next.js
+    location / {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### Troubleshooting: Conflicting server_name
+
+**Issue:** Nginx reports `conflicting server name "YOUR_SERVER_IP" on 0.0.0.0:80`
+
+**Cause:** Multiple server blocks on the same port (80 or 443) are claiming the same server IP address.
+
+**Solution:**
+1. Ensure only ONE port 80 server block includes `YOUR_SERVER_IP` in its `server_name` directive
+2. The www redirect block should ONLY include `www.appofasi.gr`, not the IP
+3. The main server block should include both `appofasi.gr` and `YOUR_SERVER_IP`
+
+**Correct pattern:**
+```nginx
+# ✓ www block - no IP address
+server {
+    listen 80;
+    server_name www.appofasi.gr;  # Only www, no IP
+    return 301 http://appofasi.gr$request_uri;
+}
+
+# ✓ Main block - includes IP address
+server {
+    listen 80;
+    server_name appofasi.gr YOUR_SERVER_IP;  # Non-www + IP
+    # ... application routes
+}
+```
+
+**Incorrect pattern:**
+```nginx
+# ✗ Both blocks claim the IP - causes conflict
+server {
+    listen 80;
+    server_name www.appofasi.gr YOUR_SERVER_IP;  # Wrong: IP here
+    return 301 http://appofasi.gr$request_uri;
+}
+
+server {
+    listen 80;
+    server_name appofasi.gr YOUR_SERVER_IP;  # Conflict: IP here too
+    # ... application routes
+}
+```
+
+### Certificate Renewal
+
+Let's Encrypt certificates are valid for 90 days. Certbot automatically sets up a renewal cron job or systemd timer.
+
+Verify auto-renewal is configured:
+
+```bash
+# Test renewal process (dry run)
+sudo certbot renew --dry-run
+
+# Check renewal timer status
+sudo systemctl status certbot.timer
+```
+
+Certificates will automatically renew when they have 30 days or less remaining.
+
+---
+
 ## Update After Merge (Server)
 
 Use these commands on the VPS after pulling the latest changes from `main`.
