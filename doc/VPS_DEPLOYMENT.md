@@ -501,6 +501,11 @@ Expected results:
 - `https://www.appofasi.gr` → redirects to `https://appofasi.gr`
 - `https://appofasi.gr` → serves the application (200 OK)
 
+**Note on IP Address Access:**
+- HTTP access via IP (e.g., `http://185.92.192.81`) will work normally and serve the application
+- HTTPS access via IP (e.g., `https://185.92.192.81`) will show a certificate warning because SSL certificates are issued for domain names, not IP addresses
+- Users should access the site via `https://appofasi.gr` for secure, warning-free access
+
 ### Complete nginx Configuration Example
 
 After completing all steps, your final nginx configuration should look similar to this:
@@ -545,6 +550,10 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/appofasi.gr/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    
+    # Note: Including YOUR_SERVER_IP in server_name allows direct IP access,
+    # but will show a certificate warning since the SSL cert is only for appofasi.gr
+    # Users should access the site via https://appofasi.gr for proper HTTPS
 
     # Route API requests to Express backend
     location /api/ {
