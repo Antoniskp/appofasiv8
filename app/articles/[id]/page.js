@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeftIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { articleAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { SafeHtml } from '@/lib/html-sanitizer';
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -177,9 +178,10 @@ export default function ArticleDetailPage() {
 
           {/* Article Content */}
           <div className="prose max-w-none mb-8">
-            <div className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-              {article.content}
-            </div>
+            <SafeHtml 
+              html={article.content}
+              className="text-gray-800 leading-relaxed"
+            />
           </div>
 
           {(article.sourceName || article.sourceUrl) && (
