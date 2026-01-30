@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { stripHtml } from '@/lib/html-sanitizer';
+import { SafeHtml, truncateHtml } from '@/lib/html-sanitizer';
 
 /**
  * Reusable article card component
@@ -16,7 +16,6 @@ export default function ArticleCard({ article, variant = 'grid' }) {
     archived: 'Αρχειοθετημένο'
   };
   const statusLabel = statusLabels[article.status] || article.status;
-  const contentPreview = stripHtml(article.content);
 
   return (
     <article className={isListVariant ? 'card p-6' : 'card'}>
@@ -48,9 +47,16 @@ export default function ArticleCard({ article, variant = 'grid' }) {
             {article.subtitle && (
               <p className="text-gray-600 mb-2">{article.subtitle}</p>
             )}
-            <p className="body-copy mb-4">
-              {article.summary || (contentPreview ? `${contentPreview.slice(0, 200)}...` : '')}
-            </p>
+            {article.summary ? (
+              <p className="body-copy mb-4">{article.summary}</p>
+            ) : (
+              <div className="prose max-w-none mb-4 line-clamp-3">
+                <SafeHtml
+                  html={truncateHtml(article.content, 240)}
+                  className="text-gray-800 leading-relaxed"
+                />
+              </div>
+            )}
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
               <span>Από {article.author?.username || article.User?.username || 'Άγνωστος'}</span>
               <span>•</span>
@@ -103,9 +109,16 @@ export default function ArticleCard({ article, variant = 'grid' }) {
           {article.subtitle && (
             <p className="text-gray-600 mb-2">{article.subtitle}</p>
           )}
-          <p className="body-copy mb-4 line-clamp-3">
-            {article.summary || (contentPreview ? `${contentPreview.slice(0, 150)}...` : '')}
-          </p>
+          {article.summary ? (
+            <p className="body-copy mb-4 line-clamp-3">{article.summary}</p>
+          ) : (
+            <div className="prose max-w-none mb-4 line-clamp-3">
+              <SafeHtml
+                html={truncateHtml(article.content, 180)}
+                className="text-gray-800 leading-relaxed"
+              />
+            </div>
+          )}
           <div className="flex justify-between items-center text-sm text-gray-500">
             <div className="flex flex-wrap gap-2">
               <span>Από {article.author?.username || article.User?.username || 'Άγνωστος'}</span>
