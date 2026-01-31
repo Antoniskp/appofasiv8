@@ -9,10 +9,10 @@ export default function HomeHero() {
       <div className="app-container text-center">
         <p className="text-4xl md:text-6xl font-bold mb-4">
           Καλώς ήρθες στο πρόγραμμα διαχείρησης κοινότητας.
-        <p>
+        </p>
         <p className="text-4xl md:text-6xl font-bold mb-4">
           Αποφάσισε για την περιοχή σου.
-        <p>
+        </p>
         <p className="text-xl md:text-2xl mb-8">
           Η αξιόπιστη πηγή σας για τις πιο πρόσφατες ειδήσεις και άρθρα.
         </p>
