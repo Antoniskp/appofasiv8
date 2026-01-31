@@ -416,10 +416,6 @@ const articleController = {
           message: normalizedTags.error
         });
       }
-          success: false,
-          message: normalizedReadingTime.error
-        });
-      }
 
       const normalizedCoverImageUrl = normalizeUrl(
         coverImageUrl,
