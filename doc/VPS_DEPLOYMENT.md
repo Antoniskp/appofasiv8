@@ -699,6 +699,26 @@ npm run frontend:build   # production build
 npm run frontend:start   # production server
 ```
 
+### Database migrations (poll tables/indexes)
+
+If you run `npm run migrate` after the poll tables were already created (for example, via `sequelize.sync`), Sequelize may fail with an error like:
+
+```
+ERROR: relation "unique_user_poll_vote" already exists
+```
+
+If this happens, it means the `PollVotes` or `PollOptions` tables already have one of the poll-related indexes. After updating to a version of the code that includes the index-skipping logic, you can re-run migrations safely because the migration skips creating existing poll indexes.
+
+If you are still on a version of this migration without the skip logic, resolve the error by dropping the index manually:
+
+```bash
+sudo -u postgres psql -d newsapp
+DROP INDEX IF EXISTS unique_user_poll_vote;
+DROP INDEX IF EXISTS poll_voter_identifier_index;
+DROP INDEX IF EXISTS poll_option_order_index;
+\q
+```
+
 ### Clean Update Workflow
 
 For a complete rebuild that ensures all changes are properly applied and old build artifacts are cleared, follow this comprehensive update workflow:
