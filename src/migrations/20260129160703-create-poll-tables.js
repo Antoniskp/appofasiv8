@@ -1,5 +1,42 @@
 'use strict';
 
+/**
+ * Normalize Sequelize index metadata into a set of index names.
+ *
+ * @param {Array} indexes Sequelize index metadata entries.
+ * @returns {Set<string>} Set of index names for fast lookup.
+ */
+const getIndexNames = (indexes = []) => new Set(
+  (Array.isArray(indexes) ? indexes : [])
+    // Sequelize returns index names under different keys depending on dialect/driver.
+    .map((index) => index?.name ?? index?.index_name ?? index?.keyName ?? '')
+    .filter(Boolean)
+);
+
+/**
+ * Fetch index names for a table, returning an empty set if the table does not exist yet.
+ *
+ * @param {object} queryInterface Sequelize query interface.
+ * @param {string} tableName Table name to inspect.
+ * @returns {Promise<Set<string>>} Set of index names.
+ */
+const getIndexNamesForTable = async (queryInterface, tableName) => {
+  try {
+    const indexes = await queryInterface.showIndex(tableName);
+    return getIndexNames(indexes);
+  } catch (error) {
+    const originalError = error?.original;
+    const message = originalError?.message ?? error?.message ?? String(error);
+    const missingTable = originalError?.code === '42P01'
+      || message.includes('does not exist')
+      || message.includes('no such table');
+    if (missingTable) {
+      return new Set();
+    }
+    throw error;
+  }
+};
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Create Polls table
@@ -215,14 +252,7 @@ module.exports = {
     });
 
     // Add indexes (skip if already present)
-    const getIndexNames = (indexes) => new Set(
-      indexes
-        .map((index) => index.name || index.index_name || index.keyName)
-        .filter(Boolean)
-    );
-
-    const pollVoteIndexes = await queryInterface.showIndex('PollVotes');
-    const pollVoteIndexNames = getIndexNames(pollVoteIndexes);
+    const pollVoteIndexNames = await getIndexNamesForTable(queryInterface, 'PollVotes');
 
     if (!pollVoteIndexNames.has('unique_user_poll_vote')) {
       await queryInterface.addIndex('PollVotes', ['pollId', 'userId'], {
@@ -242,8 +272,7 @@ module.exports = {
       });
     }
 
-    const pollOptionIndexes = await queryInterface.showIndex('PollOptions');
-    const pollOptionIndexNames = getIndexNames(pollOptionIndexes);
+    const pollOptionIndexNames = await getIndexNamesForTable(queryInterface, 'PollOptions');
 
     if (!pollOptionIndexNames.has('poll_option_order_index')) {
       await queryInterface.addIndex('PollOptions', ['pollId', 'orderIndex'], {
