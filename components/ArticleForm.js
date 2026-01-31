@@ -105,7 +105,7 @@ export default function ArticleForm({
           id="articleType"
           name="articleType"
           required
-          value={formData.articleType}
+          value={formData.articleType || 'personal'}
           onChange={onInputChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
         >
@@ -124,7 +124,7 @@ export default function ArticleForm({
             id="category"
             name="category"
             required={formData.articleType !== 'personal'}
-            value={formData.category}
+            value={formData.category || ''}
             onChange={onInputChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
           >
