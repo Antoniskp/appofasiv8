@@ -183,8 +183,10 @@ exports.createPoll = async (req, res) => {
       if (error?.name !== 'SequelizeForeignKeyConstraintError') {
         throw error;
       }
-      console.warn('Poll create failed due to foreign key constraint. Retrying after sync.');
-      await sequelize.sync();
+      console.warn('Poll create failed due to foreign key constraint. Retrying after poll table sync.');
+      await Poll.sync();
+      await PollOption.sync();
+      await PollVote.sync();
       return Poll.create(pollPayload);
     });
 

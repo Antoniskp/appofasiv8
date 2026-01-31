@@ -69,11 +69,15 @@ const ensurePollTables = async () => {
       console.warn(
         `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
       );
-      await sequelize.query('PRAGMA foreign_keys = OFF;').catch(() => {});
+      await sequelize.query('PRAGMA foreign_keys = OFF;').catch((error) => {
+        console.warn('Unable to disable SQLite foreign keys:', error.message || error);
+      });
       await Poll.sync({ force: true });
       await PollOption.sync({ force: true });
       await PollVote.sync({ force: true });
-      await sequelize.query('PRAGMA foreign_keys = ON;').catch(() => {});
+      await sequelize.query('PRAGMA foreign_keys = ON;').catch((error) => {
+        console.warn('Unable to enable SQLite foreign keys:', error.message || error);
+      });
     }
 
   try {

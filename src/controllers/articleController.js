@@ -97,6 +97,16 @@ const hasCategoryValue = (category) => {
   return Boolean(category);
 };
 
+const deriveLegacyArticleType = (isNews, hasCategory, existingCategory) => {
+  if (isNews) {
+    return 'news';
+  }
+  if (hasCategory || existingCategory) {
+    return 'articles';
+  }
+  return 'personal';
+};
+
 const articleController = {
   // Create a new article
   createArticle: async (req, res) => {
@@ -545,7 +555,7 @@ const articleController = {
           article.category = null;
         }
       } else if (isNews !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
-        article.articleType = isNews ? 'news' : (hasCategory || article.category ? 'articles' : 'personal');
+        article.articleType = deriveLegacyArticleType(isNews, hasCategory, article.category);
         article.isNews = isNews;
         if (!isNews) {
           article.newsApprovedAt = null;
