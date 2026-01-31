@@ -214,24 +214,44 @@ module.exports = {
       }
     });
 
-    // Add indexes
-    await queryInterface.addIndex('PollVotes', ['pollId', 'userId'], {
-      name: 'unique_user_poll_vote',
-      unique: true,
-      where: {
-        userId: {
-          [Sequelize.Op.ne]: null
+    // Add indexes (skip if already present)
+    const pollVoteIndexes = await queryInterface.showIndex('PollVotes');
+    const pollVoteIndexNames = new Set(
+      pollVoteIndexes
+        .map((index) => index.name || index.index_name || index.keyName)
+        .filter(Boolean)
+    );
+
+    if (!pollVoteIndexNames.has('unique_user_poll_vote')) {
+      await queryInterface.addIndex('PollVotes', ['pollId', 'userId'], {
+        name: 'unique_user_poll_vote',
+        unique: true,
+        where: {
+          userId: {
+            [Sequelize.Op.ne]: null
+          }
         }
-      }
-    });
+      });
+    }
 
-    await queryInterface.addIndex('PollVotes', ['pollId', 'voterIdentifier'], {
-      name: 'poll_voter_identifier_index'
-    });
+    if (!pollVoteIndexNames.has('poll_voter_identifier_index')) {
+      await queryInterface.addIndex('PollVotes', ['pollId', 'voterIdentifier'], {
+        name: 'poll_voter_identifier_index'
+      });
+    }
 
-    await queryInterface.addIndex('PollOptions', ['pollId', 'orderIndex'], {
-      name: 'poll_option_order_index'
-    });
+    const pollOptionIndexes = await queryInterface.showIndex('PollOptions');
+    const pollOptionIndexNames = new Set(
+      pollOptionIndexes
+        .map((index) => index.name || index.index_name || index.keyName)
+        .filter(Boolean)
+    );
+
+    if (!pollOptionIndexNames.has('poll_option_order_index')) {
+      await queryInterface.addIndex('PollOptions', ['pollId', 'orderIndex'], {
+        name: 'poll_option_order_index'
+      });
+    }
   },
 
   down: async (queryInterface, Sequelize) => {
