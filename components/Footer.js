@@ -22,11 +22,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white text-sm">
-                  Επικοινωνία
-                </Link>
-              </li>
-              <li>
                 <Link href="/rules" className="text-gray-400 hover:text-white text-sm">
                   Κανόνες
                 </Link>
@@ -44,7 +39,9 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Επικοινωνία</h3>
+            <Link href="/contact" className="text-gray-400 hover:text-white text-sm">
+              <h3 className="text-lg font-semibold mb-4">Επικοινωνία</h3>
+            </Link>
             <p className="text-gray-400 text-sm">
               Email: eimaiautospou@gmail.com
             </p>
