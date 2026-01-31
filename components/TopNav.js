@@ -137,7 +137,7 @@ export default function TopNav() {
                       className={`flex items-center gap-2 px-4 py-2 text-sm text-blue-900 hover:bg-seafoam/40 ${isActive('/profile')}`}
                     >
                       <UserCircleIcon className="h-4 w-4" aria-hidden="true" />
-                      Profile
+                      Προφίλ
                     </Link>
                     <Link
                       href="/editor"
@@ -145,15 +145,15 @@ export default function TopNav() {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-blue-900 hover:bg-seafoam/40"
                     >
                       <PlusIcon className="h-4 w-4" aria-hidden="true" />
-                      New Article
+                      Τα άρθρα μου
                     </Link>
                     <Link
-                      href="/polls/create"
+                      href="/polls/my-polls"
                       role="menuitem"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-blue-900 hover:bg-seafoam/40"
                     >
                       <ChartBarIcon className="h-4 w-4" aria-hidden="true" />
-                      Create Poll
+                      Οι ψηφοφορίες μου
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -161,7 +161,7 @@ export default function TopNav() {
                       className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-seafoam/40"
                     >
                       <ArrowRightOnRectangleIcon className="h-4 w-4" aria-hidden="true" />
-                      Exit
+                      Έξοδος
                     </button>
                   </div>
                 )}
@@ -258,7 +258,7 @@ export default function TopNav() {
                   className={`flex items-center gap-2 text-base font-medium text-blue-900 ${isActive('/profile')}`}
                 >
                   <UserCircleIcon className="h-5 w-5" aria-hidden="true" />
-                  Profile
+                  Προφίλ
                 </Link>
                 <Link
                   href="/editor"
@@ -266,15 +266,15 @@ export default function TopNav() {
                   className="inline-flex w-full items-center justify-center gap-2 text-base font-medium bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
                 >
                   <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                  New Article
+                  Τα άρθρα μου
                 </Link>
                 <Link
-                  href="/polls/create"
+                  href="/polls/my-polls"
                   role="menuitem"
                   className="inline-flex w-full items-center justify-center gap-2 text-base font-medium border border-blue-600 text-blue-600 px-3 py-2 rounded hover:bg-blue-50"
                 >
                   <ChartBarIcon className="h-5 w-5" aria-hidden="true" />
-                  Create Poll
+                  Οι ψηφοφορίες μου
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -282,7 +282,7 @@ export default function TopNav() {
                   className="inline-flex w-full items-center gap-2 text-left text-base font-medium text-red-600 hover:text-red-800"
                 >
                   <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />
-                  Exit
+                  Έξοδος
                 </button>
               </div>
             </div>
