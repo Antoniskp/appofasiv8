@@ -69,6 +69,15 @@ const Poll = sequelize.define('Poll', {
     },
     comment: 'Optional reference if poll is embedded in an article'
   },
+  locationId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Locations',
+      key: 'id'
+    },
+    comment: 'Optional location reference for the poll'
+  },
   startsAt: {
     type: DataTypes.DATE,
     allowNull: true

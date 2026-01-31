@@ -100,6 +100,7 @@ exports.createPoll = async (req, res) => {
       allowFreeTextResponse,
       status,
       articleId,
+      locationId,
       startsAt,
       endsAt,
       options
@@ -132,6 +133,7 @@ exports.createPoll = async (req, res) => {
       status: status || 'draft',
       creatorId: req.user.id,
       articleId: articleId || null,
+      locationId: locationId || null,
       startsAt: startsAt || null,
       endsAt: endsAt || null
     });
@@ -485,6 +487,7 @@ exports.updatePoll = async (req, res) => {
       allowUserSubmittedAnswers,
       allowUnauthenticatedVoting,
       allowFreeTextResponse,
+      locationId,
       startsAt,
       endsAt
     } = req.body;
@@ -513,6 +516,7 @@ exports.updatePoll = async (req, res) => {
       allowUserSubmittedAnswers: allowUserSubmittedAnswers !== undefined ? allowUserSubmittedAnswers : poll.allowUserSubmittedAnswers,
       allowUnauthenticatedVoting: allowUnauthenticatedVoting !== undefined ? allowUnauthenticatedVoting : poll.allowUnauthenticatedVoting,
       allowFreeTextResponse: allowFreeTextResponse !== undefined ? allowFreeTextResponse : poll.allowFreeTextResponse,
+      locationId: locationId !== undefined ? locationId : poll.locationId,
       startsAt: startsAt !== undefined ? startsAt : poll.startsAt,
       endsAt: endsAt !== undefined ? endsAt : poll.endsAt
     });

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { PlusIcon, TrashIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import LocationSelector from '@/components/LocationSelector';
 
 export default function PollForm({ initialData = null, onSubmit, isLoading = false }) {
   const canEditOptions = !(initialData?.voteCount > 0);
@@ -14,6 +15,8 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
     allowUnauthenticatedVoting: initialData?.allowUnauthenticatedVoting || false,
     allowFreeTextResponse: initialData?.allowFreeTextResponse || false,
     status: initialData?.status || 'draft',
+    locationId: initialData?.locationId || null,
+    useUserLocation: initialData?.useUserLocation || false,
     options: initialData?.options || [
       { text: '', photoUrl: '', linkUrl: '' },
       { text: '', photoUrl: '', linkUrl: '' }
@@ -84,6 +87,8 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
     // Filter out empty options and prepare data
     const submitData = {
       ...formData,
+      locationId: formData.locationId || null,
+      useUserLocation: formData.useUserLocation || false,
       options: validOptions.map((opt, index) => ({
         text: opt.text.trim(),
         photoUrl: opt.photoUrl?.trim() || null,
@@ -331,6 +336,18 @@ export default function PollForm({ initialData = null, onSubmit, isLoading = fal
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Location */}
+      <div className="bg-white shadow rounded-lg p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-blue-900">Τοποθεσία (Προαιρετικό)</h2>
+        <LocationSelector
+          selectedLocationId={formData.locationId}
+          onLocationChange={(locationId) => setFormData((prev) => ({ ...prev, locationId }))}
+          showUseUserLocation={true}
+          useUserLocation={formData.useUserLocation}
+          onUseUserLocationChange={(checked) => setFormData((prev) => ({ ...prev, useUserLocation: checked }))}
+        />
       </div>
 
       {/* Submit Button */}
