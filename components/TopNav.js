@@ -16,7 +16,7 @@ import {
 import { useAuth } from '@/lib/auth-context';
 
 export default function TopNav() {
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -105,7 +105,12 @@ export default function TopNav() {
             </div>
           </div>
           <div className="hidden sm:flex flex-wrap items-center gap-4">
-            {user ? (
+            {loading ? (
+              <div className="flex items-center gap-4 animate-pulse">
+                <div className="h-9 w-20 bg-gray-200 rounded"></div>
+                <div className="h-9 w-24 bg-gray-200 rounded"></div>
+              </div>
+            ) : user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
                   type="button"
@@ -227,7 +232,12 @@ export default function TopNav() {
           </Link>
         </div>
         <div className="border-t border-seafoam px-4 py-3 space-y-3">
-          {user ? (
+          {loading ? (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-10 bg-gray-200 rounded"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+          ) : user ? (
             <div ref={mobileUserMenuRef}>
               <button
                 type="button"
