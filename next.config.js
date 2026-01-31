@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    mcpServer: false,
+  },
   // Ensure backend API routes don't conflict with Next.js
   async rewrites() {
     return [
