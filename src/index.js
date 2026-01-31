@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const articleRoutes = require('./routes/articleRoutes');
 const locationRoutes = require('./routes/locationRoutes');
 const pollRoutes = require('./routes/pollRoutes');
+const { syncPollTables } = require('./utils/pollTables');
 
 if (process.env.NODE_ENV === 'test' && !process.env.SKIP_POLL_TABLE_DROP) {
   process.env.SKIP_POLL_TABLE_DROP = 'true';
@@ -69,15 +70,7 @@ const ensurePollTables = async () => {
       console.warn(
         `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
       );
-      await sequelize.query('PRAGMA foreign_keys = OFF;').catch((error) => {
-        console.warn('Unable to disable SQLite foreign keys:', error.message || error);
-      });
-      await Poll.sync({ force: true });
-      await PollOption.sync({ force: true });
-      await PollVote.sync({ force: true });
-      await sequelize.query('PRAGMA foreign_keys = ON;').catch((error) => {
-        console.warn('Unable to enable SQLite foreign keys:', error.message || error);
-      });
+      await syncPollTables({ force: true });
     }
 
   try {

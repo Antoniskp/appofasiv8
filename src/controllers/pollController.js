@@ -1,6 +1,7 @@
-const { sequelize, Poll, PollOption, PollVote, User } = require('../models');
+const { Poll, PollOption, PollVote, User } = require('../models');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
+const { syncPollTables } = require('../utils/pollTables');
 
 const voterSalt = process.env.VOTER_SALT
   || process.env.JWT_SECRET
@@ -184,9 +185,7 @@ exports.createPoll = async (req, res) => {
         throw error;
       }
       console.warn('Poll create failed due to foreign key constraint. Retrying after poll table sync.');
-      await Poll.sync();
-      await PollOption.sync();
-      await PollVote.sync();
+      await syncPollTables();
       return Poll.create(pollPayload);
     });
 

@@ -447,10 +447,10 @@ const articleController = {
         });
       }
 
-      const isLegacyRequest = articleType === undefined && isNews !== undefined;
+      const isLegacyRequest = articleType === undefined;
       const hasCategory = hasCategoryValue(category);
       const requestedArticleType = articleType
-        || (isNews === true ? 'news' : isNews === false && hasCategory ? 'articles' : undefined);
+        || (isNews !== undefined ? deriveLegacyArticleType(isNews, hasCategory, article.category) : undefined);
       const finalArticleType = requestedArticleType || article.articleType;
       if (requestedArticleType && !VALID_ARTICLE_TYPES.includes(requestedArticleType)) {
         return res.status(400).json({
