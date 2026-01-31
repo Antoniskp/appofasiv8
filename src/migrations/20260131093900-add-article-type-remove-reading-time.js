@@ -9,8 +9,7 @@ module.exports = {
       allowNull: false
     });
 
-    // Remove readingTimeMinutes column
-    await queryInterface.removeColumn('Articles', 'readingTimeMinutes');
+    // Keep readingTimeMinutes column (frontend and API still depend on it)
   },
 
   down: async (queryInterface, Sequelize) => {
