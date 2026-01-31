@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const { sequelize, Poll, PollOption, PollVote } = require('./models');
+const { Sequelize } = require('sequelize');
+const { sequelize, Poll, PollOption, PollVote, User } = require('./models');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -24,24 +25,72 @@ const normalizeTableName = (table) => {
   return String(table);
 };
 
+const normalizeTableKey = (table) => {
+  const name = normalizeTableName(table);
+  if (!name) {
+    return null;
+  }
+  return name.replace(/"/g, '').split('.').pop().toLowerCase();
+};
+
+const buildTableNameMap = (tables = []) => {
+  const tableNameMap = new Map();
+  tables.forEach((table) => {
+    const key = normalizeTableKey(table);
+    if (key && !tableNameMap.has(key)) {
+      tableNameMap.set(key, table);
+    }
+  });
+  return tableNameMap;
+};
+
 const ensurePollTables = async () => {
   const queryInterface = sequelize.getQueryInterface();
   const tables = await queryInterface.showAllTables();
-  const normalizedTables = tables
-    .map(normalizeTableName)
-    .filter(Boolean)
-    .map((name) => name.replace(/"/g, '').split('.').pop().toLowerCase());
+  const tableNameMap = buildTableNameMap(tables);
   const requiredTables = [Poll, PollOption, PollVote]
-    .map((model) => normalizeTableName(model.getTableName()))
-    .filter(Boolean)
-    .map((name) => name.replace(/"/g, '').split('.').pop().toLowerCase());
-  const missingTables = requiredTables.filter((tableName) => !normalizedTables.includes(tableName));
+    .map((model) => normalizeTableKey(model.getTableName()))
+    .filter(Boolean);
+  const missingTables = requiredTables.filter((tableName) => !tableNameMap.has(tableName));
 
   if (missingTables.length > 0) {
     console.warn(
       `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
     );
-    await sequelize.sync({ models: [Poll, PollOption, PollVote] });
+    await sequelize.sync({ models: [Poll, PollOption, PollVote, User] });
+  }
+
+  try {
+    const updatedTables = missingTables.length > 0 ? await queryInterface.showAllTables() : tables;
+    const updatedTableNameMap = buildTableNameMap(updatedTables);
+    const pollTableKey = normalizeTableKey(Poll.getTableName());
+    const pollTableName = updatedTableNameMap.get(pollTableKey) || Poll.getTableName();
+    if (!pollTableKey || !pollTableName) {
+      return;
+    }
+    const pollTable = await queryInterface.describeTable(pollTableName);
+    if (pollTable.locationId) {
+      const columnType = String(pollTable.locationId.type || '').toLowerCase();
+      const isStringType = columnType.includes('char') || columnType.includes('text');
+      if (!isStringType) {
+        const foreignKeys = await queryInterface
+          .getForeignKeyReferencesForTable(pollTableName)
+          .catch(() => []);
+        const locationForeignKeys = foreignKeys.filter(
+          (foreignKey) => foreignKey.columnName === 'locationId' && foreignKey.constraintName
+        );
+        for (const foreignKey of locationForeignKeys) {
+          await queryInterface.removeConstraint(pollTableName, foreignKey.constraintName);
+        }
+        await queryInterface.changeColumn(pollTableName, 'locationId', {
+          type: Sequelize.STRING(100),
+          allowNull: true,
+          comment: 'Location code (e.g., GR, GR-I, GR-I-6104) from JSON location data'
+        });
+      }
+    }
+  } catch (error) {
+    console.warn('Unable to verify poll location column:', error.message);
   }
 };
 

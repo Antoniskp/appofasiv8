@@ -101,6 +101,7 @@ exports.createPoll = async (req, res) => {
       status,
       articleId,
       locationId,
+      useUserLocation,
       startsAt,
       endsAt,
       options
@@ -121,6 +122,21 @@ exports.createPoll = async (req, res) => {
       });
     }
 
+    let finalLocationId = locationId;
+    if (useUserLocation) {
+      const user = await User.findByPk(req.user.id);
+      finalLocationId = user?.locationId ?? null;
+    }
+
+    if (finalLocationId !== null && finalLocationId !== undefined) {
+      if (typeof finalLocationId !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid location ID format. Location ID must be a string code.'
+        });
+      }
+    }
+
     // Create poll
     const poll = await Poll.create({
       title,
@@ -133,7 +149,7 @@ exports.createPoll = async (req, res) => {
       status: status || 'draft',
       creatorId: req.user.id,
       articleId: articleId || null,
-      locationId: locationId || null,
+      locationId: finalLocationId || null,
       startsAt: startsAt || null,
       endsAt: endsAt || null
     });
@@ -488,6 +504,7 @@ exports.updatePoll = async (req, res) => {
       allowUnauthenticatedVoting,
       allowFreeTextResponse,
       locationId,
+      useUserLocation,
       startsAt,
       endsAt
     } = req.body;
@@ -508,6 +525,21 @@ exports.updatePoll = async (req, res) => {
       });
     }
 
+    let finalLocationId = locationId;
+    if (useUserLocation) {
+      const user = await User.findByPk(req.user.id);
+      finalLocationId = user?.locationId ?? null;
+    }
+
+    if (finalLocationId !== null && finalLocationId !== undefined) {
+      if (typeof finalLocationId !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid location ID format. Location ID must be a string code.'
+        });
+      }
+    }
+
     // Update poll
     await poll.update({
       title: title || poll.title,
@@ -516,7 +548,7 @@ exports.updatePoll = async (req, res) => {
       allowUserSubmittedAnswers: allowUserSubmittedAnswers !== undefined ? allowUserSubmittedAnswers : poll.allowUserSubmittedAnswers,
       allowUnauthenticatedVoting: allowUnauthenticatedVoting !== undefined ? allowUnauthenticatedVoting : poll.allowUnauthenticatedVoting,
       allowFreeTextResponse: allowFreeTextResponse !== undefined ? allowFreeTextResponse : poll.allowFreeTextResponse,
-      locationId: locationId !== undefined ? locationId : poll.locationId,
+      locationId: finalLocationId !== undefined ? finalLocationId : poll.locationId,
       startsAt: startsAt !== undefined ? startsAt : poll.startsAt,
       endsAt: endsAt !== undefined ? endsAt : poll.endsAt
     });
