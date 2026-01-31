@@ -215,12 +215,14 @@ module.exports = {
     });
 
     // Add indexes (skip if already present)
-    const pollVoteIndexes = await queryInterface.showIndex('PollVotes');
-    const pollVoteIndexNames = new Set(
-      pollVoteIndexes
+    const getIndexNames = (indexes) => new Set(
+      indexes
         .map((index) => index.name || index.index_name || index.keyName)
         .filter(Boolean)
     );
+
+    const pollVoteIndexes = await queryInterface.showIndex('PollVotes');
+    const pollVoteIndexNames = getIndexNames(pollVoteIndexes);
 
     if (!pollVoteIndexNames.has('unique_user_poll_vote')) {
       await queryInterface.addIndex('PollVotes', ['pollId', 'userId'], {
@@ -241,11 +243,7 @@ module.exports = {
     }
 
     const pollOptionIndexes = await queryInterface.showIndex('PollOptions');
-    const pollOptionIndexNames = new Set(
-      pollOptionIndexes
-        .map((index) => index.name || index.index_name || index.keyName)
-        .filter(Boolean)
-    );
+    const pollOptionIndexNames = getIndexNames(pollOptionIndexes);
 
     if (!pollOptionIndexNames.has('poll_option_order_index')) {
       await queryInterface.addIndex('PollOptions', ['pollId', 'orderIndex'], {

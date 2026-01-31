@@ -707,7 +707,7 @@ If you run `npm run migrate` after the poll tables were already created (for exa
 ERROR: relation "unique_user_poll_vote" already exists
 ```
 
-If this happens, it means the `PollVotes` table already has the unique index. You can re-run migrations safely after applying this update, because the migration now skips creating existing poll indexes. For older deployments, you can still resolve the error by dropping the index manually:
+If this happens, it means the `PollVotes` or `PollOptions` tables already have one of the poll-related indexes. You can re-run migrations safely after applying this update, because the migration now skips creating existing poll indexes. For older deployments, you can still resolve the error by dropping the index manually:
 
 ```bash
 sudo -u postgres psql -d newsapp
