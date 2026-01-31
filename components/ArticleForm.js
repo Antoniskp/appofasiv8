@@ -20,8 +20,10 @@ export default function ArticleForm({
 }) {
   const [imageError, setImageError] = useState(false);
   
-  // Get available categories based on article type
-  const availableCategories = articleCategories[formData.articleType] || [];
+  // Get available categories based on article type, with fallback to empty array
+  const availableCategories = formData.articleType && articleCategories[formData.articleType] 
+    ? articleCategories[formData.articleType] 
+    : [];
 
   useEffect(() => {
     setImageError(false);
@@ -126,7 +128,7 @@ export default function ArticleForm({
             onChange={onInputChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">Επιλέξτε κατηγορία...</option>
+            <option value="" disabled>Επιλέξτε κατηγορία...</option>
             {availableCategories.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}

@@ -125,6 +125,14 @@ const articleController = {
             message: `Invalid category for ${finalArticleType}. Please select a valid category.`
           });
         }
+      } else {
+        // Personal articles should not have a category
+        if (category) {
+          return res.status(400).json({
+            success: false,
+            message: 'Personal articles cannot have a category.'
+          });
+        }
       }
 
       // Determine which locationId to use
@@ -399,12 +407,36 @@ const articleController = {
 
       // Validate category if articleType is being updated or if category is being updated
       const finalArticleType = articleType !== undefined ? articleType : article.articleType;
-      if (category !== undefined && finalArticleType !== 'personal') {
-        const validCategories = articleCategories[finalArticleType] || [];
-        if (category && !validCategories.includes(category)) {
+      if (finalArticleType !== 'personal') {
+        // For non-personal articles, category is required
+        if (category === undefined && articleType !== undefined && article.category === null) {
+          // Changing to articles/news but no category provided and article doesn't have one
           return res.status(400).json({
             success: false,
-            message: `Invalid category for ${finalArticleType}. Please select a valid category.`
+            message: `Category is required for ${finalArticleType}.`
+          });
+        }
+        if (category !== undefined) {
+          if (!category) {
+            return res.status(400).json({
+              success: false,
+              message: `Category is required for ${finalArticleType}.`
+            });
+          }
+          const validCategories = articleCategories[finalArticleType] || [];
+          if (!validCategories.includes(category)) {
+            return res.status(400).json({
+              success: false,
+              message: `Invalid category for ${finalArticleType}. Please select a valid category.`
+            });
+          }
+        }
+      } else {
+        // Personal articles should not have a category
+        if (category !== undefined && category !== null && category !== '') {
+          return res.status(400).json({
+            success: false,
+            message: 'Personal articles cannot have a category.'
           });
         }
       }
