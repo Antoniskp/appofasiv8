@@ -54,25 +54,23 @@ export default function PollsPage() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="app-container">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-4xl font-bold mb-8">Ψηφοφορίες</h1>
-            </div>
-            {user && (
-              <Link
-                href="/polls/create"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <PlusIcon className="h-5 w-5" />
-                Νέα Ψηφοφορία
-              </Link>
-            )}
-          </div>
+        <h1 className="text-4xl font-bold mb-8">Ψηφοφορίες</h1>
 
-          {/* Filters */}
-          <div className="card p-4 mb-8">
+        {/* Create Button */}
+        {user && (
+          <div className="mb-4">
+            <Link
+              href="/polls/create"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <PlusIcon className="h-5 w-5" />
+              Νέα Ψηφοφορία
+            </Link>
+          </div>
+        )}
+
+        {/* Filters */}
+        <div className="card p-4 mb-8">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => { setFilter('active'); setPage(1); }}
@@ -106,9 +104,8 @@ export default function PollsPage() {
               </button>
             </div>
           </div>
-        </div>
 
-      {/* Content */}
+        {/* Content */}
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
