@@ -15,6 +15,7 @@ Professional news application with JWT authentication, PostgreSQL, role-based ac
 - [Poll user guide](doc/POLL_USER_GUIDE.md)
 - [API testing](doc/API_TESTING.md)
 - [Database migrations](doc/MIGRATIONS.md)
+- [Database schema overview](doc/DB_SCHEMA.md)
 
 ## Quick start
 
@@ -36,6 +37,10 @@ npm run dev
 # Frontend
 npm run frontend
 ```
+
+## Database schema
+
+See [DB schema documentation](doc/DB_SCHEMA.md) for a table-by-table overview, column notes, and indexes.
 
 ## License
 

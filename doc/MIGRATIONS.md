@@ -96,7 +96,7 @@ npx sequelize-cli db:migrate:undo
 Migrations are located in `src/migrations/` directory:
 
 1. **20260128230337-initial-schema.js**
-   - Creates the Users and Articles tables with the correct schema
+   - Creates the Users and Articles tables with the initial schema
    - Sets locationId as VARCHAR(100) from the start
    - Use this for fresh installations
 
@@ -105,6 +105,18 @@ Migrations are located in `src/migrations/` directory:
    - Removes foreign key constraints
    - Converts locationId to VARCHAR(100)
    - Safe to run on both old and new schemas (idempotent)
+
+3. **20260129160703-create-poll-tables.js**
+   - Creates Polls, PollOptions, and PollVotes tables
+   - Adds poll indexes for vote deduplication and option ordering
+
+4. **20260131093900-add-article-type-remove-reading-time.js**
+   - Adds articleType enum to Articles
+   - Removes readingTimeMinutes from Articles
+
+5. **20260131110900-add-location-to-polls.js**
+   - Adds locationId column to Polls (legacy migration)
+   - The runtime ensures poll locationId is stored as VARCHAR(100) location codes
 
 ## Environment Variables
 

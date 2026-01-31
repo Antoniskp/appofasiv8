@@ -36,6 +36,8 @@ Creates a new poll. Requires authentication.
   "allowFreeTextResponse": false,
   "status": "draft",  // "draft", "active", or "closed"
   "articleId": null,  // optional, link to article
+  "locationId": "GR-I-6104",  // optional location code
+  "useUserLocation": false,  // optional, use creator's locationId
   "startsAt": null,  // optional, ISO 8601 date
   "endsAt": null,  // optional, ISO 8601 date
   "options": [
@@ -293,6 +295,8 @@ Add a user-submitted option to a poll. Optional authentication.
   status: 'draft' | 'active' | 'closed'
   creatorId: number
   articleId?: number
+  locationId?: string
+  useUserLocation?: boolean
   startsAt?: Date
   endsAt?: Date
   createdAt: Date

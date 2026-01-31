@@ -26,7 +26,13 @@ A complete, production-ready news application built with Node.js, Express, Postg
 - **Pagination**: Built-in pagination for article listings
 - **Author Attribution**: Articles linked to their authors
 
-### 4. Security Features
+### 4. Poll System
+- **Poll Types**: Simple and complex polls with rich options
+- **Voting Modes**: Single-choice and ranked-choice voting
+- **Participation**: Authenticated/unauthenticated voting, free-text responses
+- **Analytics**: Results endpoint with aggregated statistics
+
+### 5. Security Features
 - ✅ JWT token authentication with expiration
 - ✅ Password hashing using bcrypt
 - ✅ Rate limiting on all endpoints
@@ -37,7 +43,7 @@ A complete, production-ready news application built with Node.js, Express, Postg
 - ✅ CORS configuration
 - ✅ **0 CodeQL security alerts**
 
-### 5. API Endpoints
+### 6. API Endpoints
 
 #### Authentication
 - `POST /api/auth/register` - Register new user
@@ -51,21 +57,28 @@ A complete, production-ready news application built with Node.js, Express, Postg
 - `PUT /api/articles/:id` - Update article (authenticated, role-based)
 - `DELETE /api/articles/:id` - Delete article (authenticated, role-based)
 
-### 6. Documentation
+#### Polls
+- `GET /api/polls` - List polls (optional auth)
+- `GET /api/polls/:id` - Poll details (optional auth)
+- `POST /api/polls` - Create poll (authenticated)
+- `POST /api/polls/:id/vote` - Vote on poll (optional auth)
+- `GET /api/polls/:id/results` - Poll results (public)
+
+### 7. Documentation
 - ✅ Comprehensive README with setup instructions
 - ✅ API testing guide with curl examples
 - ✅ Deployment guide (VPS, Docker, Heroku, AWS)
 - ✅ Security documentation
 - ✅ Postman collection for API testing
 
-### 7. Testing
+### 8. Testing
 - ✅ Jest testing framework configured
 - ✅ Integration tests for all endpoints
 - ✅ Authentication flow tests
 - ✅ Role-based access control tests
 - ✅ CRUD operation tests
 
-### 8. Deployment Support
+### 9. Deployment Support
 - ✅ Docker support with docker-compose
 - ✅ Environment configuration templates
 - ✅ Database setup scripts
@@ -109,11 +122,15 @@ The application is ready for deployment with:
 1. **README.md** - Main documentation with setup instructions
 2. **doc/API_TESTING.md** - API testing examples
 3. **doc/DEPLOYMENT.md** - Deployment guides for various platforms
-4. **doc/SECURITY.md** - Security features and best practices
-5. **doc/VPS_DEPLOYMENT.md** - VPS deployment guide
-6. **doc/ARCHITECTURE.md** - Architecture overview
-7. **doc/USER_ROLES.md** - User roles and responsibilities
-8. **postman_collection.json** - Postman API collection
+4. **doc/DB_SCHEMA.md** - Database schema overview
+5. **doc/MIGRATIONS.md** - Database migrations guide
+6. **doc/SECURITY.md** - Security features and best practices
+7. **doc/POLL_API.md** - Poll API reference
+8. **doc/POLL_USER_GUIDE.md** - Poll user guide
+9. **doc/VPS_DEPLOYMENT.md** - VPS deployment guide
+10. **doc/ARCHITECTURE.md** - Architecture overview
+11. **doc/USER_ROLES.md** - User roles and responsibilities
+12. **postman_collection.json** - Postman API collection
 
 ## 🧪 Testing
 
@@ -128,6 +145,7 @@ Test coverage includes:
 - Role-based access control
 - Article CRUD operations
 - Permission validation
+- Poll creation and voting
 
 ## 📦 Technology Stack
 
