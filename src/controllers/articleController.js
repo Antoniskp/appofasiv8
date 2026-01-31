@@ -1,5 +1,11 @@
 const { Article, User } = require('../models');
 const { Op } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
+
+// Load article categories
+const categoriesPath = path.join(__dirname, '../../data/article-categories.json');
+const articleCategories = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
 
 const TAG_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N}\s-]{0,39}$/u;
 const MAX_TAGS = 10;
@@ -43,20 +49,6 @@ const normalizeTags = (tags) => {
   return { value: uniqueTags };
 };
 
-const normalizeReadingTime = (readingTimeMinutes) => {
-  if (readingTimeMinutes === undefined) {
-    return { value: undefined };
-  }
-  if (readingTimeMinutes === null || readingTimeMinutes === '') {
-    return { value: null };
-  }
-  const parsed = Number(readingTimeMinutes);
-  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 120) {
-    return { error: 'Reading time must be an integer between 1 and 120 minutes.' };
-  }
-  return { value: parsed };
-};
-
 const normalizeUrl = (value, fieldName, maxLength) => {
   if (value === undefined) {
     return { value: undefined };
@@ -89,7 +81,7 @@ const articleController = {
         subtitle,
         category,
         status,
-        isNews,
+        articleType,
         locationId,
         useUserLocation,
         coverImageUrl,
@@ -97,7 +89,6 @@ const articleController = {
         sourceName,
         sourceUrl,
         tags,
-        readingTimeMinutes,
         isFeatured
       } = req.body;
 
@@ -107,6 +98,41 @@ const articleController = {
           success: false,
           message: 'Title and content are required.'
         });
+      }
+
+      // Validate and default articleType
+      const validArticleTypes = ['personal', 'articles', 'news'];
+      const finalArticleType = articleType || 'personal';
+      if (!validArticleTypes.includes(finalArticleType)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid article type. Must be one of: personal, articles, news.'
+        });
+      }
+
+      // Validate category if articleType is not personal
+      if (finalArticleType !== 'personal') {
+        if (!category) {
+          return res.status(400).json({
+            success: false,
+            message: 'Category is required for articles and news.'
+          });
+        }
+        const validCategories = articleCategories[finalArticleType] || [];
+        if (!validCategories.includes(category)) {
+          return res.status(400).json({
+            success: false,
+            message: `Invalid category for ${finalArticleType}. Please select a valid category.`
+          });
+        }
+      } else {
+        // Personal articles should not have a category
+        if (category) {
+          return res.status(400).json({
+            success: false,
+            message: 'Personal articles cannot have a category.'
+          });
+        }
       }
 
       // Determine which locationId to use
@@ -134,14 +160,6 @@ const articleController = {
         });
       }
 
-      const normalizedReadingTime = normalizeReadingTime(readingTimeMinutes);
-      if (normalizedReadingTime.error) {
-        return res.status(400).json({
-          success: false,
-          message: normalizedReadingTime.error
-        });
-      }
-
       const normalizedCoverImageUrl = normalizeUrl(
         coverImageUrl,
         'Cover image URL',
@@ -166,24 +184,27 @@ const articleController = {
         });
       }
 
+      // Determine isNews based on articleType
+      const isNews = finalArticleType === 'news';
+
       // Create article
       const article = await Article.create({
         title,
         content,
         summary,
         subtitle,
-        category,
+        category: finalArticleType !== 'personal' ? category : null,
+        articleType: finalArticleType,
         status: status || 'draft',
         authorId: req.user.id,
         publishedAt: status === 'published' ? new Date() : null,
-        isNews: isNews || false,
+        isNews,
         locationId: finalLocationId || null,
         coverImageUrl: normalizedCoverImageUrl.value,
         coverImageCaption,
         sourceName,
         sourceUrl: normalizedSourceUrl.value,
         tags: normalizedTags.value,
-        readingTimeMinutes: normalizedReadingTime.value,
         isFeatured: isFeatured || false
       });
 
@@ -216,7 +237,7 @@ const articleController = {
   // Get all articles
   getAllArticles: async (req, res) => {
     try {
-      const { status, category, authorId, isNews, page = 1, limit = 10 } = req.query;
+      const { status, category, authorId, isNews, articleType, page = 1, limit = 10 } = req.query;
       
       const where = {};
       
@@ -225,6 +246,11 @@ const articleController = {
         where.status = status;
       } else if (!req.user) {
         where.status = 'published';
+      }
+      
+      // Filter by articleType
+      if (articleType) {
+        where.articleType = articleType;
       }
       
       // Filter by category
@@ -340,7 +366,7 @@ const articleController = {
         subtitle,
         category,
         status,
-        isNews,
+        articleType,
         locationId,
         useUserLocation,
         coverImageUrl,
@@ -348,7 +374,6 @@ const articleController = {
         sourceName,
         sourceUrl,
         tags,
-        readingTimeMinutes,
         isFeatured
       } = req.body;
 
@@ -369,19 +394,58 @@ const articleController = {
         });
       }
 
+      // Validate articleType if provided
+      if (articleType !== undefined) {
+        const validArticleTypes = ['personal', 'articles', 'news'];
+        if (!validArticleTypes.includes(articleType)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid article type. Must be one of: personal, articles, news.'
+          });
+        }
+      }
+
+      // Validate category if articleType is being updated or if category is being updated
+      const finalArticleType = articleType !== undefined ? articleType : article.articleType;
+      if (finalArticleType !== 'personal') {
+        // For non-personal articles, category is required
+        if (category === undefined && articleType !== undefined && article.category === null) {
+          // Changing to articles/news but no category provided and article doesn't have one
+          return res.status(400).json({
+            success: false,
+            message: `Category is required for ${finalArticleType}.`
+          });
+        }
+        if (category !== undefined) {
+          if (!category) {
+            return res.status(400).json({
+              success: false,
+              message: `Category is required for ${finalArticleType}.`
+            });
+          }
+          const validCategories = articleCategories[finalArticleType] || [];
+          if (!validCategories.includes(category)) {
+            return res.status(400).json({
+              success: false,
+              message: `Invalid category for ${finalArticleType}. Please select a valid category.`
+            });
+          }
+        }
+      } else {
+        // Personal articles should not have a category
+        if (category !== undefined && category !== null && category !== '') {
+          return res.status(400).json({
+            success: false,
+            message: 'Personal articles cannot have a category.'
+          });
+        }
+      }
+
       const normalizedTags = normalizeTags(tags);
       if (normalizedTags.error) {
         return res.status(400).json({
           success: false,
           message: normalizedTags.error
-        });
-      }
-
-      const normalizedReadingTime = normalizeReadingTime(readingTimeMinutes);
-      if (normalizedReadingTime.error) {
-        return res.status(400).json({
-          success: false,
-          message: normalizedReadingTime.error
         });
       }
 
@@ -422,13 +486,18 @@ const articleController = {
         }
       }
       
-      // Allow author, admin, editor, or moderator to set/unset isNews flag
-      if (isNews !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
-        article.isNews = isNews;
-        // Clear approval if user unflags as news
-        if (!isNews) {
+      // Update articleType and sync isNews
+      if (articleType !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
+        article.articleType = articleType;
+        article.isNews = articleType === 'news';
+        // Clear approval if changing away from news
+        if (articleType !== 'news') {
           article.newsApprovedAt = null;
           article.newsApprovedBy = null;
+        }
+        // Clear category if changing to personal
+        if (articleType === 'personal') {
+          article.category = null;
         }
       }
 
@@ -441,9 +510,6 @@ const articleController = {
         article.sourceUrl = normalizedSourceUrl.value;
       }
       if (normalizedTags.value !== undefined) article.tags = normalizedTags.value;
-      if (normalizedReadingTime.value !== undefined) {
-        article.readingTimeMinutes = normalizedReadingTime.value;
-      }
       if (isFeatured !== undefined) article.isFeatured = isFeatured;
 
       // Handle location update

@@ -23,7 +23,7 @@ export default function NewsPage() {
           page,
           limit: 10,
           status: 'published',
-          isNews: true,
+          articleType: 'news',
         };
 
         const response = await articleAPI.getAll(params);

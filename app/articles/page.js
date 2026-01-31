@@ -16,6 +16,7 @@ export default function ArticlesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState({
     status: 'published',
+    articleType: 'articles',
     category: '',
   });
 

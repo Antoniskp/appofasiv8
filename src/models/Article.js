@@ -50,9 +50,10 @@ const Article = sequelize.define('Article', {
     allowNull: true,
     defaultValue: []
   },
-  readingTimeMinutes: {
-    type: DataTypes.INTEGER,
-    allowNull: true
+  articleType: {
+    type: DataTypes.ENUM('personal', 'articles', 'news'),
+    defaultValue: 'personal',
+    allowNull: false
   },
   isFeatured: {
     type: DataTypes.BOOLEAN,
