@@ -11,6 +11,7 @@ const TAG_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N}\s-]{0,39}$/u;
 const MAX_TAGS = 10;
 const MAX_IMAGE_URL_LENGTH = 500;
 const MAX_SOURCE_URL_LENGTH = 500;
+const VALID_ARTICLE_TYPES = ['personal', 'articles', 'news'];
 
 const normalizeTags = (tags) => {
   if (tags === undefined) {
@@ -70,6 +71,42 @@ const normalizeUrl = (value, fieldName, maxLength) => {
   }
 };
 
+const normalizeReadingTime = (value) => {
+  if (value === undefined) {
+    return { value: undefined };
+  }
+  if (value === null || value === '') {
+    return { value: null };
+  }
+
+  const parsedValue = Number(value);
+  if (!Number.isInteger(parsedValue) || parsedValue < 1) {
+    return { error: 'Reading time must be a positive integer.' };
+  }
+
+  return { value: parsedValue };
+};
+
+const hasCategoryValue = (category) => {
+  if (category === undefined || category === null) {
+    return false;
+  }
+  if (typeof category === 'string') {
+    return category.trim().length > 0;
+  }
+  return Boolean(category);
+};
+
+const deriveLegacyArticleType = (isNews, hasCategory, existingCategory) => {
+  if (isNews) {
+    return 'news';
+  }
+  if (hasCategory || existingCategory) {
+    return 'articles';
+  }
+  return 'personal';
+};
+
 const articleController = {
   // Create a new article
   createArticle: async (req, res) => {
@@ -89,7 +126,9 @@ const articleController = {
         sourceName,
         sourceUrl,
         tags,
-        isFeatured
+        isFeatured,
+        isNews,
+        readingTimeMinutes
       } = req.body;
 
       // Validate required fields
@@ -100,10 +139,11 @@ const articleController = {
         });
       }
 
-      // Validate and default articleType
-      const validArticleTypes = ['personal', 'articles', 'news'];
-      const finalArticleType = articleType || 'personal';
-      if (!validArticleTypes.includes(finalArticleType)) {
+      const isLegacyRequest = articleType === undefined;
+      const hasCategory = hasCategoryValue(category);
+      const finalArticleType = articleType
+        || (isNews === true ? 'news' : hasCategory ? 'articles' : 'personal');
+      if (!VALID_ARTICLE_TYPES.includes(finalArticleType)) {
         return res.status(400).json({
           success: false,
           message: 'Invalid article type. Must be one of: personal, articles, news.'
@@ -112,22 +152,24 @@ const articleController = {
 
       // Validate category if articleType is not personal
       if (finalArticleType !== 'personal') {
-        if (!category) {
+        if (!hasCategory && !isLegacyRequest) {
           return res.status(400).json({
             success: false,
             message: 'Category is required for articles and news.'
           });
         }
-        const validCategories = articleCategories[finalArticleType] || [];
-        if (!validCategories.includes(category)) {
-          return res.status(400).json({
-            success: false,
-            message: `Invalid category for ${finalArticleType}. Please select a valid category.`
-          });
+        if (!isLegacyRequest && hasCategory) {
+          const validCategories = articleCategories[finalArticleType] || [];
+          if (!validCategories.includes(category)) {
+            return res.status(400).json({
+              success: false,
+              message: `Invalid category for ${finalArticleType}. Please select a valid category.`
+            });
+          }
         }
       } else {
         // Personal articles should not have a category
-        if (category) {
+        if (hasCategory) {
           return res.status(400).json({
             success: false,
             message: 'Personal articles cannot have a category.'
@@ -184,8 +226,16 @@ const articleController = {
         });
       }
 
+      const normalizedReadingTime = normalizeReadingTime(readingTimeMinutes);
+      if (normalizedReadingTime.error) {
+        return res.status(400).json({
+          success: false,
+          message: normalizedReadingTime.error
+        });
+      }
+
       // Determine isNews based on articleType
-      const isNews = finalArticleType === 'news';
+      const resolvedIsNews = finalArticleType === 'news';
 
       // Create article
       const article = await Article.create({
@@ -198,14 +248,15 @@ const articleController = {
         status: status || 'draft',
         authorId: req.user.id,
         publishedAt: status === 'published' ? new Date() : null,
-        isNews,
+        isNews: resolvedIsNews,
         locationId: finalLocationId || null,
         coverImageUrl: normalizedCoverImageUrl.value,
         coverImageCaption,
         sourceName,
         sourceUrl: normalizedSourceUrl.value,
         tags: normalizedTags.value,
-        isFeatured: isFeatured || false
+        isFeatured: isFeatured || false,
+        readingTimeMinutes: normalizedReadingTime.value ?? null
       });
 
       // Fetch article with author info
@@ -374,7 +425,9 @@ const articleController = {
         sourceName,
         sourceUrl,
         tags,
-        isFeatured
+        isFeatured,
+        isNews,
+        readingTimeMinutes
       } = req.body;
 
       const article = await Article.findByPk(id);
@@ -394,22 +447,22 @@ const articleController = {
         });
       }
 
-      // Validate articleType if provided
-      if (articleType !== undefined) {
-        const validArticleTypes = ['personal', 'articles', 'news'];
-        if (!validArticleTypes.includes(articleType)) {
-          return res.status(400).json({
-            success: false,
-            message: 'Invalid article type. Must be one of: personal, articles, news.'
-          });
-        }
+      const isLegacyRequest = articleType === undefined;
+      const hasCategory = hasCategoryValue(category);
+      const requestedArticleType = articleType
+        || (isNews !== undefined ? deriveLegacyArticleType(isNews, hasCategory, article.category) : undefined);
+      const finalArticleType = requestedArticleType || article.articleType;
+      if (requestedArticleType && !VALID_ARTICLE_TYPES.includes(requestedArticleType)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid article type. Must be one of: personal, articles, news.'
+        });
       }
 
       // Validate category if articleType is being updated or if category is being updated
-      const finalArticleType = articleType !== undefined ? articleType : article.articleType;
       if (finalArticleType !== 'personal') {
         // For non-personal articles, category is required
-        if (category === undefined && articleType !== undefined && article.category === null) {
+        if (category === undefined && requestedArticleType && article.category === null) {
           // Changing to articles/news but no category provided and article doesn't have one
           return res.status(400).json({
             success: false,
@@ -417,23 +470,25 @@ const articleController = {
           });
         }
         if (category !== undefined) {
-          if (!category) {
+          if (!hasCategory && !isLegacyRequest) {
             return res.status(400).json({
               success: false,
               message: `Category is required for ${finalArticleType}.`
             });
           }
-          const validCategories = articleCategories[finalArticleType] || [];
-          if (!validCategories.includes(category)) {
-            return res.status(400).json({
-              success: false,
-              message: `Invalid category for ${finalArticleType}. Please select a valid category.`
-            });
+          if (!isLegacyRequest && hasCategory) {
+            const validCategories = articleCategories[finalArticleType] || [];
+            if (!validCategories.includes(category)) {
+              return res.status(400).json({
+                success: false,
+                message: `Invalid category for ${finalArticleType}. Please select a valid category.`
+              });
+            }
           }
         }
       } else {
         // Personal articles should not have a category
-        if (category !== undefined && category !== null && category !== '') {
+        if (category !== undefined && hasCategory) {
           return res.status(400).json({
             success: false,
             message: 'Personal articles cannot have a category.'
@@ -487,17 +542,24 @@ const articleController = {
       }
       
       // Update articleType and sync isNews
-      if (articleType !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
-        article.articleType = articleType;
-        article.isNews = articleType === 'news';
+      if (requestedArticleType && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
+        article.articleType = requestedArticleType;
+        article.isNews = requestedArticleType === 'news';
         // Clear approval if changing away from news
-        if (articleType !== 'news') {
+        if (requestedArticleType !== 'news') {
           article.newsApprovedAt = null;
           article.newsApprovedBy = null;
         }
         // Clear category if changing to personal
-        if (articleType === 'personal') {
+        if (requestedArticleType === 'personal') {
           article.category = null;
+        }
+      } else if (isNews !== undefined && (article.authorId === req.user.id || ['admin', 'editor', 'moderator'].includes(req.user.role))) {
+        article.articleType = deriveLegacyArticleType(isNews, hasCategory, article.category);
+        article.isNews = isNews;
+        if (!isNews) {
+          article.newsApprovedAt = null;
+          article.newsApprovedBy = null;
         }
       }
 
@@ -511,6 +573,16 @@ const articleController = {
       }
       if (normalizedTags.value !== undefined) article.tags = normalizedTags.value;
       if (isFeatured !== undefined) article.isFeatured = isFeatured;
+      if (readingTimeMinutes !== undefined) {
+        const normalizedReadingTime = normalizeReadingTime(readingTimeMinutes);
+        if (normalizedReadingTime.error) {
+          return res.status(400).json({
+            success: false,
+            message: normalizedReadingTime.error
+          });
+        }
+        article.readingTimeMinutes = normalizedReadingTime.value;
+      }
 
       // Handle location update
       if (useUserLocation) {

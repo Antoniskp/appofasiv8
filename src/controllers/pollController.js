@@ -1,6 +1,7 @@
 const { Poll, PollOption, PollVote, User } = require('../models');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
+const { syncPollTables } = require('../utils/pollTables');
 
 const voterSalt = process.env.VOTER_SALT
   || process.env.JWT_SECRET
@@ -164,7 +165,7 @@ exports.createPoll = async (req, res) => {
     const finalLocationId = locationResult.value;
 
     // Create poll
-    const poll = await Poll.create({
+    const pollPayload = {
       title,
       description,
       pollType: pollType || 'simple',
@@ -178,6 +179,14 @@ exports.createPoll = async (req, res) => {
       locationId: finalLocationId,
       startsAt: startsAt || null,
       endsAt: endsAt || null
+    };
+    const poll = await Poll.create(pollPayload).catch(async (error) => {
+      if (error?.name !== 'SequelizeForeignKeyConstraintError') {
+        throw error;
+      }
+      console.warn('Poll create failed due to foreign key constraint. Retrying after poll table sync.');
+      await syncPollTables();
+      return Poll.create(pollPayload);
     });
 
     // Create options
@@ -295,10 +304,10 @@ exports.getPoll = async (req, res) => {
         {
           model: PollOption,
           as: 'options',
-          attributes: ['id', 'text', 'photoUrl', 'linkUrl', 'orderIndex', 'isUserSubmitted'],
-          order: [['orderIndex', 'ASC']]
+          attributes: ['id', 'text', 'photoUrl', 'linkUrl', 'orderIndex', 'isUserSubmitted']
         }
-      ]
+      ],
+      order: [[{ model: PollOption, as: 'options' }, 'orderIndex', 'ASC']]
     });
 
     if (!poll) {
