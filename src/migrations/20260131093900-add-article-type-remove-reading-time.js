@@ -9,8 +9,7 @@ module.exports = {
       allowNull: false
     });
 
-    // Remove readingTimeMinutes column
-    await queryInterface.removeColumn('Articles', 'readingTimeMinutes');
+    // Keep readingTimeMinutes column (frontend and API still depend on it)
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -19,11 +18,5 @@ module.exports = {
     
     // Drop the ENUM type (PostgreSQL only)
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Articles_articleType"');
-
-    // Add back readingTimeMinutes column
-    await queryInterface.addColumn('Articles', 'readingTimeMinutes', {
-      type: Sequelize.INTEGER,
-      allowNull: true
-    });
   }
 };

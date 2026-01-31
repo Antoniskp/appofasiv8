@@ -112,7 +112,7 @@ Migrations are located in `src/migrations/` directory:
 
 4. **20260131093900-add-article-type-remove-reading-time.js**
    - Adds articleType enum to Articles
-   - Removes readingTimeMinutes from Articles
+   - Retains readingTimeMinutes to support existing APIs and UI
 
 5. **20260131110900-add-location-to-polls.js**
    - Adds locationId column to Polls (legacy migration)
