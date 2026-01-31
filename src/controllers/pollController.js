@@ -2,9 +2,37 @@ const { Poll, PollOption, PollVote, User } = require('../models');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
 
+const voterSalt = process.env.VOTER_SALT
+  || process.env.JWT_SECRET
+  || crypto.randomBytes(32).toString('hex');
+
 // Helper function to generate voter identifier from IP
 const generateVoterIdentifier = (ip) => {
-  return crypto.createHash('sha256').update(ip + process.env.VOTER_SALT || 'default-salt').digest('hex');
+  return crypto
+    .createHash('sha256')
+    .update(ip)
+    .update(voterSalt)
+    .digest('hex');
+};
+
+const resolvePollLocation = async ({ locationId, useUserLocation, userId }) => {
+  let finalLocationId = locationId ?? null;
+
+  if (useUserLocation) {
+    const user = await User.findByPk(userId);
+    finalLocationId = user?.locationId ?? null;
+  }
+
+  if (finalLocationId != null && typeof finalLocationId !== 'string') {
+    return {
+      error: {
+        status: 400,
+        message: 'Invalid location ID format. Location ID must be a string code.'
+      }
+    };
+  }
+
+  return { value: finalLocationId };
 };
 
 // Helper function to calculate results
@@ -101,6 +129,7 @@ exports.createPoll = async (req, res) => {
       status,
       articleId,
       locationId,
+      useUserLocation,
       startsAt,
       endsAt,
       options
@@ -121,6 +150,19 @@ exports.createPoll = async (req, res) => {
       });
     }
 
+    const locationResult = await resolvePollLocation({
+      locationId,
+      useUserLocation,
+      userId: req.user.id
+    });
+    if (locationResult.error) {
+      return res.status(locationResult.error.status).json({
+        success: false,
+        message: locationResult.error.message
+      });
+    }
+    const finalLocationId = locationResult.value;
+
     // Create poll
     const poll = await Poll.create({
       title,
@@ -133,7 +175,7 @@ exports.createPoll = async (req, res) => {
       status: status || 'draft',
       creatorId: req.user.id,
       articleId: articleId || null,
-      locationId: locationId || null,
+      locationId: finalLocationId,
       startsAt: startsAt || null,
       endsAt: endsAt || null
     });
@@ -488,6 +530,7 @@ exports.updatePoll = async (req, res) => {
       allowUnauthenticatedVoting,
       allowFreeTextResponse,
       locationId,
+      useUserLocation,
       startsAt,
       endsAt
     } = req.body;
@@ -508,6 +551,22 @@ exports.updatePoll = async (req, res) => {
       });
     }
 
+    let resolvedLocationId = locationId;
+    if (locationId !== undefined || useUserLocation !== undefined) {
+      const locationResult = await resolvePollLocation({
+        locationId,
+        useUserLocation,
+        userId: req.user.id
+      });
+      if (locationResult.error) {
+        return res.status(locationResult.error.status).json({
+          success: false,
+          message: locationResult.error.message
+        });
+      }
+      resolvedLocationId = locationResult.value;
+    }
+
     // Update poll
     await poll.update({
       title: title || poll.title,
@@ -516,7 +575,7 @@ exports.updatePoll = async (req, res) => {
       allowUserSubmittedAnswers: allowUserSubmittedAnswers !== undefined ? allowUserSubmittedAnswers : poll.allowUserSubmittedAnswers,
       allowUnauthenticatedVoting: allowUnauthenticatedVoting !== undefined ? allowUnauthenticatedVoting : poll.allowUnauthenticatedVoting,
       allowFreeTextResponse: allowFreeTextResponse !== undefined ? allowFreeTextResponse : poll.allowFreeTextResponse,
-      locationId: locationId !== undefined ? locationId : poll.locationId,
+      locationId: resolvedLocationId !== undefined ? resolvedLocationId : poll.locationId,
       startsAt: startsAt !== undefined ? startsAt : poll.startsAt,
       endsAt: endsAt !== undefined ? endsAt : poll.endsAt
     });
