@@ -52,17 +52,13 @@ export default function PollsPage() {
   };
 
   return (
-    <div className="app-container py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-blue-900">Ψηφοφορίες</h1>
-            <p className="text-gray-600 mt-1">
-              Συμμετέχετε στις ψηφοφορίες και δείτε τα αποτελέσματα
-            </p>
-          </div>
-          {user && (
+    <div className="bg-gray-50 min-h-screen py-8">
+      <div className="app-container">
+        <h1 className="text-4xl font-bold mb-8">Ψηφοφορίες</h1>
+
+        {/* Create Button */}
+        {user && (
+          <div className="mb-4">
             <Link
               href="/polls/create"
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -70,45 +66,46 @@ export default function PollsPage() {
               <PlusIcon className="h-5 w-5" />
               Νέα Ψηφοφορία
             </Link>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => { setFilter('active'); setPage(1); }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              filter === 'active'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-blue-900 border border-seafoam hover:bg-seafoam/20'
-            }`}
-          >
-            Ενεργές
-          </button>
-          <button
-            onClick={() => { setFilter('closed'); setPage(1); }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              filter === 'closed'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-blue-900 border border-seafoam hover:bg-seafoam/20'
-            }`}
-          >
-            Κλειστές
-          </button>
-          <button
-            onClick={() => { setFilter('all'); setPage(1); }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              filter === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-blue-900 border border-seafoam hover:bg-seafoam/20'
-            }`}
-          >
-            Όλες
-          </button>
-        </div>
-      </div>
+        <div className="card p-4 mb-8">
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => { setFilter('active'); setPage(1); }}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'active'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Ενεργές
+              </button>
+              <button
+                onClick={() => { setFilter('closed'); setPage(1); }}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'closed'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Κλειστές
+              </button>
+              <button
+                onClick={() => { setFilter('all'); setPage(1); }}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Όλες
+              </button>
+            </div>
+          </div>
 
-      {/* Content */}
+        {/* Content */}
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
@@ -148,17 +145,17 @@ export default function PollsPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 bg-white border border-seafoam rounded-md text-blue-900 hover:bg-seafoam/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Προηγούμενη
               </button>
-              <span className="px-4 py-2 text-blue-900">
+              <span className="px-4 py-2 text-gray-700">
                 Σελίδα {page} από {totalPages}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 bg-white border border-seafoam rounded-md text-blue-900 hover:bg-seafoam/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Επόμενη
               </button>
@@ -166,6 +163,7 @@ export default function PollsPage() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
