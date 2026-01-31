@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import LocationSelector from '@/components/LocationSelector';
+import articleCategories from '@/data/article-categories.json';
 
 export default function ArticleForm({
   formData,
@@ -18,6 +19,9 @@ export default function ArticleForm({
   onUseUserLocationChange = () => {},
 }) {
   const [imageError, setImageError] = useState(false);
+  
+  // Get available categories based on article type
+  const availableCategories = articleCategories[formData.articleType] || [];
 
   useEffect(() => {
     setImageError(false);
@@ -90,6 +94,47 @@ export default function ArticleForm({
           placeholder="Εισάγετε υπότιτλο άρθρου"
         />
       </div>
+
+      <div>
+        <label htmlFor="articleType" className="block text-sm font-medium text-gray-700 mb-1">
+          Τύπος Άρθρου *
+        </label>
+        <select
+          id="articleType"
+          name="articleType"
+          required
+          value={formData.articleType}
+          onChange={onInputChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="personal">Personal (μόνο για εμένα)</option>
+          <option value="articles">Άρθρα (εκπαιδευτικό περιεχόμενο)</option>
+          <option value="news">News (ειδήσεις)</option>
+        </select>
+      </div>
+
+      {availableCategories.length > 0 && (
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            Κατηγορία {formData.articleType !== 'personal' ? '*' : ''}
+          </label>
+          <select
+            id="category"
+            name="category"
+            required={formData.articleType !== 'personal'}
+            value={formData.category}
+            onChange={onInputChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Επιλέξτε κατηγορία...</option>
+            {availableCategories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div>
         <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
@@ -206,98 +251,50 @@ export default function ArticleForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-            Κατηγορία
-          </label>
-          <input
-            type="text"
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={onInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="π.χ. Τεχνολογία, Αθλητισμός"
-          />
-        </div>
-        <div>
-          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
-            Ετικέτες (με κόμμα)
-          </label>
-          <input
-            type="text"
-            id="tags"
-            name="tags"
-            value={formData.tags}
-            onChange={onInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="πολιτική, οικονομία, τοπικά"
-          />
-        </div>
+      <div>
+        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+          Ετικέτες (με κόμμα)
+        </label>
+        <input
+          type="text"
+          id="tags"
+          name="tags"
+          value={formData.tags}
+          onChange={onInputChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="πολιτική, οικονομία, τοπικά"
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="readingTimeMinutes" className="block text-sm font-medium text-gray-700 mb-1">
-            Χρόνος ανάγνωσης (λεπτά)
-          </label>
-          <input
-            type="number"
-            id="readingTimeMinutes"
-            name="readingTimeMinutes"
-            min="1"
-            value={formData.readingTimeMinutes}
-            onChange={onInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="5"
-          />
-        </div>
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-            Κατάσταση *
-          </label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={onInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="draft">Πρόχειρο</option>
-            <option value="published">Δημοσιευμένο</option>
-            <option value="archived">Αρχειοθετημένο</option>
-          </select>
-        </div>
+      <div>
+        <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+          Κατάσταση *
+        </label>
+        <select
+          id="status"
+          name="status"
+          value={formData.status}
+          onChange={onInputChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="draft">Πρόχειρο</option>
+          <option value="published">Δημοσιευμένο</option>
+          <option value="archived">Αρχειοθετημένο</option>
+        </select>
       </div>
 
-      <div className="flex flex-wrap items-center gap-6">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="isNews"
-            name="isNews"
-            checked={formData.isNews}
-            onChange={onInputChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label htmlFor="isNews" className="ml-2 block text-sm text-gray-700">
-            Σήμανση ως είδηση (απαιτείται έγκριση για δημοσίευση)
-          </label>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="isFeatured"
-            name="isFeatured"
-            checked={formData.isFeatured}
-            onChange={onInputChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
-            Προτεινόμενο άρθρο
-          </label>
-        </div>
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="isFeatured"
+          name="isFeatured"
+          checked={formData.isFeatured}
+          onChange={onInputChange}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
+          Προτεινόμενο άρθρο
+        </label>
       </div>
 
       <div>

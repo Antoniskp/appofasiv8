@@ -17,15 +17,14 @@ function EditArticleContent() {
     content: '',
     summary: '',
     category: '',
+    articleType: 'personal',
     status: 'draft',
-    isNews: false,
     isFeatured: false,
     coverImageUrl: '',
     coverImageCaption: '',
     sourceName: '',
     sourceUrl: '',
     tags: '',
-    readingTimeMinutes: '',
     locationId: null,
     useUserLocation: false
   });
@@ -46,15 +45,14 @@ function EditArticleContent() {
             content: article.content || '',
             summary: article.summary || '',
             category: article.category || '',
+            articleType: article.articleType || 'personal',
             status: article.status || 'draft',
-            isNews: article.isNews || false,
             isFeatured: article.isFeatured || false,
             coverImageUrl: article.coverImageUrl || '',
             coverImageCaption: article.coverImageCaption || '',
             sourceName: article.sourceName || '',
             sourceUrl: article.sourceUrl || '',
             tags: Array.isArray(article.tags) ? article.tags.join(', ') : '',
-            readingTimeMinutes: article.readingTimeMinutes || '',
             locationId: article.locationId || null,
             useUserLocation: false
           });
@@ -99,9 +97,6 @@ function EditArticleContent() {
     setSubmitting(true);
 
     try {
-      const parsedReadingTime = formData.readingTimeMinutes
-        ? Number(formData.readingTimeMinutes)
-        : null;
       const payload = {
         ...formData,
         tags: formData.tags
@@ -109,10 +104,7 @@ function EditArticleContent() {
             .split(',')
             .map(tag => tag.trim())
             .filter(Boolean)
-          : [],
-        readingTimeMinutes: parsedReadingTime && parsedReadingTime >= 1
-          ? parsedReadingTime
-          : null
+          : []
       };
       const response = await articleAPI.update(params.id, payload);
       if (response.success) {

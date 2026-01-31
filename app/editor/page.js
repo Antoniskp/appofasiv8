@@ -28,15 +28,14 @@ function EditorDashboardContent() {
     content: '',
     summary: '',
     category: '',
+    articleType: 'personal',
     status: 'draft',
-    isNews: false,
     isFeatured: false,
     coverImageUrl: '',
     coverImageCaption: '',
     sourceName: '',
     sourceUrl: '',
     tags: '',
-    readingTimeMinutes: '',
     locationId: null,
     useUserLocation: false
   });
@@ -86,9 +85,6 @@ function EditorDashboardContent() {
     setSubmitting(true);
 
     try {
-      const parsedReadingTime = formData.readingTimeMinutes
-        ? Number(formData.readingTimeMinutes)
-        : null;
       const payload = {
         ...formData,
         tags: formData.tags
@@ -96,10 +92,7 @@ function EditorDashboardContent() {
             .split(',')
             .map(tag => tag.trim())
             .filter(Boolean)
-          : [],
-        readingTimeMinutes: parsedReadingTime && parsedReadingTime >= 1
-          ? parsedReadingTime
-          : null
+          : []
       };
       const response = await articleAPI.create(payload);
       if (response.success) {
@@ -111,15 +104,14 @@ function EditorDashboardContent() {
           content: '',
           summary: '',
           category: '',
+          articleType: 'personal',
           status: 'draft',
-          isNews: false,
           isFeatured: false,
           coverImageUrl: '',
           coverImageCaption: '',
           sourceName: '',
           sourceUrl: '',
           tags: '',
-          readingTimeMinutes: '',
           locationId: null,
           useUserLocation: false
         });

@@ -61,12 +61,6 @@ export default function ArticleCard({ article, variant = 'grid' }) {
               <span>Από {article.author?.username || article.User?.username || 'Άγνωστος'}</span>
               <span>•</span>
               <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-              {article.readingTimeMinutes && (
-                <>
-                  <span>•</span>
-                  <span>{article.readingTimeMinutes} λεπτά ανάγνωσης</span>
-                </>
-              )}
               {article.status !== 'published' && (
                 <>
                   <span>•</span>
@@ -124,12 +118,6 @@ export default function ArticleCard({ article, variant = 'grid' }) {
               <span>Από {article.author?.username || article.User?.username || 'Άγνωστος'}</span>
               <span>•</span>
               <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-              {article.readingTimeMinutes && (
-                <>
-                  <span>•</span>
-                  <span>{article.readingTimeMinutes} λεπτά ανάγνωσης</span>
-                </>
-              )}
             </div>
           </div>
           <Link
