@@ -12,6 +12,13 @@ const pollRoutes = require('./routes/pollRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const normalizeTableIdentifier = (name) => {
+  if (!name) {
+    return null;
+  }
+  return name.replace(/"/g, '').split('.').pop().toLowerCase();
+};
+
 const normalizeTableName = (table) => {
   if (!table) {
     return null;
@@ -27,10 +34,7 @@ const normalizeTableName = (table) => {
 
 const normalizeTableKey = (table) => {
   const name = normalizeTableName(table);
-  if (!name) {
-    return null;
-  }
-  return name.replace(/"/g, '').split('.').pop().toLowerCase();
+  return normalizeTableIdentifier(name);
 };
 
 const buildTableNameMap = (tables = []) => {
@@ -52,12 +56,16 @@ const ensurePollTables = async () => {
     .map((model) => normalizeTableKey(model.getTableName()))
     .filter(Boolean);
   const missingTables = requiredTables.filter((tableName) => !tableNameMap.has(tableName));
+  const missingModels = [Poll, PollOption, PollVote].filter((model) => {
+    const tableKey = normalizeTableKey(model.getTableName());
+    return tableKey ? missingTables.includes(tableKey) : false;
+  });
 
   if (missingTables.length > 0) {
     console.warn(
       `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
     );
-    await sequelize.sync({ models: [Poll, PollOption, PollVote, User] });
+    await sequelize.sync({ models: missingModels });
   }
 
   try {
@@ -75,9 +83,17 @@ const ensurePollTables = async () => {
       if (!isStringType) {
         const foreignKeys = await queryInterface
           .getForeignKeyReferencesForTable(pollTableName)
-          .catch(() => []);
+          .catch((foreignKeyError) => {
+            console.warn(
+              'Unable to inspect poll foreign keys:',
+              foreignKeyError.message || foreignKeyError
+            );
+            return [];
+          });
         const locationForeignKeys = foreignKeys.filter(
-          (foreignKey) => foreignKey.columnName === 'locationId' && foreignKey.constraintName
+          (foreignKey) =>
+            foreignKey.columnName === 'locationId'
+            && foreignKey.constraintName != null
         );
         for (const foreignKey of locationForeignKeys) {
           await queryInterface.removeConstraint(pollTableName, foreignKey.constraintName);
