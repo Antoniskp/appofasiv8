@@ -9,6 +9,10 @@ const articleRoutes = require('./routes/articleRoutes');
 const locationRoutes = require('./routes/locationRoutes');
 const pollRoutes = require('./routes/pollRoutes');
 
+if (process.env.NODE_ENV === 'test' && !process.env.SKIP_POLL_TABLE_DROP) {
+  process.env.SKIP_POLL_TABLE_DROP = 'true';
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -61,12 +65,16 @@ const ensurePollTables = async () => {
     return tableKey ? missingTables.includes(tableKey) : false;
   });
 
-  if (missingTables.length > 0) {
-    console.warn(
-      `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
-    );
-    await sequelize.sync({ models: missingModels });
-  }
+    if (missingTables.length > 0) {
+      console.warn(
+        `Poll tables missing (${missingTables.join(', ')}). Creating missing poll tables with model sync.`
+      );
+      await sequelize.query('PRAGMA foreign_keys = OFF;').catch(() => {});
+      await Poll.sync({ force: true });
+      await PollOption.sync({ force: true });
+      await PollVote.sync({ force: true });
+      await sequelize.query('PRAGMA foreign_keys = ON;').catch(() => {});
+    }
 
   try {
     const updatedTables = missingTables.length > 0 ? await queryInterface.showAllTables() : tables;
@@ -190,6 +198,8 @@ const startServer = async () => {
 
 app.ensurePollTables = ensurePollTables;
 
-startServer();
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
 
 module.exports = app;

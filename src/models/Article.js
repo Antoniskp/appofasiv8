@@ -102,6 +102,13 @@ const Article = sequelize.define('Article', {
     type: DataTypes.STRING(100),
     allowNull: true,
     comment: 'Location code (e.g., GR, GR-I, GR-I-6104) from JSON location data'
+  },
+  readingTimeMinutes: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    validate: {
+      min: 1
+    }
   }
 }, {
   timestamps: true
