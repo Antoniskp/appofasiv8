@@ -229,7 +229,7 @@ const articleController = {
   // Get all articles
   getAllArticles: async (req, res) => {
     try {
-      const { status, category, authorId, isNews, page = 1, limit = 10 } = req.query;
+      const { status, category, authorId, isNews, articleType, page = 1, limit = 10 } = req.query;
       
       const where = {};
       
@@ -238,6 +238,11 @@ const articleController = {
         where.status = status;
       } else if (!req.user) {
         where.status = 'published';
+      }
+      
+      // Filter by articleType
+      if (articleType) {
+        where.articleType = articleType;
       }
       
       // Filter by category
