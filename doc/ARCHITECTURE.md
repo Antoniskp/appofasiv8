@@ -43,6 +43,13 @@
 │  │  │  ├─ POST   /         (Protected, Rate Limited)  │  │   │
 │  │  │  ├─ PUT    /:id      (Protected, Role-Based)    │  │   │
 │  │  │  └─ DELETE /:id      (Protected, Role-Based)    │  │   │
+│  │  │                                                   │  │   │
+│  │  │  /api/polls/*                                    │  │   │
+│  │  │  ├─ GET    /         (Optional Auth)            │  │   │
+│  │  │  ├─ GET    /:id      (Optional Auth)            │  │   │
+│  │  │  ├─ POST   /         (Protected)                │  │   │
+│  │  │  ├─ POST   /:id/vote (Optional Auth)            │  │   │
+│  │  │  └─ GET    /:id/results (Public)                │  │   │
 │  │  └──────────────────────────────────────────────────┘  │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └───────────────────────────┬─────────────────────────────────────┘
@@ -65,6 +72,14 @@
 │  └────────────────────────┘    │  • Editor: Create/Edit all  │ │
 │                                 │  • Viewer: Create/Edit own  │ │
 │                                 └─────────────────────────────┘ │
+│  ┌────────────────────────┐    ┌─────────────────────────────┐ │
+│  │  Poll Controller       │    │  Location Controller         │ │
+│  │  ├─ createPoll()       │    │  ├─ getCountries()           │ │
+│  │  ├─ getPolls()         │    │  ├─ getJurisdictionsByCountry│ │
+│  │  ├─ getPollById()      │    │  ├─ getMunicipalitiesByJur.  │ │
+│  │  ├─ voteOnPoll()       │    │  └─ getLocationById()        │ │
+│  │  └─ getPollResults()   │    │                             │ │
+│  └────────────────────────┘    └─────────────────────────────┘ │
 └───────────────────────────┬─────────────────────────────────────┘
                             │
                             │ ORM Layer (Sequelize)
@@ -80,17 +95,54 @@
 │  │  • username        │  1:N     │  • title                 │  │
 │  │  • email           │  Author  │  • content               │  │
 │  │  • password        │          │  • summary               │  │
-│  │  • role            │          │  • authorId (FK)         │  │
-│  │  • firstName       │          │  • status                │  │
-│  │  • lastName        │          │  • publishedAt           │  │
-│  │  • createdAt       │          │  • category              │  │
-│  │  • updatedAt       │          │  • createdAt             │  │
-│  │                    │          │  • updatedAt             │  │
-│  │  Hooks:            │          │                          │  │
-│  │  • beforeCreate    │          │  Validations:            │  │
-│  │  • beforeUpdate    │          │  • Title length: 5-200   │  │
-│  │  (Hash password)   │          │  • Content: 10-50000     │  │
+│  │  • role            │          │  • subtitle              │  │
+│  │  • firstName       │          │  • coverImageUrl         │  │
+│  │  • lastName        │          │  • coverImageCaption     │  │
+│  │  • locationId      │          │  • sourceName            │  │
+│  │  • createdAt       │          │  • sourceUrl             │  │
+│  │  • updatedAt       │          │  • tags (JSON)           │  │
+│  │                    │          │  • articleType           │  │
+│  │  Hooks:            │          │  • isFeatured            │  │
+│  │  • beforeCreate    │          │  • authorId (FK)         │  │
+│  │  • beforeUpdate    │          │  • status                │  │
+│  │  (Hash password)   │          │  • publishedAt           │  │
+│  │                    │          │  • category              │  │
+│  │  Validations:      │          │  • isNews                │  │
+│  │  • email format    │          │  • newsApprovedAt        │  │
+│  │  • username length │          │  • newsApprovedBy (FK)   │  │
+│  │                    │          │  • locationId            │  │
 │  └────────────────────┘          └──────────────────────────┘  │
+│                                                                   │
+│  ┌────────────────────┐          ┌──────────────────────────┐  │
+│  │   Poll Model       │          │   PollOption Model       │  │
+│  │                    │          │                          │  │
+│  │  Fields:           │          │  Fields:                 │  │
+│  │  • id              │◄─────────┤  • id                    │  │
+│  │  • title           │  1:N     │  • pollId (FK)           │  │
+│  │  • description     │          │  • text                  │  │
+│  │  • pollType        │          │  • photoUrl              │  │
+│  │  • questionType    │          │  • linkUrl               │  │
+│  │  • status          │          │  • orderIndex            │  │
+│  │  • creatorId (FK)  │          │  • isUserSubmitted       │  │
+│  │  • articleId (FK)  │          │  • submittedByUserId     │  │
+│  │  • locationId      │          │                          │  │
+│  │  • startsAt        │          │                          │  │
+│  │  • endsAt          │          │                          │  │
+│  └────────────────────┘          └──────────────────────────┘  │
+│                                                                   │
+│  ┌────────────────────┐
+│  │    PollVote Model  │
+│  │                    │
+│  │  Fields:           │
+│  │  • id              │
+│  │  • pollId (FK)     │
+│  │  • userId (FK)     │
+│  │  • optionId (FK)   │
+│  │  • ranking (JSONB) │
+│  │  • freeTextResponse│
+│  │  • isAuthenticated │
+│  │  • voterIdentifier │
+│  └────────────────────┘
 └───────────────────────────┬─────────────────────────────────────┘
                             │
                             │ Database Driver (pg)
@@ -101,6 +153,9 @@
 │  Tables:                                                         │
 │  • Users                                                         │
 │  • Articles                                                      │
+│  • Polls                                                         │
+│  • PollOptions                                                   │
+│  • PollVotes                                                     │
 │                                                                   │
 │  Features:                                                       │
 │  • ACID Compliance                                              │
@@ -293,11 +348,16 @@ appofasiv8/
 │   ├── models/                   # Data models
 │   │   ├── User.js              # User model with password hashing
 │   │   ├── Article.js           # Article model
+│   │   ├── Poll.js              # Poll model
+│   │   ├── PollOption.js        # Poll option model
+│   │   ├── PollVote.js          # Poll vote model
 │   │   └── index.js             # Model associations
 │   │
 │   ├── controllers/              # Business logic
 │   │   ├── authController.js    # Auth operations
-│   │   └── articleController.js # Article operations
+│   │   ├── articleController.js # Article operations
+│   │   ├── pollController.js    # Poll operations
+│   │   └── locationControllerJSON.js # Location lookups
 │   │
 │   ├── middleware/               # Custom middleware
 │   │   ├── auth.js              # JWT authentication
@@ -307,7 +367,9 @@ appofasiv8/
 │   │
 │   ├── routes/                   # Route definitions
 │   │   ├── authRoutes.js        # Auth endpoints
-│   │   └── articleRoutes.js     # Article endpoints
+│   │   ├── articleRoutes.js     # Article endpoints
+│   │   ├── pollRoutes.js        # Poll endpoints
+│   │   └── locationRoutes.js    # Location endpoints
 │   │
 │   └── index.js                  # App entry point
 │
@@ -317,6 +379,8 @@ appofasiv8/
 ├── doc/                         # Project docs
 │   ├── API_TESTING.md           # API testing guide
 │   ├── DEPLOYMENT.md            # Deployment guide
+│   ├── POLL_API.md              # Poll API documentation
+│   ├── POLL_USER_GUIDE.md       # Poll user guide
 │   ├── SECURITY.md              # Security documentation
 │   ├── PROJECT_SUMMARY.md       # Project overview
 │   ├── VPS_DEPLOYMENT.md        # VPS deployment guide
