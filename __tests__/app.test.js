@@ -24,6 +24,7 @@ const originalFetch = global.fetch;
 
 describe('News Application Integration Tests', () => {
   let adminToken;
+  let adminUserId;
   let editorToken;
   let viewerToken;
   let testArticleId;
@@ -36,6 +37,22 @@ describe('News Application Integration Tests', () => {
     // Connect to test database and sync models
     await sequelize.authenticate();
     await sequelize.sync({ force: true }); // Reset database for tests
+
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'testmoderator',
+        email: 'moderator@test.com',
+        password: 'moderator123',
+        role: 'moderator',
+        firstName: 'Test',
+        lastName: 'Moderator'
+      });
+
+    moderatorToken = response.body?.data?.token;
+    if (!moderatorToken) {
+      throw new Error('Failed to create moderator user for tests.');
+    }
   });
 
   afterAll(async () => {
@@ -65,6 +82,7 @@ describe('News Application Integration Tests', () => {
       expect(response.body.data.token).toBeDefined();
       expect(response.body.data.user.role).toBe('admin');
       adminToken = response.body.data.token;
+      adminUserId = response.body.data.user.id;
     });
 
     test('should register a new editor user', async () => {
@@ -101,24 +119,6 @@ describe('News Application Integration Tests', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.data.user.role).toBe('viewer');
       viewerToken = response.body.data.token;
-    });
-
-    test('should register a new moderator user', async () => {
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({
-          username: 'testmoderator',
-          email: 'moderator@test.com',
-          password: 'moderator123',
-          role: 'moderator',
-          firstName: 'Test',
-          lastName: 'Moderator'
-        });
-
-      expect(response.status).toBe(201);
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.user.role).toBe('moderator');
-      moderatorToken = response.body.data.token;
     });
 
     test('should not register user with duplicate email', async () => {
@@ -437,13 +437,13 @@ describe('News Application Integration Tests', () => {
       const response = await request(app)
         .get('/api/articles')
         .set('Authorization', `Bearer ${adminToken}`)
-        .query({ authorId: 1 });
+        .query({ authorId: adminUserId });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.articles.length).toBeGreaterThan(0);
       response.body.data.articles.forEach((article) => {
-        expect(article.authorId).toBe(1);
+        expect(article.authorId).toBe(adminUserId);
       });
     });
 

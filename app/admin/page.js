@@ -7,6 +7,13 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { articleAPI, authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
+const roleCards = [
+  { key: 'admin', label: 'Διαχειριστές', color: 'text-blue-600' },
+  { key: 'moderator', label: 'Συντονιστές', color: 'text-indigo-600' },
+  { key: 'editor', label: 'Συντάκτες', color: 'text-emerald-600' },
+  { key: 'viewer', label: 'Θεατές', color: 'text-gray-600' }
+];
+
 function AdminDashboardContent() {
   const { user } = useAuth();
   const [articles, setArticles] = useState([]);
@@ -30,12 +37,6 @@ function AdminDashboardContent() {
     }
   });
   const [loading, setLoading] = useState(true);
-  const roleCards = [
-    { key: 'admin', label: 'Διαχειριστές', color: 'text-blue-600' },
-    { key: 'moderator', label: 'Συντονιστές', color: 'text-indigo-600' },
-    { key: 'editor', label: 'Συντάκτες', color: 'text-emerald-600' },
-    { key: 'viewer', label: 'Θεατές', color: 'text-gray-600' }
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
