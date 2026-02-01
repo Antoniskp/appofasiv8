@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { User, sequelize } = require('../models');
+const userRoles = require('../../data/user-roles.json');
 require('dotenv').config();
 
 const normalizeAvatarUrl = (avatarUrl) => {
@@ -653,9 +654,12 @@ const authController = {
       });
 
       const roleValues = User.rawAttributes?.role?.values;
+      const fallbackRoles = Array.isArray(userRoles)
+        ? userRoles.map((role) => role.key)
+        : ['admin', 'moderator', 'editor', 'viewer'];
       const roles = Array.isArray(roleValues) && roleValues.length
         ? roleValues
-        : roleCounts.map(({ role }) => role);
+        : fallbackRoles;
 
       const roleTotals = roles.reduce((acc, role) => {
         acc[role] = 0;

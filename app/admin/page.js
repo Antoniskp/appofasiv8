@@ -5,14 +5,10 @@ import Link from 'next/link';
 import { BookOpenIcon, CheckBadgeIcon, ClockIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { articleAPI, authAPI } from '@/lib/api';
+import { USER_ROLES } from '@/lib/roles';
 import { useAuth } from '@/lib/auth-context';
 
-const roleCards = [
-  { key: 'admin', label: 'Διαχειριστές', color: 'text-blue-600' },
-  { key: 'moderator', label: 'Συντονιστές', color: 'text-indigo-600' },
-  { key: 'editor', label: 'Συντάκτες', color: 'text-emerald-600' },
-  { key: 'viewer', label: 'Θεατές', color: 'text-gray-600' }
-];
+const roleCards = USER_ROLES;
 
 function AdminDashboardContent() {
   const { user } = useAuth();
