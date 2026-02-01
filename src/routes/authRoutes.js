@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const authMiddleware = require('../middleware/auth');
+const checkRole = require('../middleware/checkRole');
 const optionalAuth = require('../middleware/optionalAuth');
 const { authLimiter, apiLimiter } = require('../middleware/rateLimiter');
 
@@ -15,5 +16,6 @@ router.post('/github/callback', authLimiter, optionalAuth, authController.github
 router.get('/profile', apiLimiter, authMiddleware, authController.getProfile);
 router.put('/profile', apiLimiter, authMiddleware, authController.updateProfile);
 router.put('/password', apiLimiter, authMiddleware, authController.updatePassword);
+router.get('/stats', apiLimiter, authMiddleware, checkRole('admin', 'moderator'), authController.getUserStats);
 
 module.exports = router;

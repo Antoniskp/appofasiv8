@@ -1,6 +1,13 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
+const userRoles = require('../../data/user-roles.json');
+
+if (!Array.isArray(userRoles) || userRoles.length === 0) {
+  throw new Error('User roles configuration is missing.');
+}
+
+const roleKeys = userRoles.map((role) => role.key);
 
 const User = sequelize.define('User', {
   id: {
@@ -29,7 +36,7 @@ const User = sequelize.define('User', {
     allowNull: false
   },
   role: {
-    type: DataTypes.ENUM('admin', 'moderator', 'editor', 'viewer'),
+    type: DataTypes.ENUM(...roleKeys),
     defaultValue: 'viewer',
     allowNull: false
   },

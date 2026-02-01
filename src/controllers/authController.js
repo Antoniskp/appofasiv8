@@ -1,7 +1,8 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
-const { User } = require('../models');
+const { User, sequelize } = require('../models');
+const userRoles = require('../../data/user-roles.json');
 require('dotenv').config();
 
 const normalizeAvatarUrl = (avatarUrl) => {
@@ -638,6 +639,49 @@ const authController = {
       res.status(500).json({
         success: false,
         message: 'Error updating password.',
+        error: error.message
+      });
+    }
+  },
+  // Get user statistics for admin dashboard
+  getUserStats: async (req, res) => {
+    try {
+      const total = await User.count();
+      const roleCounts = await User.findAll({
+        attributes: ['role', [sequelize.fn('COUNT', sequelize.col('role')), 'count']],
+        group: ['role'],
+        raw: true
+      });
+
+      const roleValues = User.rawAttributes?.role?.values;
+      const fallbackRoles = Array.isArray(userRoles)
+        ? userRoles.map((role) => role.key)
+        : [];
+      const roles = Array.isArray(roleValues) && roleValues.length
+        ? roleValues
+        : fallbackRoles;
+
+      const roleTotals = roles.reduce((acc, role) => {
+        acc[role] = 0;
+        return acc;
+      }, {});
+
+      roleCounts.forEach(({ role, count }) => {
+        roleTotals[role] = Number(count) || 0;
+      });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          total,
+          roles: roleTotals
+        }
+      });
+    } catch (error) {
+      console.error('User stats error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error fetching user statistics.',
         error: error.message
       });
     }

@@ -24,9 +24,11 @@ const originalFetch = global.fetch;
 
 describe('News Application Integration Tests', () => {
   let adminToken;
+  let adminUserId;
   let editorToken;
   let viewerToken;
   let testArticleId;
+  let moderatorToken;
 
   beforeAll(async () => {
     process.env.GITHUB_CLIENT_ID = 'test-client-id';
@@ -35,6 +37,22 @@ describe('News Application Integration Tests', () => {
     // Connect to test database and sync models
     await sequelize.authenticate();
     await sequelize.sync({ force: true }); // Reset database for tests
+
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'testmoderator',
+        email: 'moderator@test.com',
+        password: 'moderator123',
+        role: 'moderator',
+        firstName: 'Test',
+        lastName: 'Moderator'
+      });
+
+    moderatorToken = response.body?.data?.token;
+    if (!moderatorToken) {
+      throw new Error('Failed to create moderator user for tests.');
+    }
   });
 
   afterAll(async () => {
@@ -64,6 +82,7 @@ describe('News Application Integration Tests', () => {
       expect(response.body.data.token).toBeDefined();
       expect(response.body.data.user.role).toBe('admin');
       adminToken = response.body.data.token;
+      adminUserId = response.body.data.user.id;
     });
 
     test('should register a new editor user', async () => {
@@ -148,6 +167,40 @@ describe('News Application Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.user.email).toBe('admin@test.com');
+    });
+
+    test('should get user stats as admin', async () => {
+      const response = await request(app)
+        .get('/api/auth/stats')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.total).toBe(4);
+      expect(response.body.data.roles).toMatchObject({
+        admin: 1,
+        editor: 1,
+        viewer: 1,
+        moderator: 1
+      });
+    });
+
+    test('should allow moderator to access user stats', async () => {
+      const response = await request(app)
+        .get('/api/auth/stats')
+        .set('Authorization', `Bearer ${moderatorToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+    });
+
+    test('should forbid viewer from accessing user stats', async () => {
+      const response = await request(app)
+        .get('/api/auth/stats')
+        .set('Authorization', `Bearer ${viewerToken}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.success).toBe(false);
     });
 
     test('should not get profile without token', async () => {
@@ -384,13 +437,13 @@ describe('News Application Integration Tests', () => {
       const response = await request(app)
         .get('/api/articles')
         .set('Authorization', `Bearer ${adminToken}`)
-        .query({ authorId: 1 });
+        .query({ authorId: adminUserId });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.articles.length).toBeGreaterThan(0);
       response.body.data.articles.forEach((article) => {
-        expect(article.authorId).toBe(1);
+        expect(article.authorId).toBe(adminUserId);
       });
     });
 
@@ -540,24 +593,7 @@ describe('News Application Integration Tests', () => {
   });
 
   describe('News Workflow Tests', () => {
-    let moderatorToken;
     let newsArticleId;
-
-    beforeAll(async () => {
-      // Register a moderator user
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({
-          username: 'testmoderator',
-          email: 'moderator@test.com',
-          password: 'moderator123',
-          role: 'moderator',
-          firstName: 'Test',
-          lastName: 'Moderator'
-        });
-      
-      moderatorToken = response.body.data.token;
-    });
 
     test('should create article with isNews flag', async () => {
       const response = await request(app)

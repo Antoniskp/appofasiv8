@@ -4,8 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BookOpenIcon, CheckBadgeIcon, ClockIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { articleAPI } from '@/lib/api';
+import { articleAPI, authAPI } from '@/lib/api';
+import { USER_ROLES } from '@/lib/roles';
 import { useAuth } from '@/lib/auth-context';
+
+const roleCards = USER_ROLES;
 
 function AdminDashboardContent() {
   const { user } = useAuth();
@@ -21,33 +24,54 @@ function AdminDashboardContent() {
     draft: 0,
     archived: 0,
     pendingNews: 0,
+    totalUsers: 0,
+    roleStats: {
+      admin: 0,
+      moderator: 0,
+      editor: 0,
+      viewer: 0
+    }
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Fetch all articles (admin can see all)
-        const response = await articleAPI.getAll({ limit: 100 });
-        if (response.success) {
-          const allArticles = response.data.articles || [];
+        const [articleResult, userStatsResult] = await Promise.allSettled([
+          articleAPI.getAll({ limit: 100 }),
+          authAPI.getUserStats()
+        ]);
+
+        if (articleResult.status === 'fulfilled' && articleResult.value.success) {
+          const allArticles = articleResult.value.data.articles || [];
           setArticles(allArticles);
-          
-          // Calculate stats
-          setStats({
+          setStats((prevStats) => ({
+            ...prevStats,
             total: allArticles.length,
             published: allArticles.filter(a => a.status === 'published').length,
             draft: allArticles.filter(a => a.status === 'draft').length,
             archived: allArticles.filter(a => a.status === 'archived').length,
             pendingNews: allArticles.filter(a => a.isNews && !a.newsApprovedAt).length,
-          });
+          }));
+        } else if (articleResult.status === 'rejected') {
+          console.error('Failed to fetch articles:', articleResult.reason);
         }
-      } catch (error) {
-        console.error('Failed to fetch articles:', error);
+
+        if (userStatsResult.status === 'fulfilled' && userStatsResult.value?.success) {
+          setStats((prevStats) => ({
+            ...prevStats,
+            totalUsers: userStatsResult.value.data?.total ?? 0,
+            roleStats: {
+              ...prevStats.roleStats,
+              ...(userStatsResult.value.data?.roles || {})
+            }
+          }));
+        } else if (userStatsResult.status === 'rejected') {
+          console.error('Failed to fetch user stats:', userStatsResult.reason);
+        }
       } finally {
         setLoading(false);
       }
-    };
+      };
 
     fetchData();
   }, []);
@@ -120,6 +144,19 @@ function AdminDashboardContent() {
             <h3 className="text-gray-500 text-sm font-medium">Εκκρεμείς Ειδήσεις</h3>
             <p className="text-3xl font-bold mt-2 text-orange-600">{stats.pendingNews}</p>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Σύνολο Χρηστών</h3>
+            <p className="text-3xl font-bold mt-2">{stats.totalUsers}</p>
+          </div>
+          {roleCards.map((role) => (
+            <div key={role.key} className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-gray-500 text-sm font-medium">{role.label}</h3>
+              <p className={`text-3xl font-bold mt-2 ${role.color}`}>{stats.roleStats[role.key] ?? 0}</p>
+            </div>
+          ))}
         </div>
 
         {/* Quick Actions */}

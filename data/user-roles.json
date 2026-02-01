@@ -1,0 +1,6 @@
+[
+  { "key": "admin", "label": "Διαχειριστές", "color": "text-blue-600" },
+  { "key": "moderator", "label": "Συντονιστές", "color": "text-indigo-600" },
+  { "key": "editor", "label": "Συντάκτες", "color": "text-emerald-600" },
+  { "key": "viewer", "label": "Θεατές", "color": "text-gray-600" }
+]
