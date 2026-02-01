@@ -30,6 +30,12 @@ function AdminDashboardContent() {
     }
   });
   const [loading, setLoading] = useState(true);
+  const roleCards = [
+    { key: 'admin', label: 'Διαχειριστές', color: 'text-blue-600' },
+    { key: 'moderator', label: 'Συντονιστές', color: 'text-indigo-600' },
+    { key: 'editor', label: 'Συντάκτες', color: 'text-emerald-600' },
+    { key: 'viewer', label: 'Θεατές', color: 'text-gray-600' }
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -145,22 +151,12 @@ function AdminDashboardContent() {
             <h3 className="text-gray-500 text-sm font-medium">Σύνολο Χρηστών</h3>
             <p className="text-3xl font-bold mt-2">{stats.totalUsers}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-gray-500 text-sm font-medium">Διαχειριστές</h3>
-            <p className="text-3xl font-bold mt-2 text-blue-600">{stats.roleStats.admin}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-gray-500 text-sm font-medium">Συντονιστές</h3>
-            <p className="text-3xl font-bold mt-2 text-indigo-600">{stats.roleStats.moderator}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-gray-500 text-sm font-medium">Συντάκτες</h3>
-            <p className="text-3xl font-bold mt-2 text-emerald-600">{stats.roleStats.editor}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-gray-500 text-sm font-medium">Θεατές</h3>
-            <p className="text-3xl font-bold mt-2 text-gray-600">{stats.roleStats.viewer}</p>
-          </div>
+          {roleCards.map((role) => (
+            <div key={role.key} className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-gray-500 text-sm font-medium">{role.label}</h3>
+              <p className={`text-3xl font-bold mt-2 ${role.color}`}>{stats.roleStats[role.key] ?? 0}</p>
+            </div>
+          ))}
         </div>
 
         {/* Quick Actions */}

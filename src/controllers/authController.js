@@ -646,15 +646,16 @@ const authController = {
   getUserStats: async (req, res) => {
     try {
       const total = await User.count();
-      const roleValues = User.rawAttributes?.role?.values;
-      const roles = Array.isArray(roleValues) && roleValues.length
-        ? roleValues
-        : ['admin', 'moderator', 'editor', 'viewer'];
       const roleCounts = await User.findAll({
         attributes: ['role', [sequelize.fn('COUNT', sequelize.col('role')), 'count']],
         group: ['role'],
         raw: true
       });
+
+      const roleValues = User.rawAttributes?.role?.values;
+      const roles = Array.isArray(roleValues) && roleValues.length
+        ? roleValues
+        : roleCounts.map(({ role }) => role);
 
       const roleTotals = roles.reduce((acc, role) => {
         acc[role] = 0;
