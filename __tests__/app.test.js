@@ -27,6 +27,7 @@ describe('News Application Integration Tests', () => {
   let editorToken;
   let viewerToken;
   let testArticleId;
+  let moderatorToken;
 
   beforeAll(async () => {
     process.env.GITHUB_CLIENT_ID = 'test-client-id';
@@ -102,6 +103,24 @@ describe('News Application Integration Tests', () => {
       viewerToken = response.body.data.token;
     });
 
+    test('should register a new moderator user', async () => {
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testmoderator',
+          email: 'moderator@test.com',
+          password: 'moderator123',
+          role: 'moderator',
+          firstName: 'Test',
+          lastName: 'Moderator'
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.user.role).toBe('moderator');
+      moderatorToken = response.body.data.token;
+    });
+
     test('should not register user with duplicate email', async () => {
       const response = await request(app)
         .post('/api/auth/register')
@@ -148,6 +167,40 @@ describe('News Application Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.user.email).toBe('admin@test.com');
+    });
+
+    test('should get user stats as admin', async () => {
+      const response = await request(app)
+        .get('/api/auth/stats')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.total).toBe(4);
+      expect(response.body.data.roles).toMatchObject({
+        admin: 1,
+        editor: 1,
+        viewer: 1,
+        moderator: 1
+      });
+    });
+
+    test('should allow moderator to access user stats', async () => {
+      const response = await request(app)
+        .get('/api/auth/stats')
+        .set('Authorization', `Bearer ${moderatorToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+    });
+
+    test('should forbid viewer from accessing user stats', async () => {
+      const response = await request(app)
+        .get('/api/auth/stats')
+        .set('Authorization', `Bearer ${viewerToken}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.success).toBe(false);
     });
 
     test('should not get profile without token', async () => {

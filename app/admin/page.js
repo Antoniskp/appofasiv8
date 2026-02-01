@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BookOpenIcon, CheckBadgeIcon, ClockIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { articleAPI } from '@/lib/api';
+import { articleAPI, authAPI } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
 function AdminDashboardContent() {
@@ -21,33 +21,51 @@ function AdminDashboardContent() {
     draft: 0,
     archived: 0,
     pendingNews: 0,
+    totalUsers: 0,
+    roleStats: {
+      admin: 0,
+      moderator: 0,
+      editor: 0,
+      viewer: 0
+    }
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Fetch all articles (admin can see all)
-        const response = await articleAPI.getAll({ limit: 100 });
-        if (response.success) {
-          const allArticles = response.data.articles || [];
-          setArticles(allArticles);
-          
-          // Calculate stats
-          setStats({
-            total: allArticles.length,
-            published: allArticles.filter(a => a.status === 'published').length,
-            draft: allArticles.filter(a => a.status === 'draft').length,
-            archived: allArticles.filter(a => a.status === 'archived').length,
-            pendingNews: allArticles.filter(a => a.isNews && !a.newsApprovedAt).length,
-          });
+        try {
+          const [articleResponse, userStatsResponse] = await Promise.all([
+            articleAPI.getAll({ limit: 100 }),
+            authAPI.getUserStats()
+          ]);
+          if (articleResponse.success) {
+            const allArticles = articleResponse.data.articles || [];
+            setArticles(allArticles);
+            setStats((prevStats) => ({
+              ...prevStats,
+              total: allArticles.length,
+              published: allArticles.filter(a => a.status === 'published').length,
+              draft: allArticles.filter(a => a.status === 'draft').length,
+              archived: allArticles.filter(a => a.status === 'archived').length,
+              pendingNews: allArticles.filter(a => a.isNews && !a.newsApprovedAt).length,
+            }));
+          }
+          if (userStatsResponse?.success) {
+            setStats((prevStats) => ({
+              ...prevStats,
+              totalUsers: userStatsResponse.data?.total ?? 0,
+              roleStats: {
+                ...prevStats.roleStats,
+                ...(userStatsResponse.data?.roles || {})
+              }
+            }));
+          }
+        } catch (error) {
+          console.error('Failed to fetch dashboard data:', error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Failed to fetch articles:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
     fetchData();
   }, []);
@@ -119,6 +137,29 @@ function AdminDashboardContent() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-gray-500 text-sm font-medium">Εκκρεμείς Ειδήσεις</h3>
             <p className="text-3xl font-bold mt-2 text-orange-600">{stats.pendingNews}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Σύνολο Χρηστών</h3>
+            <p className="text-3xl font-bold mt-2">{stats.totalUsers}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Διαχειριστές</h3>
+            <p className="text-3xl font-bold mt-2 text-blue-600">{stats.roleStats.admin}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Συντονιστές</h3>
+            <p className="text-3xl font-bold mt-2 text-indigo-600">{stats.roleStats.moderator}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Συντάκτες</h3>
+            <p className="text-3xl font-bold mt-2 text-emerald-600">{stats.roleStats.editor}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-gray-500 text-sm font-medium">Θεατές</h3>
+            <p className="text-3xl font-bold mt-2 text-gray-600">{stats.roleStats.viewer}</p>
           </div>
         </div>
 
