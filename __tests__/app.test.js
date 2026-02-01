@@ -593,24 +593,7 @@ describe('News Application Integration Tests', () => {
   });
 
   describe('News Workflow Tests', () => {
-    let moderatorToken;
     let newsArticleId;
-
-    beforeAll(async () => {
-      // Register a moderator user
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({
-          username: 'testmoderator',
-          email: 'moderator@test.com',
-          password: 'moderator123',
-          role: 'moderator',
-          firstName: 'Test',
-          lastName: 'Moderator'
-        });
-      
-      moderatorToken = response.body.data.token;
-    });
 
     test('should create article with isNews flag', async () => {
       const response = await request(app)
