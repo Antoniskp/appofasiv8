@@ -656,7 +656,7 @@ const authController = {
       const roleValues = User.rawAttributes?.role?.values;
       const fallbackRoles = Array.isArray(userRoles)
         ? userRoles.map((role) => role.key)
-        : ['admin', 'moderator', 'editor', 'viewer'];
+        : [];
       const roles = Array.isArray(roleValues) && roleValues.length
         ? roleValues
         : fallbackRoles;

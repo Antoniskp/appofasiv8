@@ -36,38 +36,41 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-          const [articleResponse, userStatsResponse] = await Promise.all([
-            articleAPI.getAll({ limit: 100 }),
-            authAPI.getUserStats()
-          ]);
-          if (articleResponse.success) {
-            const allArticles = articleResponse.data.articles || [];
-            setArticles(allArticles);
-            setStats((prevStats) => ({
-              ...prevStats,
-              total: allArticles.length,
-              published: allArticles.filter(a => a.status === 'published').length,
-              draft: allArticles.filter(a => a.status === 'draft').length,
-              archived: allArticles.filter(a => a.status === 'archived').length,
-              pendingNews: allArticles.filter(a => a.isNews && !a.newsApprovedAt).length,
-            }));
-          }
-          if (userStatsResponse?.success) {
-            setStats((prevStats) => ({
-              ...prevStats,
-              totalUsers: userStatsResponse.data?.total ?? 0,
-              roleStats: {
-                ...prevStats.roleStats,
-                ...(userStatsResponse.data?.roles || {})
-              }
-            }));
-          }
-        } catch (error) {
-          console.error('Failed to fetch dashboard data:', error);
-        } finally {
-          setLoading(false);
+        const [articleResult, userStatsResult] = await Promise.allSettled([
+          articleAPI.getAll({ limit: 100 }),
+          authAPI.getUserStats()
+        ]);
+
+        if (articleResult.status === 'fulfilled' && articleResult.value.success) {
+          const allArticles = articleResult.value.data.articles || [];
+          setArticles(allArticles);
+          setStats((prevStats) => ({
+            ...prevStats,
+            total: allArticles.length,
+            published: allArticles.filter(a => a.status === 'published').length,
+            draft: allArticles.filter(a => a.status === 'draft').length,
+            archived: allArticles.filter(a => a.status === 'archived').length,
+            pendingNews: allArticles.filter(a => a.isNews && !a.newsApprovedAt).length,
+          }));
+        } else if (articleResult.status === 'rejected') {
+          console.error('Failed to fetch articles:', articleResult.reason);
         }
+
+        if (userStatsResult.status === 'fulfilled' && userStatsResult.value?.success) {
+          setStats((prevStats) => ({
+            ...prevStats,
+            totalUsers: userStatsResult.value.data?.total ?? 0,
+            roleStats: {
+              ...prevStats.roleStats,
+              ...(userStatsResult.value.data?.roles || {})
+            }
+          }));
+        } else if (userStatsResult.status === 'rejected') {
+          console.error('Failed to fetch user stats:', userStatsResult.reason);
+        }
+      } finally {
+        setLoading(false);
+      }
       };
 
     fetchData();
